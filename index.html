@@ -254,6 +254,22 @@
         .btn-load { background: #39ff14; color: black; }
         .btn-delete { background: #ff3333; color: white; }
 
+        /* --- FIRMA MARCA DE AGUA --- */
+        #appWatermark {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.3); /* Color por defecto en modo oscuro */
+            pointer-events: none;
+            font-family: system-ui, -apple-system, sans-serif;
+            font-weight: 500;
+            z-index: 5;
+            user-select: none;
+            transition: color 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
     </style>
 </head>
 <body>
@@ -350,6 +366,9 @@
             <button class="float-btn btn-primary" id="reverseFlowBtn" title="Invertir Dirección"><i data-lucide="arrow-right-left"></i></button>
             <button class="float-btn btn-danger" id="deleteObjBtn" title="Eliminar"><i data-lucide="trash"></i></button>
         </div>
+
+        <!-- FIRMA PROFESIONAL -->
+        <div id="appWatermark">Roberto Fibonacci | Prospecta | Derechos Reservados</div>
     </div>
 
     <div class="zoom-indicator" id="zoomText">100%</div>
@@ -497,6 +516,8 @@
         const currentColorBtn = document.getElementById('currentColorBtn');
         const colorFlyout = document.getElementById('colorFlyout');
 
+        const watermark = document.getElementById('appWatermark'); // Elemento de la firma
+
         const generateId = () => Math.random().toString(36).substr(2, 9);
 
         // --- ESTADO INICIAL ---
@@ -598,7 +619,7 @@
             reader.onload = (event) => {
                 const img = new Image();
                 img.onload = () => {
-                    const max_size = 300; 
+                    const max_size = 1500; // CALIDAD PREMIUM AUMENTADA (antes 300)
                     let w = img.width; let h = img.height;
                     if (w > h) { if (w > max_size) { h *= max_size / w; w = max_size; } } 
                     else { if (h > max_size) { w *= max_size / h; h = max_size; } }
@@ -607,12 +628,14 @@
                     tempCanvas.width = w; tempCanvas.height = h;
                     const tCtx = tempCanvas.getContext('2d');
                     tCtx.drawImage(img, 0, 0, w, h);
-                    const optimizedBase64 = tempCanvas.toDataURL('image/png');
+                    
+                    // COMPRESIÓN INTELIGENTE (WEBP AL 95%)
+                    const optimizedBase64 = tempCanvas.toDataURL('image/webp', 0.95);
                     
                     typeArray.push({ id: generateId(), data: optimizedBase64 });
                     saveGalleryToMemory(); 
                     renderGalleryUI(); 
-                    showMessage("Imagen guardada");
+                    showMessage("Imagen guardada en alta calidad");
                 };
                 img.src = event.target.result;
             };
@@ -1024,6 +1047,12 @@
             document.getElementById('theme-color-meta').content = bgColor; // Actualiza el color de la app en móvil
             
             textInput.style.caretColor = appState.theme === 'dark' ? 'white' : 'black';
+            
+            // LÓGICA PARA ADAPTAR LA FIRMA PROFESIONAL
+            if(watermark) {
+                watermark.style.color = appState.theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.4)';
+            }
+
             redrawAll();
         });
 
