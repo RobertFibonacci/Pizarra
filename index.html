@@ -53,8 +53,9 @@
 
         .panel-wrapper.left { left: 15px; top: 50%; transform: translateY(-50%); flex-direction: row; }
         .panel-wrapper.left .panel-content { 
-            border-radius: 12px; padding: 12px 8px; display: flex; flex-direction: column; gap: 8px; 
-            max-height: 80vh; overflow-y: auto; scrollbar-width: none; align-items: center;
+            border-radius: 12px; padding: 12px 8px; display: flex; flex-direction: column; gap: 12px; 
+            max-height: 80vh; overflow-y: auto; scrollbar-width: none; align-items: stretch;
+            min-width: 140px;
         }
         .panel-wrapper.left .panel-content::-webkit-scrollbar { display: none; }
         .panel-wrapper.left.collapsed .panel-content { transform: translateX(-150%); opacity: 0; pointer-events: none; position: absolute; }
@@ -72,27 +73,32 @@
         #tool-smart:hover { color: #ffff00; background: rgba(255,255,0,0.1); }
         #tool-smart.active { color: #ffff00; background: rgba(255,255,0,0.2); box-shadow: inset 0 0 5px rgba(255,255,0,0.5); }
 
-        .upload-btn { border: 1px dashed rgba(255,255,255,0.4); color: #fff; width: 100%; }
+        .upload-btn { border: 1px dashed rgba(255,255,255,0.4); color: #fff; width: 100%; justify-content: center; }
         .upload-btn:hover { border-color: #fff; background: rgba(255,255,255,0.2); }
         
+        /* --- NUEVO ESTILO DE GALERÍA COMPACTA --- */
+        .compact-gallery {
+            display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-start;
+        }
+        
         .gallery-thumb {
-            width: 36px; height: 36px; border-radius: 6px; object-fit: contain;
+            width: 32px; height: 32px; border-radius: 6px; object-fit: contain;
             border: 2px solid transparent; cursor: pointer; transition: 0.2s;
-            background: rgba(0,0,0,0.5); padding: 2px;
+            background: rgba(0,0,0,0.5); padding: 2px; flex-shrink: 0;
         }
         .gallery-thumb.active { border-color: #00ffff; transform: scale(1.1); background: rgba(255,255,255,0.1); }
         
-        .delete-thumb-btn {
-            position: absolute; top: -5px; right: -5px; background: red; color: white;
-            border-radius: 50%; width: 14px; height: 14px; font-size: 10px; display: none;
-            align-items: center; justify-content: center; border: none; cursor: pointer; z-index: 20;
+        .view-all-btn {
+            width: 32px; height: 32px; border-radius: 6px; background: rgba(255,255,255,0.1);
+            color: #aaa; font-size: 11px; font-weight: bold; border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; flex-shrink: 0;
         }
-        .gallery-item-wrapper { position: relative; }
-        .gallery-item-wrapper:hover .delete-thumb-btn { display: flex; }
+        .view-all-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
 
         .section-title {
             color: #aaa; font-size: 10px; font-weight: bold; text-transform: uppercase;
-            margin: 5px 0 0 0; text-align: center; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 3px;
+            margin: 0; text-align: center; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 3px;
         }
 
         /* --- PALETA DE COLORES EN PANEL DERECHO --- */
@@ -160,21 +166,31 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
-        /* --- MODAL DE CONFIGURACIÓN DE REACCIÓN --- */
-        #reactionModalOverlay {
+        /* --- MODALES GENERALES --- */
+        .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
             z-index: 1000; display: none; align-items: center; justify-content: center;
         }
-        .reaction-modal {
+        .modal-box {
             background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);
             color: white; font-family: system-ui; width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             display: flex; flex-direction: column; gap: 15px;
         }
-        .reaction-modal h3 { margin: 0; font-size: 18px; text-align: center; }
-        .reaction-modal select, .reaction-modal input {
+        .modal-box.large { width: 450px; max-width: 90vw; }
+        .modal-box h3 { margin: 0; font-size: 18px; text-align: center; }
+        .modal-box select, .modal-box input {
             width: 100%; padding: 10px; background: #0d0d0d; color: white; border: 1px solid #333;
             border-radius: 8px; outline: none; font-size: 14px; box-sizing: border-box;
         }
+        
+        .modal-btns { display: flex; gap: 10px; margin-top: 10px; }
+        .modal-btns button {
+            flex: 1; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold;
+        }
+        .btn-cancel { background: #333; color: white; }
+        .btn-save { background: #00ffff; color: black; }
+
+        /* --- GRID DE REACCIONES Y GALERÍA GENERAL --- */
         .reaction-grid {
             display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
             max-height: 150px; overflow-y: auto; padding: 5px;
@@ -184,18 +200,30 @@
             cursor: pointer; border: 2px solid transparent; transition: 0.2s;
         }
         .reaction-grid img.selected { border-color: #00ffff; transform: scale(1.1); }
-        .modal-btns { display: flex; gap: 10px; margin-top: 10px; }
-        .modal-btns button {
-            flex: 1; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold;
+
+        /* --- NUEVA GALERÍA COMPLETA (MODAL) --- */
+        .full-gallery-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px;
+            max-height: 300px; overflow-y: auto; padding: 5px; scrollbar-width: thin;
         }
-        .btn-cancel { background: #333; color: white; }
-        .btn-save { background: #00ffff; color: black; }
+        .full-gallery-item {
+            position: relative; width: 100%; aspect-ratio: 1;
+        }
+        .full-gallery-item img {
+            width: 100%; height: 100%; object-fit: contain; background: #000; border-radius: 6px;
+            cursor: pointer; border: 2px solid transparent; transition: 0.2s; padding: 4px; box-sizing: border-box;
+        }
+        .full-gallery-item img:hover { background: rgba(255,255,255,0.1); }
+        .full-gallery-item img.active { border-color: #00ffff; background: rgba(255,255,255,0.1); transform: scale(1.05); }
+        
+        .delete-thumb-btn {
+            position: absolute; top: -5px; right: -5px; background: red; color: white;
+            border-radius: 50%; width: 18px; height: 18px; font-size: 10px; display: none;
+            align-items: center; justify-content: center; border: none; cursor: pointer; z-index: 20; font-weight: bold;
+        }
+        .full-gallery-item:hover .delete-thumb-btn { display: flex; }
 
         /* --- MODAL DE GESTOR DE DIAGRAMAS --- */
-        #diagramsModalOverlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
-            z-index: 1000; display: none; align-items: center; justify-content: center;
-        }
         .diagram-list {
             display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; padding: 5px 0;
             scrollbar-width: thin; scrollbar-color: #555 #111;
@@ -219,8 +247,9 @@
 
     <div id="toastMsg">Mensaje</div>
 
-    <div id="reactionModalOverlay">
-        <div class="reaction-modal">
+    <!-- MODAL DE REACCIÓN -->
+    <div id="reactionModalOverlay" class="modal-overlay">
+        <div class="modal-box">
             <h3>Configurar Animación</h3>
             <p style="font-size:12px; color:#aaa; margin:0; text-align:center;">¿Qué pasa al tocarlo con la herramienta Smart?</p>
             
@@ -244,8 +273,9 @@
         </div>
     </div>
 
-    <div id="diagramsModalOverlay">
-        <div class="reaction-modal"> 
+    <!-- MODAL DE DIAGRAMAS -->
+    <div id="diagramsModalOverlay" class="modal-overlay">
+        <div class="modal-box"> 
             <h3>Gestor de Diagramas</h3>
             
             <div style="display:flex; gap:10px; margin-top: 15px;">
@@ -256,12 +286,28 @@
             <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">
                 <p style="font-size:12px; color:#aaa; margin:0 0 10px; text-align:center;">Mis Diagramas Guardados</p>
                 <div class="diagram-list" id="diagramsListContainer">
-                    </div>
+                </div>
             </div>
 
             <div class="modal-btns">
                 <button class="btn-cancel" onclick="closeDiagramsModal()">Cerrar</button>
                 <button class="btn-save" style="background:#ff9900;" onclick="startNewDiagram()">Nueva Pizarra</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NUEVO: MODAL DE GALERÍA COMPLETA -->
+    <div id="fullGalleryModalOverlay" class="modal-overlay">
+        <div class="modal-box large">
+            <h3 id="fullGalleryTitle">Mi Galería</h3>
+            <p style="font-size:12px; color:#aaa; margin:0; text-align:center;">Selecciona para usar o elimina para limpiar espacio.</p>
+            
+            <div class="full-gallery-grid" id="fullGalleryGrid">
+                <!-- Se llena dinámicamente -->
+            </div>
+
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeFullGalleryModal()">Cerrar</button>
             </div>
         </div>
     </div>
@@ -345,21 +391,32 @@
         <button class="toggle-btn" onclick="togglePanel('panel-right')" title="Ocultar Herramientas"><i data-lucide="chevron-right"></i></button>
     </div>
 
+    <!-- PANEL IZQUIERDO REDISEÑADO -->
     <div class="panel-wrapper left" id="panel-left">
         <div class="panel-content">
-            <p class="section-title">Elementos</p>
-            <input type="file" id="elementUploader" accept="image/png, image/jpeg, image/webp" style="display: none;">
-            <button class="tool-btn upload-btn" onclick="document.getElementById('elementUploader').click()" title="Subir Imagen al Diagrama">
-                <i data-lucide="image-plus"></i>
-            </button>
-            <div id="elementsContainer" style="display:flex; flex-direction:column; gap:5px; width:100%; align-items:center;"></div>
+            <!-- Sección Elementos -->
+            <div style="width: 100%;">
+                <p class="section-title">Elementos</p>
+                <div style="display: flex; gap: 5px; margin-top: 5px;">
+                    <input type="file" id="elementUploader" accept="image/png, image/jpeg, image/webp" style="display: none;">
+                    <button class="tool-btn upload-btn" onclick="document.getElementById('elementUploader').click()" title="Subir Imagen al Diagrama">
+                        <i data-lucide="image-plus"></i>
+                    </button>
+                </div>
+                <div id="elementsContainer" class="compact-gallery" style="margin-top: 8px;"></div>
+            </div>
             
-            <p class="section-title" style="margin-top:15px;">Reacciones</p>
-            <input type="file" id="reactionUploader" accept="image/png, image/jpeg, image/webp" style="display: none;">
-            <button class="tool-btn upload-btn" onclick="document.getElementById('reactionUploader').click()" title="Subir Icono Animado">
-                <i data-lucide="sparkles"></i>
-            </button>
-            <div id="reactionsContainer" style="display:flex; flex-direction:column; gap:5px; width:100%; align-items:center;"></div>
+            <!-- Sección Reacciones -->
+            <div style="width: 100%; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                <p class="section-title">Reacciones</p>
+                <div style="display: flex; gap: 5px; margin-top: 5px;">
+                    <input type="file" id="reactionUploader" accept="image/png, image/jpeg, image/webp" style="display: none;">
+                    <button class="tool-btn upload-btn" onclick="document.getElementById('reactionUploader').click()" title="Subir Icono Animado">
+                        <i data-lucide="sparkles"></i>
+                    </button>
+                </div>
+                <div id="reactionsContainer" class="compact-gallery" style="margin-top: 8px;"></div>
+            </div>
         </div>
         <button class="toggle-btn" onclick="togglePanel('panel-left')" title="Ocultar Galería"><i data-lucide="chevron-left"></i></button>
     </div>
@@ -539,39 +596,148 @@
             if(confirm("¿Eliminar imagen permanentemente?")) {
                 if(typeStr === 'element') savedElements = savedElements.filter(img => img.id !== id);
                 else savedReactions = savedReactions.filter(img => img.id !== id);
-                saveGalleryToMemory(); renderGalleryUI();
+                saveGalleryToMemory(); 
+                
+                // Actualizamos ambas interfaces (compacta y modal)
+                renderGalleryUI();
+                if (document.getElementById('fullGalleryModalOverlay').style.display === 'flex') {
+                    openFullGalleryModal(typeStr); 
+                }
             }
         };
 
+        // --- NUEVA LÓGICA DE GALERÍA COMPACTA Y MODAL ---
+        
+        let currentFullGalleryType = ''; // 'element' o 'reaction'
+
+        window.openFullGalleryModal = function(type) {
+            currentFullGalleryType = type;
+            const modal = document.getElementById('fullGalleryModalOverlay');
+            const title = document.getElementById('fullGalleryTitle');
+            const grid = document.getElementById('fullGalleryGrid');
+            
+            title.innerText = type === 'element' ? 'Galería de Elementos' : 'Galería de Reacciones';
+            grid.innerHTML = '';
+            
+            const dataArray = type === 'element' ? savedElements : savedReactions;
+            
+            if (dataArray.length === 0) {
+                grid.innerHTML = '<span style="font-size:12px; color:#aaa; text-align:center; grid-column: 1 / -1; padding: 20px;">No hay imágenes guardadas en esta categoría.</span>';
+            } else {
+                // Mostrar en orden de más reciente a más antiguo
+                [...dataArray].reverse().forEach(imgObj => {
+                    const item = document.createElement('div');
+                    item.className = 'full-gallery-item';
+                    
+                    const img = document.createElement('img');
+                    img.src = imgObj.data;
+                    if (appState.currentImageId === imgObj.id && appState.tool === 'image' && type === 'element') img.classList.add('active');
+                    
+                    img.onclick = () => {
+                        if (type === 'element') {
+                            appState.tool = 'image'; 
+                            appState.currentImageId = imgObj.id; 
+                            appState.currentImageData = imgObj.data;
+                            document.querySelectorAll('.tool-btn:not(.action-btn)').forEach(b => b.classList.remove('active'));
+                            clearSelection();
+                            renderGalleryUI(); // Para actualizar la selección en el panel lateral
+                            closeFullGalleryModal();
+                            showMessage("Elemento seleccionado para dibujar");
+                        } else {
+                            // Si estamos en reacciones, simplemente mostramos mensaje (se usa en la varita)
+                            showMessage("Ve a 'Configurar Animación' para usar esta reacción.");
+                            closeFullGalleryModal();
+                        }
+                    };
+                    
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'delete-thumb-btn';
+                    delBtn.innerHTML = 'X';
+                    delBtn.title = "Eliminar permanentemente";
+                    delBtn.onclick = (e) => deleteFromGallery(e, imgObj.id, type);
+                    
+                    item.appendChild(img);
+                    item.appendChild(delBtn);
+                    grid.appendChild(item);
+                });
+            }
+            
+            modal.style.display = 'flex';
+        };
+
+        window.closeFullGalleryModal = function() {
+            document.getElementById('fullGalleryModalOverlay').style.display = 'none';
+        };
+
         function renderGalleryUI() {
+            // Render Elementos (Solo últimos 3)
             elementsContainer.innerHTML = '';
-            savedElements.forEach(imgObj => {
-                const wrapper = document.createElement('div'); wrapper.className = 'gallery-item-wrapper';
+            const recentElements = savedElements.slice(-3).reverse();
+            
+            recentElements.forEach(imgObj => {
                 const imgBtn = document.createElement('img');
-                imgBtn.src = imgObj.data; imgBtn.className = 'gallery-thumb tool-btn';
+                imgBtn.src = imgObj.data; 
+                imgBtn.className = 'gallery-thumb tool-btn';
                 if (appState.currentImageId === imgObj.id && appState.tool === 'image') imgBtn.classList.add('active');
                 
                 imgBtn.addEventListener('click', () => {
                     appState.tool = 'image'; appState.currentImageId = imgObj.id; appState.currentImageData = imgObj.data;
                     document.querySelectorAll('.tool-btn:not(.action-btn):not(.gallery-thumb)').forEach(b => b.classList.remove('active'));
-                    document.querySelectorAll('.gallery-thumb').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('#elementsContainer .gallery-thumb').forEach(b => b.classList.remove('active'));
                     imgBtn.classList.add('active'); clearSelection();
                 });
-                const delBtn = document.createElement('button'); delBtn.className = 'delete-thumb-btn'; delBtn.innerHTML = 'X';
-                delBtn.onclick = (e) => deleteFromGallery(e, imgObj.id, 'element');
-                wrapper.appendChild(imgBtn); wrapper.appendChild(delBtn); elementsContainer.appendChild(wrapper);
+                elementsContainer.appendChild(imgBtn);
             });
+            
+            if (savedElements.length > 3) {
+                const extraCount = savedElements.length - 3;
+                const viewAllBtn = document.createElement('button');
+                viewAllBtn.className = 'view-all-btn';
+                viewAllBtn.innerText = `+${extraCount}`;
+                viewAllBtn.title = "Ver toda la galería";
+                viewAllBtn.onclick = () => openFullGalleryModal('element');
+                elementsContainer.appendChild(viewAllBtn);
+            } else if (savedElements.length > 0) {
+                 // Si hay 3 o menos, poner un botón de ver galería por consistencia si el usuario quiere borrar
+                 const viewAllBtn = document.createElement('button');
+                 viewAllBtn.className = 'view-all-btn';
+                 viewAllBtn.innerHTML = `<i data-lucide="layout-grid" style="width:14px; height:14px;"></i>`;
+                 viewAllBtn.title = "Abrir Gestor";
+                 viewAllBtn.onclick = () => openFullGalleryModal('element');
+                 elementsContainer.appendChild(viewAllBtn);
+            }
 
+            // Render Reacciones (Solo últimas 3)
             reactionsContainer.innerHTML = '';
-            savedReactions.forEach(imgObj => {
-                const wrapper = document.createElement('div'); wrapper.className = 'gallery-item-wrapper';
+            const recentReactions = savedReactions.slice(-3).reverse();
+            
+            recentReactions.forEach(imgObj => {
                 const imgBtn = document.createElement('img');
-                imgBtn.src = imgObj.data; imgBtn.className = 'gallery-thumb';
-                imgBtn.style.borderColor = 'transparent'; 
-                const delBtn = document.createElement('button'); delBtn.className = 'delete-thumb-btn'; delBtn.innerHTML = 'X';
-                delBtn.onclick = (e) => deleteFromGallery(e, imgObj.id, 'reaction');
-                wrapper.appendChild(imgBtn); wrapper.appendChild(delBtn); reactionsContainer.appendChild(wrapper);
+                imgBtn.src = imgObj.data; 
+                imgBtn.className = 'gallery-thumb';
+                imgBtn.style.cursor = 'default';
+                imgBtn.title = "Reacción (Usa la varita mágica)";
+                reactionsContainer.appendChild(imgBtn);
             });
+            
+            if (savedReactions.length > 3) {
+                const extraCount = savedReactions.length - 3;
+                const viewAllBtn = document.createElement('button');
+                viewAllBtn.className = 'view-all-btn';
+                viewAllBtn.innerText = `+${extraCount}`;
+                viewAllBtn.title = "Ver toda la galería";
+                viewAllBtn.onclick = () => openFullGalleryModal('reaction');
+                reactionsContainer.appendChild(viewAllBtn);
+            } else if (savedReactions.length > 0) {
+                 const viewAllBtn = document.createElement('button');
+                 viewAllBtn.className = 'view-all-btn';
+                 viewAllBtn.innerHTML = `<i data-lucide="layout-grid" style="width:14px; height:14px;"></i>`;
+                 viewAllBtn.title = "Abrir Gestor";
+                 viewAllBtn.onclick = () => openFullGalleryModal('reaction');
+                 reactionsContainer.appendChild(viewAllBtn);
+            }
+            
+            lucide.createIcons();
         }
 
         // --- SISTEMA DE PARTÍCULAS ---
@@ -591,6 +757,57 @@
                 reaction: shape.reaction,
                 color: shape.color,
                 scaleOffset: (Math.random() * 0.2) 
+            });
+        }
+
+        function drawActiveParticles() {
+            activeParticles.forEach(p => {
+                ctx.save();
+                let progress = 1 - p.life; 
+                ctx.globalAlpha = p.life < 0.3 ? p.life / 0.3 : 1;
+                let scale;
+                if (p.reaction.type === 'text') {
+                    if (progress < 0.15) scale = 0.5 + (progress / 0.15) * 0.6; 
+                    else scale = 1.1 - ((progress - 0.15) / 0.85) * 0.1; 
+                } else {
+                    if (progress < 0.15) scale = 0.2 + (progress / 0.15) * 1.2; 
+                    else scale = 1.4 - ((progress - 0.15) / 0.85) * 0.4; 
+                    scale += p.scaleOffset;
+                }
+                ctx.translate(p.x, p.y); ctx.scale(scale, scale);
+
+                if (p.reaction.type === 'text') {
+                    const fontSize = 14; ctx.font = `bold ${fontSize}px system-ui, -apple-system, sans-serif`; ctx.textBaseline = 'top'; ctx.textAlign = 'left';
+                    const text = p.reaction.text; const maxWidth = 180; const words = text.split(' '); let line = ''; const lines = [];
+                    for(let n = 0; n < words.length; n++) {
+                        const testLine = line + words[n] + ' ';
+                        if (ctx.measureText(testLine).width > maxWidth && n > 0) { lines.push(line); line = words[n] + ' '; } 
+                        else line = testLine;
+                    }
+                    lines.push(line);
+                    const padding = 12; const lineHeight = fontSize * 1.4; const bubbleHeight = (lines.length * lineHeight) + (padding * 2) - (lineHeight - fontSize);
+                    let maxLineWidth = 0; lines.forEach(l => { if (ctx.measureText(l).width > maxLineWidth) maxLineWidth = ctx.measureText(l).width; });
+                    const bubbleWidth = maxLineWidth + (padding * 2);
+                    const bubbleX = -bubbleWidth / 2; const bubbleY = -bubbleHeight - 15; const r = 8;
+                    const adaptColor = appState.theme === 'dark' ? '#ffffff' : '#000000'; const bubbleBg = appState.theme === 'dark' ? '#1a1a1a' : '#ffffff';
+                    
+                    ctx.shadowBlur = 8 / view.scale; ctx.shadowColor = appState.theme === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.2)';
+                    ctx.fillStyle = bubbleBg; ctx.strokeStyle = adaptColor; ctx.lineWidth = 1.5 / view.scale;
+                    ctx.beginPath(); ctx.moveTo(bubbleX + r, bubbleY); ctx.lineTo(bubbleX + bubbleWidth - r, bubbleY); ctx.quadraticCurveTo(bubbleX + bubbleWidth, bubbleY, bubbleX + bubbleWidth, bubbleY + r); ctx.lineTo(bubbleX + bubbleWidth, bubbleY + bubbleHeight - r); ctx.quadraticCurveTo(bubbleX + bubbleWidth, bubbleY + bubbleHeight, bubbleX + bubbleWidth - r, bubbleY + bubbleHeight); ctx.lineTo(6, bubbleY + bubbleHeight); ctx.lineTo(0, -5); ctx.lineTo(-6, bubbleY + bubbleHeight); ctx.lineTo(bubbleX + r, bubbleY + bubbleHeight); ctx.quadraticCurveTo(bubbleX, bubbleY + bubbleHeight, bubbleX, bubbleY + bubbleHeight - r); ctx.lineTo(bubbleX, bubbleY + r); ctx.quadraticCurveTo(bubbleX, bubbleY, bubbleX + r, bubbleY); ctx.closePath();
+                    ctx.fill(); ctx.stroke();
+                    ctx.shadowBlur = 0; ctx.fillStyle = adaptColor; 
+                    lines.forEach((l, index) => { ctx.fillText(l.trim(), bubbleX + padding, bubbleY + padding + (index * lineHeight)); });
+                } else if (p.reaction.type === 'image') {
+                    const reactObj = savedReactions.find(r => r.id === p.reaction.imgId);
+                    if(reactObj) {
+                        const img = getCachedImage(reactObj.data);
+                        if (img && img.complete) {
+                            const actualColor = getActualColor(p.color); const glowColor = (actualColor === '#000000' || actualColor === '#111111') && appState.theme === 'dark' ? '#ffffff' : actualColor;
+                            ctx.shadowBlur = 15 / view.scale; ctx.shadowColor = glowColor; ctx.drawImage(img, -12, -12, 24, 24); 
+                        }
+                    }
+                }
+                ctx.restore();
             });
         }
 
@@ -974,7 +1191,6 @@
              for (let i = appState.paths.length - 1; i >= 0; i--) {
                 const shape = appState.paths[i];
                 if (shape.id === ignoreId) continue;
-                if (shape.isRevealing) continue;
                 
                 if (['rect', 'circle', 'text', 'image'].includes(shape.type)) {
                      const box = getBoundingBox(shape);
@@ -1017,7 +1233,6 @@
             for (let i = appState.paths.length - 1; i >= 0; i--) {
                 const shape = appState.paths[i];
                 
-                if (shape.isRevealing) continue;
                 if (appState.tool === 'smart' && (shape.type === 'arrow' || shape.type === 'line')) continue;
 
                 const box = getBoundingBox(shape);
@@ -1225,8 +1440,6 @@
         }
 
         function drawShape(ctxToUse, shape) {
-            if (shape.isRevealing) return; 
-
             ctxToUse.save();
             const actualColor = getActualColor(shape.color);
             
@@ -1402,8 +1615,6 @@
         function drawAnchors() {
             if (appState.tool === 'arrow' || appState.tool === 'line') {
                 appState.paths.forEach(shape => {
-                    if (shape.isRevealing) return;
-
                     if (['rect', 'circle', 'text', 'image'].includes(shape.type)) {
                         const isSource = appState.currentPath && appState.currentPath.fromId === shape.id;
                         const isTarget = appState.snapTargetShape && appState.snapTargetShape.id === shape.id;
@@ -1427,57 +1638,6 @@
                     }
                 });
             }
-        }
-
-        function drawActiveParticles() {
-            activeParticles.forEach(p => {
-                ctx.save();
-                let progress = 1 - p.life; 
-                ctx.globalAlpha = p.life < 0.3 ? p.life / 0.3 : 1;
-                let scale;
-                if (p.reaction.type === 'text') {
-                    if (progress < 0.15) scale = 0.5 + (progress / 0.15) * 0.6; 
-                    else scale = 1.1 - ((progress - 0.15) / 0.85) * 0.1; 
-                } else {
-                    if (progress < 0.15) scale = 0.2 + (progress / 0.15) * 1.2; 
-                    else scale = 1.4 - ((progress - 0.15) / 0.85) * 0.4; 
-                    scale += p.scaleOffset;
-                }
-                ctx.translate(p.x, p.y); ctx.scale(scale, scale);
-
-                if (p.reaction.type === 'text') {
-                    const fontSize = 14; ctx.font = `bold ${fontSize}px system-ui, -apple-system, sans-serif`; ctx.textBaseline = 'top'; ctx.textAlign = 'left';
-                    const text = p.reaction.text; const maxWidth = 180; const words = text.split(' '); let line = ''; const lines = [];
-                    for(let n = 0; n < words.length; n++) {
-                        const testLine = line + words[n] + ' ';
-                        if (ctx.measureText(testLine).width > maxWidth && n > 0) { lines.push(line); line = words[n] + ' '; } 
-                        else line = testLine;
-                    }
-                    lines.push(line);
-                    const padding = 12; const lineHeight = fontSize * 1.4; const bubbleHeight = (lines.length * lineHeight) + (padding * 2) - (lineHeight - fontSize);
-                    let maxLineWidth = 0; lines.forEach(l => { if (ctx.measureText(l).width > maxLineWidth) maxLineWidth = ctx.measureText(l).width; });
-                    const bubbleWidth = maxLineWidth + (padding * 2);
-                    const bubbleX = -bubbleWidth / 2; const bubbleY = -bubbleHeight - 15; const r = 8;
-                    const adaptColor = appState.theme === 'dark' ? '#ffffff' : '#000000'; const bubbleBg = appState.theme === 'dark' ? '#1a1a1a' : '#ffffff';
-                    
-                    ctx.shadowBlur = 8 / view.scale; ctx.shadowColor = appState.theme === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.2)';
-                    ctx.fillStyle = bubbleBg; ctx.strokeStyle = adaptColor; ctx.lineWidth = 1.5 / view.scale;
-                    ctx.beginPath(); ctx.moveTo(bubbleX + r, bubbleY); ctx.lineTo(bubbleX + bubbleWidth - r, bubbleY); ctx.quadraticCurveTo(bubbleX + bubbleWidth, bubbleY, bubbleX + bubbleWidth, bubbleY + r); ctx.lineTo(bubbleX + bubbleWidth, bubbleY + bubbleHeight - r); ctx.quadraticCurveTo(bubbleX + bubbleWidth, bubbleY + bubbleHeight, bubbleX + bubbleWidth - r, bubbleY + bubbleHeight); ctx.lineTo(6, bubbleY + bubbleHeight); ctx.lineTo(0, -5); ctx.lineTo(-6, bubbleY + bubbleHeight); ctx.lineTo(bubbleX + r, bubbleY + bubbleHeight); ctx.quadraticCurveTo(bubbleX, bubbleY + bubbleHeight, bubbleX, bubbleY + bubbleHeight - r); ctx.lineTo(bubbleX, bubbleY + r); ctx.quadraticCurveTo(bubbleX, bubbleY, bubbleX + r, bubbleY); ctx.closePath();
-                    ctx.fill(); ctx.stroke();
-                    ctx.shadowBlur = 0; ctx.fillStyle = adaptColor; 
-                    lines.forEach((l, index) => { ctx.fillText(l.trim(), bubbleX + padding, bubbleY + padding + (index * lineHeight)); });
-                } else if (p.reaction.type === 'image') {
-                    const reactObj = savedReactions.find(r => r.id === p.reaction.imgId);
-                    if(reactObj) {
-                        const img = getCachedImage(reactObj.data);
-                        if (img && img.complete) {
-                            const actualColor = getActualColor(p.color); const glowColor = (actualColor === '#000000' || actualColor === '#111111') && appState.theme === 'dark' ? '#ffffff' : actualColor;
-                            ctx.shadowBlur = 15 / view.scale; ctx.shadowColor = glowColor; ctx.drawImage(img, -12, -12, 24, 24); 
-                        }
-                    }
-                }
-                ctx.restore();
-            });
         }
 
         function redrawAll() {
@@ -1531,12 +1691,12 @@
             }
             if (e.touches && e.touches.length > 1) return;
             
-            if (e.target !== textInput && !e.target.closest('.floating-actions') && !e.target.closest('.panel-wrapper') && !e.target.closest('#reactionModalOverlay') && !e.target.closest('#diagramsModalOverlay')) e.preventDefault();
+            if (e.target !== textInput && !e.target.closest('.floating-actions') && !e.target.closest('.panel-wrapper') && !e.target.closest('.modal-overlay')) e.preventDefault();
             
             const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             const worldPos = screenToWorld(clientX, clientY);
 
-            if(e.target.closest('.panel-wrapper') || e.target.closest('.floating-actions') || e.target.closest('#reactionModalOverlay') || e.target.closest('#diagramsModalOverlay')) return;
+            if(e.target.closest('.panel-wrapper') || e.target.closest('.floating-actions') || e.target.closest('.modal-overlay')) return;
 
             if (appState.tool === 'text') { startText(clientX, clientY); return; }
 
@@ -1591,7 +1751,7 @@
         }
 
         function handlePointerMove(e) {
-            if (e.target !== textInput && !e.target.closest('.floating-actions') && !e.target.closest('.panel-wrapper') && !e.target.closest('#reactionModalOverlay') && !e.target.closest('#diagramsModalOverlay')) e.preventDefault();
+            if (e.target !== textInput && !e.target.closest('.floating-actions') && !e.target.closest('.panel-wrapper') && !e.target.closest('.modal-overlay')) e.preventDefault();
 
             if (e.touches && e.touches.length === 2) {
                 const touch1 = e.touches[0], touch2 = e.touches[1];
