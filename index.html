@@ -3,6 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#050505" id="theme-color-meta">
+    
+    <!-- ETIQUETAS PARA EL ÍCONO DE TU APP -->
+    <link rel="icon" type="image/png" href="icono.png">
+    <link rel="apple-touch-icon" href="icono.png">
+    
     <title>Pizarra Interactiva Definitiva</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
@@ -60,6 +68,10 @@
         .panel-wrapper.left .panel-content::-webkit-scrollbar { display: none; }
         .panel-wrapper.left.collapsed .panel-content { transform: translateX(-150%); opacity: 0; pointer-events: none; position: absolute; }
 
+        .panel-wrapper.bottom { bottom: 15px; left: 50%; transform: translateX(-50%); flex-direction: column-reverse; }
+        .panel-wrapper.bottom .panel-content { border-radius: 50px; padding: 10px 15px; display: flex; gap: 15px; align-items: center; }
+        .panel-wrapper.bottom.collapsed .panel-content { transform: translateY(150%); opacity: 0; pointer-events: none; position: absolute; }
+
         .tool-btn {
             background: transparent; border: none; color: #888; padding: 6px;
             border-radius: 8px; cursor: pointer; transition: all 0.2s;
@@ -76,7 +88,7 @@
         .upload-btn { border: 1px dashed rgba(255,255,255,0.4); color: #fff; width: 100%; justify-content: center; }
         .upload-btn:hover { border-color: #fff; background: rgba(255,255,255,0.2); }
         
-        /* --- NUEVO ESTILO DE GALERÍA COMPACTA --- */
+        /* --- ESTILO DE GALERÍA COMPACTA --- */
         .compact-gallery {
             display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-start;
         }
@@ -241,6 +253,7 @@
         }
         .btn-load { background: #39ff14; color: black; }
         .btn-delete { background: #ff3333; color: white; }
+
     </style>
 </head>
 <body>
@@ -296,6 +309,19 @@
         </div>
     </div>
 
+    <!-- MODAL DE PASOS -->
+    <div id="stepModalOverlay" class="modal-overlay">
+        <div class="modal-box">
+            <h3>Asignar Paso</h3>
+            <p style="font-size:12px; color:#aaa; margin:0; text-align:center;">¿En qué número de paso debe aparecer?</p>
+            <input type="number" id="stepNumberInput" placeholder="Ej: 1, 2... (Vacío = Fondo)" min="1" style="margin-top: 10px;">
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeStepModal()">Cancelar</button>
+                <button class="btn-save" onclick="saveStepConfig()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- NUEVO: MODAL DE GALERÍA COMPLETA -->
     <div id="fullGalleryModalOverlay" class="modal-overlay">
         <div class="modal-box large">
@@ -319,6 +345,7 @@
         <div class="floating-actions" id="floatingActions">
             <button class="float-btn btn-color" id="colorizeBtn" title="Pintar con el color activo"><i data-lucide="palette"></i></button>
             <button class="float-btn btn-neon" id="toggleNeonBtn" title="Alternar Efecto Neón"><i data-lucide="zap"></i></button>
+            <button class="float-btn btn-primary" id="assignStepBtn" title="Asignar Paso de Presentación"><i data-lucide="list-ordered"></i></button>
             <button class="float-btn btn-magic" id="configReactionBtn" title="Configurar Animación"><i data-lucide="wand-2"></i></button>
             <button class="float-btn btn-primary" id="reverseFlowBtn" title="Invertir Dirección"><i data-lucide="arrow-right-left"></i></button>
             <button class="float-btn btn-danger" id="deleteObjBtn" title="Eliminar"><i data-lucide="trash"></i></button>
@@ -381,6 +408,9 @@
             
             <button class="tool-btn action-btn" id="btn-theme" title="Modo Claro/Oscuro"><i data-lucide="sun"></i></button>
             <button class="tool-btn action-btn active" id="btn-grid" title="Mostrar/Ocultar Cuadrícula"><i data-lucide="grid"></i></button>
+            
+            <!-- NUEVO: Botón de Pantalla Completa -->
+            <button class="tool-btn action-btn" id="btn-fullscreen" title="Pantalla Completa"><i data-lucide="maximize"></i></button>
             
             <div style="height: 1px; width: 24px; background: rgba(255,255,255,0.2); margin: 2px 0;"></div>
             
@@ -452,6 +482,7 @@
         const configReactionBtn = document.getElementById('configReactionBtn');
         const colorizeBtn = document.getElementById('colorizeBtn'); 
         const toggleNeonBtn = document.getElementById('toggleNeonBtn');
+        const assignStepBtn = document.getElementById('assignStepBtn');
         
         const fontFamilySelect = document.getElementById('fontFamilySelect');
         const fontSizeSlider = document.getElementById('fontSizeSlider');
@@ -461,6 +492,7 @@
 
         const btnTheme = document.getElementById('btn-theme');
         const btnGrid = document.getElementById('btn-grid');
+        const btnFullscreen = document.getElementById('btn-fullscreen'); // NUEVO BOTÓN
 
         const currentColorBtn = document.getElementById('currentColorBtn');
         const colorFlyout = document.getElementById('colorFlyout');
@@ -854,6 +886,31 @@
         loadDiagramsFromMemory();
         startAnimationLoop();
 
+        // --- LÓGICA DE PANTALLA COMPLETA (NUEVA) ---
+        btnFullscreen.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    showMessage(`Error al iniciar pantalla completa: ${err.message}`, true);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                btnFullscreen.innerHTML = '<i data-lucide="minimize"></i>';
+                btnFullscreen.title = "Salir de Pantalla Completa";
+            } else {
+                btnFullscreen.innerHTML = '<i data-lucide="maximize"></i>';
+                btnFullscreen.title = "Pantalla Completa";
+            }
+            lucide.createIcons();
+            setTimeout(resizeCanvas, 100); 
+        });
+
         // --- LÓGICA DEL GESTOR DE DIAGRAMAS (MODAL) ---
         const diagramsModalOverlay = document.getElementById('diagramsModalOverlay');
         const diagramNameInput = document.getElementById('diagramNameInput');
@@ -961,7 +1018,11 @@
             appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
             btnTheme.innerHTML = appState.theme === 'dark' ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
             lucide.createIcons();
-            document.body.style.backgroundColor = appState.theme === 'dark' ? '#050505' : '#ffffff';
+            
+            const bgColor = appState.theme === 'dark' ? '#050505' : '#ffffff';
+            document.body.style.backgroundColor = bgColor;
+            document.getElementById('theme-color-meta').content = bgColor; // Actualiza el color de la app en móvil
+            
             textInput.style.caretColor = appState.theme === 'dark' ? 'white' : 'black';
             redrawAll();
         });
@@ -1036,7 +1097,7 @@
             if (type === 'image') {
                 reactionModalGrid.innerHTML = '';
                 if(savedReactions.length === 0) {
-                    reactionModalGrid.innerHTML = '<span style="font-size:12px; color:#ff3333; grid-column: span 4;">No tienes reacciones subidas. Cierra aquí y sube una en el panel izquierdo.</span>';
+                    reactionModalGrid.innerHTML = '<span style="font-size:12px; color:#ff3333; grid-column: span 4;">No tienes reacciones subidas. Usa el panel izquierdo para subir iconos.</span>';
                 }
                 savedReactions.forEach(imgObj => {
                     const img = document.createElement('img');
@@ -1268,7 +1329,10 @@
 
                 const toolId = e.currentTarget.id.replace('tool-', '');
 
+                // Excepciones para botones que no son de dibujo/herramientas regulares
                 if (toolId === 'undo') { undo(); return; }
+                if (toolId === 'fullscreen') return; // Evitar que cambie la herramienta activa
+                
                 if (appState.isTyping && toolId !== 'text') finalizeText();
                 if (toolId === 'clear') {
                     if (confirm("¿Borrar todo?")) { saveHistory(); appState.paths = []; clearSelection(); redrawAll(); }
