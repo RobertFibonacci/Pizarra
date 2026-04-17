@@ -7,7 +7,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#050505" id="theme-color-meta">
     
-    <!-- ETIQUETAS PARA EL ÍCONO DE TU APP -->
     <link rel="icon" type="image/png" href="icono.png">
     <link rel="apple-touch-icon" href="icono.png">
     
@@ -51,9 +50,9 @@
         .toggle-btn svg { width: 18px; height: 18px; transition: transform 0.4s ease; }
         .is-collapsed svg { transform: rotate(180deg); }
 
-        .panel-wrapper.top { top: 15px; left: 50%; transform: translateX(-50%); flex-direction: column; }
-        .panel-wrapper.top .panel-content { border-radius: 12px; padding: 8px 15px; display: flex; gap: 15px; align-items: center; }
-        .panel-wrapper.top.collapsed .panel-content { transform: translateY(-150%); opacity: 0; pointer-events: none; position: absolute; }
+        .panel-wrapper.text-panel { bottom: 80px; left: 50%; transform: translateX(-50%); flex-direction: column-reverse; }
+        .panel-wrapper.text-panel .panel-content { border-radius: 12px; padding: 8px 15px; display: flex; gap: 15px; align-items: center; }
+        .panel-wrapper.text-panel.collapsed .panel-content { transform: translateY(150%); opacity: 0; pointer-events: none; position: absolute; }
 
         .panel-wrapper.right { right: 15px; top: 50%; transform: translateY(-50%); flex-direction: row-reverse; }
         .panel-wrapper.right .panel-content { border-radius: 12px; padding: 12px 8px; display: flex; flex-direction: column; gap: 8px; align-items: center; }
@@ -88,17 +87,24 @@
         .upload-btn { border: 1px dashed rgba(255,255,255,0.4); color: #fff; width: 100%; justify-content: center; }
         .upload-btn:hover { border-color: #fff; background: rgba(255,255,255,0.2); }
         
-        /* --- ESTILO DE GALERÍA COMPACTA --- */
+        /* --- ESTILO DE GALERÍA COMPACTA Y BORRADO RÁPIDO --- */
         .compact-gallery {
             display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-start;
         }
-        
+        .gallery-item-wrapper { position: relative; display: inline-block; }
         .gallery-thumb {
             width: 32px; height: 32px; border-radius: 6px; object-fit: contain;
             border: 2px solid transparent; cursor: pointer; transition: 0.2s;
             background: rgba(0,0,0,0.5); padding: 2px; flex-shrink: 0;
         }
         .gallery-thumb.active { border-color: #00ffff; transform: scale(1.1); background: rgba(255,255,255,0.1); }
+        
+        .delete-thumb-btn {
+            position: absolute; top: -5px; right: -5px; background: red; color: white;
+            border-radius: 50%; width: 16px; height: 16px; font-size: 10px; display: none;
+            align-items: center; justify-content: center; border: none; cursor: pointer; z-index: 20; font-weight: bold;
+        }
+        .gallery-item-wrapper:hover .delete-thumb-btn { display: flex; }
         
         .view-all-btn {
             width: 32px; height: 32px; border-radius: 6px; background: rgba(255,255,255,0.1);
@@ -154,7 +160,8 @@
         #textInput {
             position: absolute; display: none; background: transparent;
             border: 1px dashed rgba(255,255,255,0.5); color: transparent;
-            outline: none; padding: 0; margin: 0; white-space: pre; transform-origin: top left; z-index: 5; caret-color: white;
+            outline: none; padding: 0; margin: 0; white-space: pre-wrap; word-wrap: break-word;
+            transform-origin: top left; z-index: 5; caret-color: white; resize: none; overflow: hidden;
         }
 
         .floating-actions { position: absolute; display: none; gap: 10px; z-index: 15; transform: translate(-50%, -120%); }
@@ -188,9 +195,9 @@
             color: white; font-family: system-ui; width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             display: flex; flex-direction: column; gap: 15px;
         }
-        .modal-box.large { width: 450px; max-width: 90vw; }
+        .modal-box.large { width: 550px; max-width: 95vw; }
         .modal-box h3 { margin: 0; font-size: 18px; text-align: center; }
-        .modal-box select, .modal-box input {
+        .modal-box select, .modal-box input[type="text"], .modal-box input[type="number"] {
             width: 100%; padding: 10px; background: #0d0d0d; color: white; border: 1px solid #333;
             border-radius: 8px; outline: none; font-size: 14px; box-sizing: border-box;
         }
@@ -201,6 +208,7 @@
         }
         .btn-cancel { background: #333; color: white; }
         .btn-save { background: #00ffff; color: black; }
+        .btn-action { background: #ff9900; color: black; }
 
         /* --- GRID DE REACCIONES Y GALERÍA GENERAL --- */
         .reaction-grid {
@@ -213,68 +221,182 @@
         }
         .reaction-grid img.selected { border-color: #00ffff; transform: scale(1.1); }
 
-        /* --- NUEVA GALERÍA COMPLETA (MODAL) --- */
         .full-gallery-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px;
             max-height: 300px; overflow-y: auto; padding: 5px; scrollbar-width: thin;
         }
-        .full-gallery-item {
-            position: relative; width: 100%; aspect-ratio: 1;
-        }
+        .full-gallery-item { position: relative; width: 100%; aspect-ratio: 1; }
         .full-gallery-item img {
             width: 100%; height: 100%; object-fit: contain; background: #000; border-radius: 6px;
             cursor: pointer; border: 2px solid transparent; transition: 0.2s; padding: 4px; box-sizing: border-box;
         }
         .full-gallery-item img:hover { background: rgba(255,255,255,0.1); }
         .full-gallery-item img.active { border-color: #00ffff; background: rgba(255,255,255,0.1); transform: scale(1.05); }
-        
-        .delete-thumb-btn {
-            position: absolute; top: -5px; right: -5px; background: red; color: white;
-            border-radius: 50%; width: 18px; height: 18px; font-size: 10px; display: none;
-            align-items: center; justify-content: center; border: none; cursor: pointer; z-index: 20; font-weight: bold;
-        }
-        .full-gallery-item:hover .delete-thumb-btn { display: flex; }
 
-        /* --- MODAL DE GESTOR DE DIAGRAMAS --- */
+        /* --- GESTOR DE DIAGRAMAS (REDISEÑO ARCHIVOS LOCALES) --- */
         .diagram-list {
             display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; padding: 5px 0;
             scrollbar-width: thin; scrollbar-color: #555 #111;
         }
-        .diagram-list::-webkit-scrollbar { width: 6px; }
-        .diagram-list::-webkit-scrollbar-thumb { background-color: #555; border-radius: 3px; }
-        .diagram-item {
-            display: flex; justify-content: space-between; align-items: center;
-            background: #222; padding: 8px 12px; border-radius: 6px; border: 1px solid #333;
-        }
-        .diagram-name { color: #fff; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
-        .diagram-actions { display: flex; gap: 5px; }
-        .diagram-actions button {
-            padding: 5px 8px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 12px;
-        }
-        .btn-load { background: #39ff14; color: black; }
-        .btn-delete { background: #ff3333; color: white; }
 
-        /* --- FIRMA MARCA DE AGUA --- */
+        /* --- NUEVO: DISEÑO CORPORATIVO (LOWER THIRD) --- */
         #appWatermark {
             position: absolute;
             bottom: 20px;
             left: 20px;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.3); /* Color por defecto en modo oscuro */
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(10, 25, 45, 0.85); 
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 12px;
+            border-left: 5px solid #00ffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             pointer-events: none;
-            font-family: system-ui, -apple-system, sans-serif;
-            font-weight: 500;
             z-index: 5;
-            user-select: none;
-            transition: color 0.3s ease;
-            letter-spacing: 0.5px;
+            opacity: 0; 
+            transition: opacity 0.4s ease, background 0.3s ease;
         }
+        #appWatermark.visible { opacity: 1; }
+        .lt-avatar { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); }
+        .lt-info { display: flex; flex-direction: column; gap: 4px; }
+        .lt-name-row { display: flex; align-items: center; gap: 6px; }
+        .lt-name { font-size: 20px; font-weight: bold; color: white; font-family: system-ui; margin:0; line-height: 1; }
+        .lt-verified { width: 18px; height: 18px; fill: #1d9bf0; }
+        .lt-details { display: grid; grid-template-columns: auto auto; column-gap: 15px; row-gap: 5px; margin-top: 2px;}
+        .lt-detail-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #cbd5e1; font-family: system-ui; font-weight: 500;}
+        .lt-detail-item svg { width: 14px; height: 14px; opacity: 0.8; }
+
+        /* Adaptación para modo claro */
+        body.light-mode #appWatermark {
+            background: rgba(240, 245, 255, 0.9);
+            border-left: 5px solid #0055ff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        body.light-mode .lt-name { color: #0f172a; }
+        body.light-mode .lt-detail-item { color: #475569; }
+        body.light-mode .lt-avatar { border-color: rgba(0,0,0,0.1); }
+
+        /* --- MODAL DE MARCA PERSONAL (BRANDING) V4 --- */
+        .branding-setting-row {
+            display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; margin-bottom: 8px;
+        }
+        .branding-setting-row input[type="checkbox"] {
+            width: 18px; height: 18px; cursor: pointer; accent-color: #00ffff; margin: 0;
+        }
+        .social-logo-preview {
+            width: 28px; height: 28px; border-radius: 5px; background: #222; object-fit: contain;
+            border: 1px dashed #555; cursor: pointer; flex-shrink: 0; transition: 0.2s;
+        }
+        .social-logo-preview:hover { border-color: #00ffff; }
+
+        .master-switch-container {
+            display: flex; justify-content: space-between; align-items: center; background: rgba(0, 255, 255, 0.1);
+            padding: 12px; border-radius: 10px; border: 1px solid rgba(0, 255, 255, 0.3); margin-bottom: 10px;
+        }
+        .toggle-switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #555; transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #00ffff; }
+        input:checked + .slider:before { transform: translateX(26px); background-color: #000; }
+        
+        .avatar-preview {
+            width: 60px; height: 60px; border-radius: 50%; background: #222; object-fit: cover;
+            border: 2px dashed #555; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .avatar-preview:hover { border-color: #00ffff; }
+
+        /* --- PESTAÑA SUPERIOR Y TARJETA DE PRESENTACIÓN --- */
+        #top-demo-tab {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1); border-top: none;
+            border-radius: 0 0 15px 15px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            z-index: 12; display: flex; flex-direction: column; align-items: center;
+            width: 380px; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 45px; overflow: hidden;
+        }
+        #top-demo-tab.expanded {
+            max-height: 500px; 
+        }
+        .demo-tab-header {
+            display: flex; width: 100%; align-items: center; justify-content: space-between;
+            padding: 5px 15px; box-sizing: border-box; height: 45px; cursor: pointer;
+        }
+        .demo-title-input {
+            background: transparent; border: none; color: #fff; font-size: 16px; font-weight: bold;
+            outline: none; text-align: center; flex: 1; font-family: system-ui;
+        }
+        .demo-tab-toggle {
+            background: transparent; border: none; color: #aaa; cursor: pointer; display: flex; align-items: center;
+            transition: transform 0.4s ease, color 0.3s ease; padding: 5px; outline: none;
+        }
+        .demo-tab-toggle:hover { color: #fff; }
+        #top-demo-tab.expanded .demo-tab-toggle { transform: rotate(180deg); }
+        
+        .business-card-content {
+            width: 100%; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .bc-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(0,255,255,0.5); margin-bottom: 10px; }
+        .bc-name { color: #fff; font-size: 18px; font-weight: bold; margin: 0 0 15px 0; text-align: center; font-family: system-ui; }
+        .bc-socials { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .bc-social-row { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; }
+        .bc-social-logo { width: 24px; height: 24px; border-radius: 4px; object-fit: contain; }
+        .bc-social-handle { color: #ccc; font-size: 14px; font-family: system-ui; font-weight: 500;}
+
+        /* --- CÁPSULA STREAMER --- */
+        .branding-capsule {
+            position: fixed; top: -80px; left: 50%; transform: translateX(-50%);
+            background: rgba(15, 15, 15, 0.85); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 50px;
+            padding: 8px 20px 8px 8px; display: flex; align-items: center; gap: 12px;
+            color: white; font-family: system-ui, -apple-system, sans-serif; font-weight: 500; font-size: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+            transition: top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 2000; pointer-events: none;
+        }
+        .branding-capsule.show { top: 60px; } 
+        .branding-capsule img.avatar {
+            width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .branding-capsule img.logo {
+            width: 28px; height: 28px; border-radius: 4px; object-fit: contain; margin: 3px;
+        }
+        .capsule-text-col { display: flex; flex-direction: column; line-height: 1.2; }
+        .capsule-prefix { font-size: 11px; color: #aaa; }
+        .capsule-handle { font-size: 15px; font-weight: bold; }
 
     </style>
 </head>
 <body>
 
     <div id="toastMsg">Mensaje</div>
+
+    <!-- PESTAÑA SUPERIOR Y TARJETA DE PRESENTACIÓN -->
+    <div id="top-demo-tab">
+        <div class="demo-tab-header">
+            <i data-lucide="monitor-play" style="color: #00ffff; width: 18px; margin-right: 5px;"></i>
+            <input type="text" class="demo-title-input" id="demoTitleInput" placeholder="Escribe el Título de tu Tema...">
+            <button class="demo-tab-toggle" id="btnToggleDemoTab"><i data-lucide="chevron-down"></i></button>
+        </div>
+        <div class="business-card-content" id="businessCardContent">
+            <!-- Rellenado por JS dinámicamente -->
+        </div>
+    </div>
+
+    <!-- CÁPSULA DE BRANDING INDEPENDIENTE -->
+    <div id="brandingCapsule" class="branding-capsule">
+        <!-- El contenido se inyecta por JS -->
+    </div>
 
     <!-- MODAL DE REACCIÓN -->
     <div id="reactionModalOverlay" class="modal-overlay">
@@ -302,25 +424,28 @@
         </div>
     </div>
 
-    <!-- MODAL DE DIAGRAMAS -->
+    <!-- MODAL DE DIAGRAMAS (REDISEÑADO PARA ARCHIVOS LOCALES) -->
     <div id="diagramsModalOverlay" class="modal-overlay">
         <div class="modal-box"> 
-            <h3>Gestor de Diagramas</h3>
+            <h3>Gestor de Pizarras</h3>
+            <p style="font-size:12px; color:#aaa; margin:0; text-align:center;">Guarda tus clases en alta calidad en tu computadora.</p>
             
-            <div style="display:flex; gap:10px; margin-top: 15px;">
-                <input type="text" id="diagramNameInput" placeholder="Nombre del diagrama..." style="flex:1;">
-                <button class="btn-save" onclick="saveCurrentDiagram()">Guardar</button>
-            </div>
-
-            <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">
-                <p style="font-size:12px; color:#aaa; margin:0 0 10px; text-align:center;">Mis Diagramas Guardados</p>
-                <div class="diagram-list" id="diagramsListContainer">
+            <div style="display:flex; flex-direction: column; gap:15px; margin-top: 15px;">
+                <button class="btn-save" onclick="downloadPizarra()" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <i data-lucide="download"></i> Descargar Pizarra Actual
+                </button>
+                
+                <div style="border-top: 1px solid #333; padding-top: 15px;">
+                    <input type="file" id="loadPizarraInput" accept=".pizarra,.json" style="display:none;">
+                    <button class="btn-action" onclick="document.getElementById('loadPizarraInput').click()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <i data-lucide="upload"></i> Cargar Pizarra desde Archivo
+                    </button>
                 </div>
             </div>
 
             <div class="modal-btns">
                 <button class="btn-cancel" onclick="closeDiagramsModal()">Cerrar</button>
-                <button class="btn-save" style="background:#ff9900;" onclick="startNewDiagram()">Nueva Pizarra</button>
+                <button class="btn-save" style="background:#ff3333; color:white;" onclick="startNewDiagram()">Borrar y Empezar Nueva</button>
             </div>
         </div>
     </div>
@@ -338,7 +463,7 @@
         </div>
     </div>
 
-    <!-- NUEVO: MODAL DE GALERÍA COMPLETA -->
+    <!-- MODAL DE GALERÍA COMPLETA -->
     <div id="fullGalleryModalOverlay" class="modal-overlay">
         <div class="modal-box large">
             <h3 id="fullGalleryTitle">Mi Galería</h3>
@@ -354,26 +479,138 @@
         </div>
     </div>
 
+    <!-- MODAL DE MARCA PERSONAL (BRANDING) V4 CORPORATIVO -->
+    <div id="brandingModalOverlay" class="modal-overlay">
+        <div class="modal-box large" style="max-height: 90vh; overflow-y: auto;">
+            <h3>Mi Marca Personal</h3>
+            <p style="font-size:12px; color:#aaa; margin:0; text-align:center;">Configura tu Banner Inferior y Cápsulas Flotantes.</p>
+            
+            <div class="master-switch-container">
+                <div>
+                    <span style="font-weight: bold; font-size: 15px; display: block;">Modo Streamer</span>
+                    <span style="font-size: 11px; color: #aaa;">Activar cápsulas automáticas</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="number" id="brandIntervalInput" value="15" min="5" max="300" style="width: 60px; padding: 5px; text-align: center;" title="Segundos entre cápsulas">
+                    <span style="font-size: 12px; color: #aaa;">seg</span>
+                    <label class="toggle-switch" style="margin-left: 10px;">
+                        <input type="checkbox" id="brandMasterToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:15px; align-items:center; margin-bottom: 10px;">
+                <input type="file" id="avatarUploader" accept="image/png, image/jpeg, image/webp" style="display: none;">
+                <img id="avatarPreview" class="avatar-preview" src="" style="display:none;" onclick="document.getElementById('avatarUploader').click()" title="Cambiar Foto">
+                <div id="avatarPlaceholder" class="avatar-preview" onclick="document.getElementById('avatarUploader').click()" title="Subir Foto">
+                    <i data-lucide="camera" style="color:#aaa;"></i>
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="text" id="brandNameInput" placeholder="Tu Nombre">
+                        <label style="display:flex; align-items:center; gap:5px; font-size:12px; cursor:pointer;" title="Mostrar Insignia Azul">
+                            <input type="checkbox" id="brandVerifiedCheck"> <svg style="width:16px; height:16px;" viewBox="0 0 24 24"><path d="M22.5 12.5l-1.58 1.58.23 2.23-2.22.45-1.04 1.99-2.07-.88-1.78 1.39-1.78-1.39-2.07.88-1.04-1.99-2.22-.45.23-2.23L2.5 12.5l1.58-1.58-.23-2.23 2.22-.45 1.04-1.99 2.07.88 1.78-1.39 1.78 1.39 2.07-.88 1.04 1.99 2.22.45-.23 2.23 1.58 1.58z" fill="#1d9bf0"/><path d="M10.5 16.5l-4-4 1.41-1.41L10.5 13.67l7.09-7.09L19 8l-8.5 8.5z" fill="#fff"/></svg>
+                        </label>
+                    </div>
+                    <input type="text" id="brandRoleInput" placeholder="Tu Puesto (Ej. Ejecutivo Comercial)">
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="brandLocationInput" placeholder="Ubicación (Ej. Querétaro)">
+                        <input type="text" id="brandPhoneInput" placeholder="Teléfono">
+                    </div>
+                    <input type="text" id="brandEmailInput" placeholder="Correo Electrónico">
+                </div>
+            </div>
+
+            <div>
+                <p style="font-size:11px; color:#aaa; margin:0 0 8px 0;">Redes y Contactos para Cápsulas Flotantes:</p>
+                
+                <!-- Instagram -->
+                <div class="branding-setting-row">
+                    <input type="checkbox" id="chk_instagram" title="Activar">
+                    <input type="file" id="up_instagram" accept="image/png, image/jpeg, image/webp, image/svg+xml" style="display:none;">
+                    <img id="prev_instagram" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E" onclick="document.getElementById('up_instagram').click()" title="Subir Logo">
+                    <input type="text" id="pfx_instagram" placeholder="Prefijo (Ej: Sígueme en)" style="flex: 0.8;">
+                    <input type="text" id="val_instagram" placeholder="@usuario_ig" style="flex: 1.2;">
+                </div>
+                
+                <!-- YouTube -->
+                <div class="branding-setting-row">
+                    <input type="checkbox" id="chk_youtube" title="Activar">
+                    <input type="file" id="up_youtube" accept="image/png, image/jpeg, image/webp, image/svg+xml" style="display:none;">
+                    <img id="prev_youtube" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E" onclick="document.getElementById('up_youtube').click()" title="Subir Logo">
+                    <input type="text" id="pfx_youtube" placeholder="Prefijo (Ej: Suscríbete)" style="flex: 0.8;">
+                    <input type="text" id="val_youtube" placeholder="/c/TuCanal" style="flex: 1.2;">
+                </div>
+
+                <!-- Twitter / X -->
+                <div class="branding-setting-row">
+                    <input type="checkbox" id="chk_twitter" title="Activar">
+                    <input type="file" id="up_twitter" accept="image/png, image/jpeg, image/webp, image/svg+xml" style="display:none;">
+                    <img id="prev_twitter" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E" onclick="document.getElementById('up_twitter').click()" title="Subir Logo">
+                    <input type="text" id="pfx_twitter" placeholder="Prefijo (Ej: Sígueme en)" style="flex: 0.8;">
+                    <input type="text" id="val_twitter" placeholder="@usuario_x" style="flex: 1.2;">
+                </div>
+
+                <!-- LinkedIn -->
+                <div class="branding-setting-row">
+                    <input type="checkbox" id="chk_linkedin" title="Activar">
+                    <input type="file" id="up_linkedin" accept="image/png, image/jpeg, image/webp, image/svg+xml" style="display:none;">
+                    <img id="prev_linkedin" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E" onclick="document.getElementById('up_linkedin').click()" title="Subir Logo">
+                    <input type="text" id="pfx_linkedin" placeholder="Prefijo (Ej: Conecta en)" style="flex: 0.8;">
+                    <input type="text" id="val_linkedin" placeholder="/in/tu-perfil" style="flex: 1.2;">
+                </div>
+
+                <!-- WhatsApp -->
+                <div class="branding-setting-row">
+                    <input type="checkbox" id="chk_whatsapp" title="Activar">
+                    <input type="file" id="up_whatsapp" accept="image/png, image/jpeg, image/webp, image/svg+xml" style="display:none;">
+                    <img id="prev_whatsapp" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E" onclick="document.getElementById('up_whatsapp').click()" title="Subir Logo">
+                    <input type="text" id="pfx_whatsapp" placeholder="Prefijo (Ej: Escríbeme al)" style="flex: 0.8;">
+                    <input type="text" id="val_whatsapp" placeholder="+52 1 234 567 8900" style="flex: 1.2;">
+                </div>
+
+                <!-- Web -->
+                <div class="branding-setting-row">
+                    <input type="checkbox" id="chk_globe" title="Activar">
+                    <input type="file" id="up_globe" accept="image/png, image/jpeg, image/webp, image/svg+xml" style="display:none;">
+                    <img id="prev_globe" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E" onclick="document.getElementById('up_globe').click()" title="Subir Logo">
+                    <input type="text" id="pfx_globe" placeholder="Prefijo (Ej: Visita)" style="flex: 0.8;">
+                    <input type="text" id="val_globe" placeholder="tu-sitio-web.com" style="flex: 1.2;">
+                </div>
+            </div>
+
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeBrandingModal()">Cerrar</button>
+                <button class="btn-save" onclick="saveBrandingConfig()">Guardar y Actualizar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="canvas-container">
         <canvas id="drawingBoard"></canvas>
-        <input type="text" id="textInput" autocomplete="off" spellcheck="false">
+        <textarea id="textInput" autocomplete="off" spellcheck="false"></textarea>
         
         <div class="floating-actions" id="floatingActions">
             <button class="float-btn btn-color" id="colorizeBtn" title="Pintar con el color activo"><i data-lucide="palette"></i></button>
             <button class="float-btn btn-neon" id="toggleNeonBtn" title="Alternar Efecto Neón"><i data-lucide="zap"></i></button>
             <button class="float-btn btn-primary" id="assignStepBtn" title="Asignar Paso de Presentación"><i data-lucide="list-ordered"></i></button>
             <button class="float-btn btn-magic" id="configReactionBtn" title="Configurar Animación"><i data-lucide="wand-2"></i></button>
+            <button class="float-btn btn-primary" id="copyObjBtn" title="Duplicar Objeto"><i data-lucide="copy"></i></button>
             <button class="float-btn btn-primary" id="reverseFlowBtn" title="Invertir Dirección"><i data-lucide="arrow-right-left"></i></button>
             <button class="float-btn btn-danger" id="deleteObjBtn" title="Eliminar"><i data-lucide="trash"></i></button>
         </div>
 
-        <!-- FIRMA PROFESIONAL -->
-        <div id="appWatermark">Roberto Fibonacci | Prospecta | Derechos Reservados</div>
+        <!-- FIRMA PROFESIONAL (LOWER THIRD CORPORATIVO) -->
+        <div id="appWatermark">
+            <!-- Rellenado por JS -->
+        </div>
     </div>
 
     <div class="zoom-indicator" id="zoomText">100%</div>
 
-    <div class="panel-wrapper top" id="panel-top">
+    <!-- PANEL TEXTO ANCLADO ABAJO -->
+    <div class="panel-wrapper text-panel" id="panel-text">
         <div class="panel-content">
             <button class="tool-btn" id="tool-text" title="Activar Texto"><i data-lucide="type"></i></button>
             <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2);"></div>
@@ -392,7 +629,7 @@
                 </div>
             </div>
         </div>
-        <button class="toggle-btn" onclick="togglePanel('panel-top')" title="Ocultar Textos"><i data-lucide="chevron-up"></i></button>
+        <button class="toggle-btn" onclick="togglePanel('panel-text')" title="Ocultar Textos"><i data-lucide="chevron-down"></i></button>
     </div>
 
     <!-- PANEL DERECHO -->
@@ -427,23 +664,25 @@
             
             <button class="tool-btn action-btn" id="btn-theme" title="Modo Claro/Oscuro"><i data-lucide="sun"></i></button>
             <button class="tool-btn action-btn active" id="btn-grid" title="Mostrar/Ocultar Cuadrícula"><i data-lucide="grid"></i></button>
-            
-            <!-- NUEVO: Botón de Pantalla Completa -->
             <button class="tool-btn action-btn" id="btn-fullscreen" title="Pantalla Completa"><i data-lucide="maximize"></i></button>
             
             <div style="height: 1px; width: 24px; background: rgba(255,255,255,0.2); margin: 2px 0;"></div>
             
-            <button class="tool-btn action-btn" id="btn-diagrams" title="Gestor de Diagramas"><i data-lucide="save"></i></button>
+            <button class="tool-btn action-btn" id="btn-diagrams" title="Gestor de Pizarras"><i data-lucide="save"></i></button>
             <button class="tool-btn action-btn" id="tool-undo" title="Deshacer"><i data-lucide="undo-2"></i></button>
             <button class="tool-btn action-btn" id="tool-clear" title="Borrar Todo"><i data-lucide="trash-2"></i></button>
+
+            <!-- BOTÓN DE MARCA PERSONAL (BRANDING) -->
+            <div style="height: 1px; width: 24px; background: rgba(255,255,255,0.2); margin: 2px 0;"></div>
+            <button class="tool-btn action-btn" id="btn-branding" title="Mi Marca Personal" style="color: #00ffff;"><i data-lucide="user"></i></button>
+
         </div>
         <button class="toggle-btn" onclick="togglePanel('panel-right')" title="Ocultar Herramientas"><i data-lucide="chevron-right"></i></button>
     </div>
 
-    <!-- PANEL IZQUIERDO REDISEÑADO -->
+    <!-- PANEL IZQUIERDO REDISEÑADO CON BORRADO RÁPIDO -->
     <div class="panel-wrapper left" id="panel-left">
         <div class="panel-content">
-            <!-- Sección Elementos -->
             <div style="width: 100%;">
                 <p class="section-title">Elementos</p>
                 <div style="display: flex; gap: 5px; margin-top: 5px;">
@@ -455,7 +694,6 @@
                 <div id="elementsContainer" class="compact-gallery" style="margin-top: 8px;"></div>
             </div>
             
-            <!-- Sección Reacciones -->
             <div style="width: 100%; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
                 <p class="section-title">Reacciones</p>
                 <div style="display: flex; gap: 5px; margin-top: 5px;">
@@ -502,6 +740,7 @@
         const colorizeBtn = document.getElementById('colorizeBtn'); 
         const toggleNeonBtn = document.getElementById('toggleNeonBtn');
         const assignStepBtn = document.getElementById('assignStepBtn');
+        const copyObjBtn = document.getElementById('copyObjBtn'); 
         
         const fontFamilySelect = document.getElementById('fontFamilySelect');
         const fontSizeSlider = document.getElementById('fontSizeSlider');
@@ -511,12 +750,11 @@
 
         const btnTheme = document.getElementById('btn-theme');
         const btnGrid = document.getElementById('btn-grid');
-        const btnFullscreen = document.getElementById('btn-fullscreen'); // NUEVO BOTÓN
+        const btnFullscreen = document.getElementById('btn-fullscreen');
+        const btnBranding = document.getElementById('btn-branding'); 
 
         const currentColorBtn = document.getElementById('currentColorBtn');
         const colorFlyout = document.getElementById('colorFlyout');
-
-        const watermark = document.getElementById('appWatermark'); // Elemento de la firma
 
         const generateId = () => Math.random().toString(36).substr(2, 9);
 
@@ -530,7 +768,10 @@
             currentFont: "'Pacifico', cursive", currentFontSize: 40,
             theme: 'dark', 
             showGrid: true,
-            isPanning: false
+            isPanning: false,
+            currentTextWidth: 300,
+            isResizingText: false,
+            snapLines: [] 
         };
 
         function getActualColor(c) {
@@ -567,10 +808,9 @@
             }
         });
 
-        // --- SISTEMA DE MEMORIA ---
+        // --- SISTEMA DE MEMORIA Y DESCARGA LOCAL ---
         let savedElements = [];
         let savedReactions = [];
-        let savedDiagrams = [];
         const imageCache = {}; 
 
         function loadGalleryFromMemory() {
@@ -591,17 +831,51 @@
             catch(e) { showMessage("Memoria llena. Borra imágenes.", true); }
         }
 
-        function loadDiagramsFromMemory() {
-            try {
-                const stored = localStorage.getItem('piz_diagrams_save');
-                if (stored) savedDiagrams = JSON.parse(stored);
-            } catch(e) {}
+        // NUEVA LÓGICA DE GUARDADO/CARGA LOCAL EN PC (.pizarra)
+        window.downloadPizarra = function() {
+            if(appState.paths.length === 0) { showMessage("La pizarra está vacía", true); return; }
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState.paths));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "mi_clase.pizarra");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            showMessage("Pizarra descargada con éxito");
+            closeDiagramsModal();
         }
 
-        function saveDiagramsToMemory() {
-            try { localStorage.setItem('piz_diagrams_save', JSON.stringify(savedDiagrams)); } 
-            catch(e) { showMessage("Memoria llena. Borra algún diagrama viejo.", true); }
-        }
+        document.getElementById('loadPizarraInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const loadedPaths = JSON.parse(evt.target.result);
+                    appState.paths = loadedPaths;
+                    saveHistory();
+                    clearSelection();
+                    redrawAll();
+                    showMessage("Pizarra cargada con éxito");
+                    closeDiagramsModal();
+                } catch(err) {
+                    showMessage("Error al leer el archivo", true);
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+
+        window.startNewDiagram = function() {
+            if (confirm("¿Borrar todo y empezar una nueva pizarra? (Asegúrate de haber descargado si quieres guardarla)")) {
+                saveHistory();
+                appState.paths = [];
+                clearSelection();
+                redrawAll();
+                closeDiagramsModal();
+                showMessage("Nueva pizarra lista");
+            }
+        };
 
         function getCachedImage(base64) {
             if (imageCache[base64]) return imageCache[base64];
@@ -619,7 +893,7 @@
             reader.onload = (event) => {
                 const img = new Image();
                 img.onload = () => {
-                    const max_size = 1500; // CALIDAD PREMIUM AUMENTADA (antes 300)
+                    const max_size = 1500; 
                     let w = img.width; let h = img.height;
                     if (w > h) { if (w > max_size) { h *= max_size / w; w = max_size; } } 
                     else { if (h > max_size) { w *= max_size / h; h = max_size; } }
@@ -629,7 +903,6 @@
                     const tCtx = tempCanvas.getContext('2d');
                     tCtx.drawImage(img, 0, 0, w, h);
                     
-                    // COMPRESIÓN INTELIGENTE (WEBP AL 95%)
                     const optimizedBase64 = tempCanvas.toDataURL('image/webp', 0.95);
                     
                     typeArray.push({ id: generateId(), data: optimizedBase64 });
@@ -653,7 +926,6 @@
                 else savedReactions = savedReactions.filter(img => img.id !== id);
                 saveGalleryToMemory(); 
                 
-                // Actualizamos ambas interfaces (compacta y modal)
                 renderGalleryUI();
                 if (document.getElementById('fullGalleryModalOverlay').style.display === 'flex') {
                     openFullGalleryModal(typeStr); 
@@ -661,9 +933,7 @@
             }
         };
 
-        // --- NUEVA LÓGICA DE GALERÍA COMPACTA Y MODAL ---
-        
-        let currentFullGalleryType = ''; // 'element' o 'reaction'
+        let currentFullGalleryType = ''; 
 
         window.openFullGalleryModal = function(type) {
             currentFullGalleryType = type;
@@ -679,7 +949,6 @@
             if (dataArray.length === 0) {
                 grid.innerHTML = '<span style="font-size:12px; color:#aaa; text-align:center; grid-column: 1 / -1; padding: 20px;">No hay imágenes guardadas en esta categoría.</span>';
             } else {
-                // Mostrar en orden de más reciente a más antiguo
                 [...dataArray].reverse().forEach(imgObj => {
                     const item = document.createElement('div');
                     item.className = 'full-gallery-item';
@@ -695,11 +964,10 @@
                             appState.currentImageData = imgObj.data;
                             document.querySelectorAll('.tool-btn:not(.action-btn)').forEach(b => b.classList.remove('active'));
                             clearSelection();
-                            renderGalleryUI(); // Para actualizar la selección en el panel lateral
+                            renderGalleryUI(); 
                             closeFullGalleryModal();
                             showMessage("Elemento seleccionado para dibujar");
                         } else {
-                            // Si estamos en reacciones, simplemente mostramos mensaje (se usa en la varita)
                             showMessage("Ve a 'Configurar Animación' para usar esta reacción.");
                             closeFullGalleryModal();
                         }
@@ -725,11 +993,13 @@
         };
 
         function renderGalleryUI() {
-            // Render Elementos (Solo últimos 3)
             elementsContainer.innerHTML = '';
             const recentElements = savedElements.slice(-3).reverse();
             
             recentElements.forEach(imgObj => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'gallery-item-wrapper';
+
                 const imgBtn = document.createElement('img');
                 imgBtn.src = imgObj.data; 
                 imgBtn.className = 'gallery-thumb tool-btn';
@@ -741,7 +1011,15 @@
                     document.querySelectorAll('#elementsContainer .gallery-thumb').forEach(b => b.classList.remove('active'));
                     imgBtn.classList.add('active'); clearSelection();
                 });
-                elementsContainer.appendChild(imgBtn);
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'delete-thumb-btn';
+                delBtn.innerHTML = 'X';
+                delBtn.onclick = (e) => deleteFromGallery(e, imgObj.id, 'element');
+
+                wrapper.appendChild(imgBtn);
+                wrapper.appendChild(delBtn);
+                elementsContainer.appendChild(wrapper);
             });
             
             if (savedElements.length > 3) {
@@ -753,7 +1031,6 @@
                 viewAllBtn.onclick = () => openFullGalleryModal('element');
                 elementsContainer.appendChild(viewAllBtn);
             } else if (savedElements.length > 0) {
-                 // Si hay 3 o menos, poner un botón de ver galería por consistencia si el usuario quiere borrar
                  const viewAllBtn = document.createElement('button');
                  viewAllBtn.className = 'view-all-btn';
                  viewAllBtn.innerHTML = `<i data-lucide="layout-grid" style="width:14px; height:14px;"></i>`;
@@ -762,17 +1039,27 @@
                  elementsContainer.appendChild(viewAllBtn);
             }
 
-            // Render Reacciones (Solo últimas 3)
             reactionsContainer.innerHTML = '';
             const recentReactions = savedReactions.slice(-3).reverse();
             
             recentReactions.forEach(imgObj => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'gallery-item-wrapper';
+
                 const imgBtn = document.createElement('img');
                 imgBtn.src = imgObj.data; 
                 imgBtn.className = 'gallery-thumb';
                 imgBtn.style.cursor = 'default';
                 imgBtn.title = "Reacción (Usa la varita mágica)";
-                reactionsContainer.appendChild(imgBtn);
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'delete-thumb-btn';
+                delBtn.innerHTML = 'X';
+                delBtn.onclick = (e) => deleteFromGallery(e, imgObj.id, 'reaction');
+
+                wrapper.appendChild(imgBtn);
+                wrapper.appendChild(delBtn);
+                reactionsContainer.appendChild(wrapper);
             });
             
             if (savedReactions.length > 3) {
@@ -906,10 +1193,9 @@
         }
         
         loadGalleryFromMemory();
-        loadDiagramsFromMemory();
         startAnimationLoop();
 
-        // --- LÓGICA DE PANTALLA COMPLETA (NUEVA) ---
+        // --- LÓGICA DE PANTALLA COMPLETA ---
         btnFullscreen.addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
@@ -936,105 +1222,15 @@
 
         // --- LÓGICA DEL GESTOR DE DIAGRAMAS (MODAL) ---
         const diagramsModalOverlay = document.getElementById('diagramsModalOverlay');
-        const diagramNameInput = document.getElementById('diagramNameInput');
-        const diagramsListContainer = document.getElementById('diagramsListContainer');
         const btnDiagrams = document.getElementById('btn-diagrams');
 
         btnDiagrams.addEventListener('click', () => {
-            renderDiagramsList();
             diagramsModalOverlay.style.display = 'flex';
         });
 
         window.closeDiagramsModal = function() {
             diagramsModalOverlay.style.display = 'none';
-            diagramNameInput.value = '';
         };
-
-        window.saveCurrentDiagram = function() {
-            const name = diagramNameInput.value.trim();
-            if (!name) { showMessage("Ponle un nombre al diagrama", true); return; }
-            if (appState.paths.length === 0) { showMessage("La pizarra está vacía", true); return; }
-            
-            const newDiagram = {
-                id: generateId(),
-                name: name,
-                paths: JSON.parse(JSON.stringify(appState.paths)),
-                date: new Date().toLocaleDateString()
-            };
-            
-            savedDiagrams.push(newDiagram);
-            saveDiagramsToMemory();
-            diagramNameInput.value = '';
-            renderDiagramsList();
-            showMessage("Diagrama guardado");
-        };
-
-        window.loadDiagram = function(id) {
-            const diagram = savedDiagrams.find(d => d.id === id);
-            if (diagram) {
-                appState.paths = JSON.parse(JSON.stringify(diagram.paths));
-                saveHistory();
-                clearSelection();
-                redrawAll();
-                closeDiagramsModal();
-                showMessage("Diagrama cargado");
-            }
-        };
-
-        window.deleteDiagram = function(id) {
-            if (confirm("¿Eliminar este diagrama permanentemente?")) {
-                savedDiagrams = savedDiagrams.filter(d => d.id !== id);
-                saveDiagramsToMemory();
-                renderDiagramsList();
-            }
-        };
-
-        window.startNewDiagram = function() {
-            if (confirm("¿Crear nuevo diagrama? (Asegúrate de haber guardado el actual)")) {
-                saveHistory();
-                appState.paths = [];
-                clearSelection();
-                redrawAll();
-                closeDiagramsModal();
-                showMessage("Nueva pizarra lista");
-            }
-        };
-
-        function renderDiagramsList() {
-            diagramsListContainer.innerHTML = '';
-            if (savedDiagrams.length === 0) {
-                diagramsListContainer.innerHTML = '<span style="font-size:12px; color:#aaa; text-align:center; display:block;">No hay diagramas guardados.</span>';
-                return;
-            }
-            
-            [...savedDiagrams].reverse().forEach(diag => {
-                const item = document.createElement('div');
-                item.className = 'diagram-item';
-                
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'diagram-name';
-                nameSpan.title = diag.name;
-                nameSpan.innerText = diag.name;
-                
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'diagram-actions';
-                
-                const loadBtn = document.createElement('button');
-                loadBtn.className = 'btn-load';
-                loadBtn.innerText = 'Abrir';
-                loadBtn.onclick = () => loadDiagram(diag.id);
-                
-                const delBtn = document.createElement('button');
-                delBtn.className = 'btn-delete';
-                delBtn.innerText = 'X';
-                delBtn.onclick = () => deleteDiagram(diag.id);
-                
-                actionsDiv.appendChild(loadBtn);
-                actionsDiv.appendChild(delBtn);
-                
-                diagramsListContainer.appendChild(item);
-            });
-        }
 
         // --- LÓGICA DE CONTROLES (TEMA Y MALLA) ---
         btnTheme.addEventListener('click', () => {
@@ -1044,14 +1240,11 @@
             
             const bgColor = appState.theme === 'dark' ? '#050505' : '#ffffff';
             document.body.style.backgroundColor = bgColor;
-            document.getElementById('theme-color-meta').content = bgColor; // Actualiza el color de la app en móvil
+            document.body.className = appState.theme === 'dark' ? '' : 'light-mode';
+            document.getElementById('theme-color-meta').content = bgColor; 
             
             textInput.style.caretColor = appState.theme === 'dark' ? 'white' : 'black';
-            
-            // LÓGICA PARA ADAPTAR LA FIRMA PROFESIONAL
-            if(watermark) {
-                watermark.style.color = appState.theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.4)';
-            }
+            updateLowerThird();
 
             redrawAll();
         });
@@ -1169,6 +1362,7 @@
             redrawAll();
         };
 
+        // --- SISTEMA DE TEXTO MULTILÍNEA Y CAJAS ---
         function finalizeText() {
             if (!appState.isTyping) return;
             if (textInput.value.trim() !== '') {
@@ -1176,7 +1370,8 @@
                 appState.paths.push({ 
                     id: generateId(), type: 'text', color: appState.color, 
                     text: textInput.value, x: appState.textPos.x, y: appState.textPos.y,
-                    font: appState.currentFont, fontSize: appState.currentFontSize, isNeon: false
+                    font: appState.currentFont, fontSize: appState.currentFontSize, 
+                    isNeon: false, width: appState.currentTextWidth || 300
                 });
             }
             appState.isTyping = false; textInput.style.display = 'none'; textInput.value = '';
@@ -1201,8 +1396,9 @@
         fontSizeSlider.addEventListener('input', (e) => {
             appState.currentFontSize = parseInt(e.target.value);
             if (appState.isTyping) { 
-                textInput.style.fontSize = appState.currentFontSize + 'px'; 
-                textInput.style.width = (textInput.value.length + 1) * (appState.currentFontSize / 2) + 'px';
+                textInput.style.fontSize = (appState.currentFontSize * view.scale) + 'px'; 
+                textInput.style.height = 'auto';
+                textInput.style.height = textInput.scrollHeight + 'px';
                 redrawAll(); 
             }
             if (appState.selectedId) {
@@ -1224,8 +1420,33 @@
                     appState.currentFontSize = shape.fontSize || 40;
                 }
             }
-            const topPanel = document.getElementById('panel-top');
-            if(showPanel && topPanel.classList.contains('collapsed')) { togglePanel('panel-top'); }
+            const topPanel = document.getElementById('panel-text');
+            if(showPanel && topPanel.classList.contains('collapsed')) { togglePanel('panel-text'); }
+        }
+
+        function wrapText(ctxToUse, text, maxWidth) {
+            const explicitLines = text.split('\n');
+            const lines = [];
+            explicitLines.forEach(expLine => {
+                if (expLine === '') {
+                    lines.push('');
+                    return;
+                }
+                let words = expLine.split(' ');
+                let currentLine = words[0];
+                for (let i = 1; i < words.length; i++) {
+                    let word = words[i];
+                    let width = ctxToUse.measureText(currentLine + " " + word).width;
+                    if (width < maxWidth) {
+                        currentLine += " " + word;
+                    } else {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    }
+                }
+                lines.push(currentLine);
+            });
+            return lines;
         }
 
         // --- Geometría ---
@@ -1237,9 +1458,17 @@
                     if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y;
                 });
             } else if (shape.type === 'text') {
-                const font = shape.font || "'Pacifico', cursive"; const fSize = shape.fontSize || 40;
-                ctx.font = `${fSize}px ${font}`; const width = ctx.measureText(shape.text).width;
-                minX = shape.x; maxX = shape.x + width; minY = shape.y; maxY = shape.y + fSize; 
+                const font = shape.font || "'Pacifico', cursive"; 
+                const fSize = shape.fontSize || 40;
+                ctx.font = `${fSize}px ${font}`; 
+                const maxWidth = shape.width || 300;
+                
+                const lines = wrapText(ctx, shape.text, maxWidth);
+                
+                minX = shape.x; 
+                maxX = shape.x + maxWidth; 
+                minY = shape.y; 
+                maxY = shape.y + (lines.length * fSize * 1.2); 
             } else if (shape.type === 'circle') {
                 const r = Math.hypot(shape.endX - shape.startX, shape.endY - shape.startY);
                 minX = shape.startX - r; maxX = shape.startX + r; minY = shape.startY - r; maxY = shape.startY + r;
@@ -1358,9 +1587,8 @@
 
                 const toolId = e.currentTarget.id.replace('tool-', '');
 
-                // Excepciones para botones que no son de dibujo/herramientas regulares
                 if (toolId === 'undo') { undo(); return; }
-                if (toolId === 'fullscreen') return; // Evitar que cambie la herramienta activa
+                if (toolId === 'fullscreen' || toolId === 'branding') return; 
                 
                 if (appState.isTyping && toolId !== 'text') finalizeText();
                 if (toolId === 'clear') {
@@ -1384,6 +1612,34 @@
                 
                 updateTextPanelVisibility();
             });
+        });
+
+        copyObjBtn.addEventListener('click', () => {
+            if (appState.selectedId) {
+                const shape = appState.paths.find(p => p.id === appState.selectedId);
+                if (shape) {
+                    saveHistory();
+                    const clone = JSON.parse(JSON.stringify(shape));
+                    clone.id = generateId(); 
+                    
+                    const offset = 30 / view.scale;
+                    if (clone.type === 'text') {
+                        clone.x += offset; clone.y += offset;
+                    } else if (clone.type === 'draw') {
+                        clone.points.forEach(pt => { pt.x += offset; pt.y += offset; });
+                    } else {
+                        clone.startX += offset; clone.startY += offset;
+                        clone.endX += offset; clone.endY += offset;
+                    }
+                    
+                    appState.paths.push(clone);
+                    appState.selectedId = clone.id; 
+                    
+                    updateFloatingBtnsPosition();
+                    redrawAll();
+                    showMessage("Objeto duplicado");
+                }
+            }
         });
 
         deleteObjBtn.addEventListener('click', () => {
@@ -1427,6 +1683,7 @@
             
             reverseFlowBtn.style.display = shape.type === 'arrow' ? 'flex' : 'none';
             configReactionBtn.style.display = (shape.type !== 'arrow' && shape.type !== 'line') ? 'flex' : 'none';
+            copyObjBtn.style.display = 'flex';
             
             colorizeBtn.style.display = 'flex'; 
             colorizeBtn.title = shape.type === 'image' ? "Alternar Tinte de Color" : "Pintar con el color actual";
@@ -1444,16 +1701,33 @@
         function startText(screenX, screenY) {
             if (appState.isTyping) finalizeText();
             const worldPos = screenToWorld(screenX, screenY);
-            appState.textPos = worldPos; appState.isTyping = true;
+            appState.textPos = worldPos; 
+            appState.isTyping = true;
+            appState.currentTextWidth = 300; 
+
             textInput.style.display = 'block'; 
-            textInput.style.left = screenX + 'px'; textInput.style.top = screenY + 'px';
-            textInput.style.transform = `scale(${view.scale})`; 
-            textInput.style.fontFamily = appState.currentFont; textInput.style.fontSize = appState.currentFontSize + 'px';
-            textInput.value = ''; setTimeout(() => textInput.focus(), 50);
+            textInput.style.left = screenX + 'px'; 
+            textInput.style.top = screenY + 'px';
+            
+            textInput.style.fontFamily = appState.currentFont; 
+            textInput.style.fontSize = (appState.currentFontSize * view.scale) + 'px';
+            textInput.style.lineHeight = '1.2';
+            textInput.style.width = (appState.currentTextWidth * view.scale) + 'px';
+            
+            textInput.value = ''; 
+            textInput.style.height = 'auto'; 
+            
+            setTimeout(() => { 
+                textInput.focus(); 
+                textInput.style.height = textInput.scrollHeight + 'px';
+            }, 50);
         }
 
-        textInput.addEventListener('input', () => { textInput.style.width = (textInput.value.length + 1) * (appState.currentFontSize / 2) + 'px'; });
-        textInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') finalizeText(); });
+        textInput.addEventListener('input', () => { 
+            textInput.style.height = 'auto';
+            textInput.style.height = textInput.scrollHeight + 'px';
+            redrawAll(); 
+        });
 
         // --- MOTOR DE DIBUJO ---
         function drawArrowPath(ctxToUse, path, isAnimated, color, reverseFlow = false, showArrowHead = true, isNeon = false, isHighlighted = false) {
@@ -1512,23 +1786,27 @@
             }
         }
 
-        function drawTextElement(ctxToUse, text, x, y, color, font = "'Pacifico', cursive", size = 40, isNeon = false, isHighlighted = false) {
+        function drawTextElement(ctxToUse, text, x, y, color, font = "'Pacifico', cursive", size = 40, isNeon = false, isHighlighted = false, maxWidth = 300) {
             const actualColor = getActualColor(color);
             ctxToUse.font = `${size}px ${font}`; ctxToUse.textBaseline = 'top';
+            
+            const lines = wrapText(ctxToUse, text, maxWidth);
+            const lineHeight = size * 1.2;
             
             if (isNeon || isHighlighted) {
                 const glowColor = (actualColor === '#000000' || actualColor === '#111111') && appState.theme === 'dark' ? '#ffffff' : actualColor;
                 ctxToUse.shadowBlur = isHighlighted ? (20 / view.scale) : (10 / view.scale); 
                 ctxToUse.shadowColor = glowColor; 
                 ctxToUse.fillStyle = actualColor;
-                ctxToUse.fillText(text, x, y);
+                lines.forEach((line, i) => ctxToUse.fillText(line, x, y + (i * lineHeight)));
+                
                 ctxToUse.shadowBlur = 0; 
                 ctxToUse.fillStyle = appState.theme === 'dark' ? '#ffffff' : '#111111'; 
-                ctxToUse.fillText(text, x, y);
+                lines.forEach((line, i) => ctxToUse.fillText(line, x, y + (i * lineHeight)));
             } else {
                 ctxToUse.shadowBlur = 0;
                 ctxToUse.fillStyle = actualColor;
-                ctxToUse.fillText(text, x, y);
+                lines.forEach((line, i) => ctxToUse.fillText(line, x, y + (i * lineHeight)));
             }
         }
 
@@ -1569,7 +1847,7 @@
             }
 
             if (shape.type === 'text') { 
-                drawTextElement(ctxToUse, shape.text, shape.x, shape.y, shape.color, shape.font, shape.fontSize, shape.isNeon, isHighlighted); 
+                drawTextElement(ctxToUse, shape.text, shape.x, shape.y, shape.color, shape.font, shape.fontSize, shape.isNeon, isHighlighted, shape.width || 300); 
                 ctxToUse.restore(); return; 
             }
 
@@ -1699,10 +1977,20 @@
             const shape = appState.paths.find(p => p.id === appState.selectedId);
             if (!shape) return;
             const box = getBoundingBox(shape);
-            ctx.lineWidth = 2 / view.scale; ctx.strokeStyle = appState.theme === 'dark' ? '#fff' : '#000';
-            ctx.setLineDash([5 / view.scale, 5 / view.scale]); ctx.shadowBlur = 0;
-            ctx.beginPath(); ctx.rect(box.minX, box.minY, box.maxX - box.minX, box.maxY - box.minY); ctx.stroke();
+            
+            ctx.lineWidth = 2 / view.scale; 
+            ctx.strokeStyle = appState.theme === 'dark' ? '#fff' : '#000';
+            ctx.setLineDash([5 / view.scale, 5 / view.scale]); 
+            ctx.shadowBlur = 0;
+            ctx.beginPath(); 
+            ctx.rect(box.minX, box.minY, box.maxX - box.minX, box.maxY - box.minY); 
+            ctx.stroke();
             ctx.setLineDash([]);
+            
+            if (shape.type === 'text') {
+                ctx.fillStyle = '#00ffff';
+                ctx.fillRect(box.maxX - 6/view.scale, (box.minY+box.maxY)/2 - 6/view.scale, 12/view.scale, 12/view.scale);
+            }
         }
 
         function drawAnchors() {
@@ -1750,14 +2038,40 @@
                 drawSelectionBox(); drawAnchors(); 
             }
 
+            if (appState.snapLines && appState.snapLines.length > 0) {
+                ctx.save();
+                ctx.lineWidth = 1 / view.scale;
+                ctx.strokeStyle = '#00ffff'; 
+                ctx.setLineDash([5 / view.scale, 5 / view.scale]);
+                ctx.beginPath();
+                const vLeft = -view.x / view.scale;
+                const vRight = vLeft + canvas.width / view.scale;
+                const vTop = -view.y / view.scale;
+                const vBottom = vTop + canvas.height / view.scale;
+
+                appState.snapLines.forEach(line => {
+                    if (line.vertical) {
+                        ctx.moveTo(line.x, vTop);
+                        ctx.lineTo(line.x, vBottom);
+                    }
+                    if (line.horizontal) {
+                        ctx.moveTo(vLeft, line.y);
+                        ctx.lineTo(vRight, line.y);
+                    }
+                });
+                ctx.stroke();
+                ctx.restore();
+            }
+
             if (appState.isTyping && textInput.value) {
-                drawTextElement(ctx, textInput.value, appState.textPos.x, appState.textPos.y, appState.color, appState.currentFont, appState.currentFontSize, false, false);
+                drawTextElement(ctx, textInput.value, appState.textPos.x, appState.textPos.y, appState.color, appState.currentFont, appState.currentFontSize, false, false, appState.currentTextWidth);
             }
 
             zoomText.innerText = Math.round(view.scale * 100) + '%';
             if(appState.isTyping) {
                 const screenPos = worldToScreen(appState.textPos.x, appState.textPos.y);
-                textInput.style.left = screenPos.x + 'px'; textInput.style.top = screenPos.y + 'px';
+                textInput.style.left = screenPos.x + 'px'; 
+                textInput.style.top = screenPos.y + 'px';
             }
             updateFloatingBtnsPosition();
         }
@@ -1776,7 +2090,7 @@
             ctx.stroke();
         }
 
-        // --- INTERACCION GENERAL FUSIONADA ---
+        // --- INTERACCION GENERAL FUSIONADA CON SNAPPING MAGNÉTICO ---
         function handlePointerDown(e) {
             if (e.target !== textInput && appState.isTyping) {
                 finalizeText();
@@ -1784,12 +2098,24 @@
             }
             if (e.touches && e.touches.length > 1) return;
             
-            if (e.target !== textInput && !e.target.closest('.floating-actions') && !e.target.closest('.panel-wrapper') && !e.target.closest('.modal-overlay')) e.preventDefault();
+            if (e.target !== textInput && !e.target.closest('.floating-actions') && !e.target.closest('.panel-wrapper') && !e.target.closest('.modal-overlay') && !e.target.closest('#top-demo-tab')) e.preventDefault();
             
             const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             const worldPos = screenToWorld(clientX, clientY);
 
-            if(e.target.closest('.panel-wrapper') || e.target.closest('.floating-actions') || e.target.closest('.modal-overlay')) return;
+            if(e.target.closest('.panel-wrapper') || e.target.closest('.floating-actions') || e.target.closest('.modal-overlay') || e.target.closest('#top-demo-tab')) return;
+
+            if (appState.tool === 'select' && appState.selectedId) {
+                const shape = appState.paths.find(p => p.id === appState.selectedId);
+                if (shape && shape.type === 'text') {
+                    const box = getBoundingBox(shape);
+                    if (Math.abs(worldPos.x - box.maxX) < 20/view.scale && Math.abs(worldPos.y - (box.minY+box.maxY)/2) < 20/view.scale) {
+                        appState.isResizingText = true;
+                        appState.isInteracting = true;
+                        return; 
+                    }
+                }
+            }
 
             if (appState.tool === 'text') { startText(clientX, clientY); return; }
 
@@ -1844,7 +2170,7 @@
         }
 
         function handlePointerMove(e) {
-            if (e.target !== textInput && !e.target.closest('.floating-actions') && !e.target.closest('.panel-wrapper') && !e.target.closest('.modal-overlay')) e.preventDefault();
+            if (e.target !== textInput && !e.target.closest('.floating-actions') && !e.target.closest('.panel-wrapper') && !e.target.closest('.modal-overlay') && !e.target.closest('#top-demo-tab')) e.preventDefault();
 
             if (e.touches && e.touches.length === 2) {
                 const touch1 = e.touches[0], touch2 = e.touches[1];
@@ -1865,13 +2191,63 @@
             const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             const worldPos = screenToWorld(clientX, clientY);
 
+            if (appState.isResizingText && appState.selectedId) {
+                const shape = appState.paths.find(p => p.id === appState.selectedId);
+                if (shape && shape.type === 'text') {
+                    shape.width = Math.max(50, worldPos.x - shape.x); 
+                    redrawAll();
+                }
+                return;
+            }
+
             if (appState.tool === 'smart') {
                 if (appState.isPanning) {
                     view.x += clientX - lastPanX; view.y += clientY - lastPanY; lastPanX = clientX; lastPanY = clientY;
                 }
             } else if (appState.tool === 'select' && appState.selectedId) {
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
-                if (shape) { moveShape(shape, worldPos.x - lastPanX, worldPos.y - lastPanY); lastPanX = worldPos.x; lastPanY = worldPos.y; }
+                if (shape) { 
+                    moveShape(shape, worldPos.x - lastPanX, worldPos.y - lastPanY); 
+                    lastPanX = worldPos.x; 
+                    lastPanY = worldPos.y;
+
+                    appState.snapLines = [];
+                    let snapDx = 0; let snapDy = 0;
+                    let snappedX = false; let snappedY = false;
+                    const snapThreshold = 10 / view.scale; 
+                    
+                    const box = getBoundingBox(shape);
+                    const cx = (box.minX + box.maxX) / 2;
+                    const cy = (box.minY + box.maxY) / 2;
+
+                    appState.paths.forEach(other => {
+                        if (other.id === shape.id) return;
+                        const oBox = getBoundingBox(other);
+                        const ocx = (oBox.minX + oBox.maxX) / 2;
+                        const ocy = (oBox.minY + oBox.maxY) / 2;
+
+                        if (!snappedX) {
+                            if (Math.abs(box.minX - oBox.minX) < snapThreshold) { snapDx = oBox.minX - box.minX; snappedX = true; appState.snapLines.push({vertical: true, x: oBox.minX}); }
+                            else if (Math.abs(box.minX - oBox.maxX) < snapThreshold) { snapDx = oBox.maxX - box.minX; snappedX = true; appState.snapLines.push({vertical: true, x: oBox.maxX}); }
+                            else if (Math.abs(box.maxX - oBox.minX) < snapThreshold) { snapDx = oBox.minX - box.maxX; snappedX = true; appState.snapLines.push({vertical: true, x: oBox.minX}); }
+                            else if (Math.abs(box.maxX - oBox.maxX) < snapThreshold) { snapDx = oBox.maxX - box.maxX; snappedX = true; appState.snapLines.push({vertical: true, x: oBox.maxX}); }
+                            else if (Math.abs(cx - ocx) < snapThreshold) { snapDx = ocx - cx; snappedX = true; appState.snapLines.push({vertical: true, x: ocx}); }
+                        }
+                        if (!snappedY) {
+                            if (Math.abs(box.minY - oBox.minY) < snapThreshold) { snapDy = oBox.minY - box.minY; snappedY = true; appState.snapLines.push({horizontal: true, y: oBox.minY}); }
+                            else if (Math.abs(box.minY - oBox.maxY) < snapThreshold) { snapDy = oBox.maxY - box.minY; snappedY = true; appState.snapLines.push({horizontal: true, y: oBox.maxY}); }
+                            else if (Math.abs(box.maxY - oBox.minY) < snapThreshold) { snapDy = oBox.minY - box.maxY; snappedY = true; appState.snapLines.push({horizontal: true, y: oBox.minY}); }
+                            else if (Math.abs(box.maxY - oBox.maxY) < snapThreshold) { snapDy = oBox.maxY - box.maxY; snappedY = true; appState.snapLines.push({horizontal: true, y: oBox.maxY}); }
+                            else if (Math.abs(cy - ocy) < snapThreshold) { snapDy = ocy - cy; snappedY = true; appState.snapLines.push({horizontal: true, y: ocy}); }
+                        }
+                    });
+
+                    if (snappedX || snappedY) {
+                        moveShape(shape, snapDx, snapDy);
+                        lastPanX += snapDx;
+                        lastPanY += snapDy;
+                    }
+                }
             } else if (appState.currentPath && appState.tool !== 'text') {
                 if (appState.tool === 'draw') appState.currentPath.points.push(worldPos);
                 else { 
@@ -1887,6 +2263,15 @@
             initialPinchDistance = null;
             if (!appState.isInteracting) return;
             appState.isInteracting = false;
+            
+            appState.snapLines = [];
+            
+            if (appState.isResizingText) {
+                appState.isResizingText = false;
+                saveHistory();
+                redrawAll();
+                return;
+            }
 
             if (appState.tool === 'smart') {
                 appState.isPanning = false;
@@ -1918,6 +2303,8 @@
                     }
                     redrawAll();
                 }
+            } else {
+                redrawAll();
             }
         }
 
@@ -1931,6 +2318,316 @@
         container.addEventListener('mousedown', handlePointerDown); window.addEventListener('mousemove', handlePointerMove); window.addEventListener('mouseup', handlePointerUp);
         container.addEventListener('touchstart', handlePointerDown, { passive: false }); container.addEventListener('touchmove', handlePointerMove, { passive: false });
         container.addEventListener('touchend', handlePointerUp); container.addEventListener('touchcancel', handlePointerUp);
+
+        // =========================================================
+        // --- LÓGICA: BRANDING, TARJETA Y MODO STREAMER ---
+        // =========================================================
+        
+        let brandingState = {
+            active: false,
+            capsuleInterval: 15,
+            avatar: null,
+            name: '',
+            verified: true,
+            role: '',
+            location: '',
+            email: '',
+            phone: '',
+            socials: {
+                instagram: { enabled: false, prefix: '', handle: '', logo: '' },
+                youtube: { enabled: false, prefix: '', handle: '', logo: '' },
+                twitter: { enabled: false, prefix: '', handle: '', logo: '' },
+                linkedin: { enabled: false, prefix: '', handle: '', logo: '' },
+                whatsapp: { enabled: false, prefix: '', handle: '', logo: '' },
+                globe: { enabled: false, prefix: '', handle: '', logo: '' } 
+            }
+        };
+
+        let brandingIntervalId = null;
+        let brandingPool = [];
+        let currentBrandIndex = 0;
+
+        const brandingModalOverlay = document.getElementById('brandingModalOverlay');
+        const brandMasterToggle = document.getElementById('brandMasterToggle');
+        const brandIntervalInput = document.getElementById('brandIntervalInput');
+        const avatarUploader = document.getElementById('avatarUploader');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+        
+        const brandNameInput = document.getElementById('brandNameInput');
+        const brandVerifiedCheck = document.getElementById('brandVerifiedCheck');
+        const brandRoleInput = document.getElementById('brandRoleInput');
+        const brandLocationInput = document.getElementById('brandLocationInput');
+        const brandPhoneInput = document.getElementById('brandPhoneInput');
+        const brandEmailInput = document.getElementById('brandEmailInput');
+        
+        const topDemoTab = document.getElementById('top-demo-tab');
+        const btnToggleDemoTab = document.getElementById('btnToggleDemoTab');
+
+        const socialNetworksList = ['instagram', 'youtube', 'twitter', 'linkedin', 'whatsapp', 'globe'];
+
+        function loadBrandingConfig() {
+            try {
+                const stored = localStorage.getItem('piz_branding_v4');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    brandingState = {...brandingState, ...parsed};
+                    
+                    updateBrandingUIFromState();
+                    updateLowerThird();
+                    updateBusinessCard();
+                    if(brandingState.active) startBrandingLoop();
+                }
+            } catch(e) {}
+        }
+
+        function saveBrandingToMemory() {
+            try { localStorage.setItem('piz_branding_v4', JSON.stringify(brandingState)); } catch(e) {}
+        }
+
+        btnToggleDemoTab.addEventListener('click', (e) => {
+            e.stopPropagation();
+            topDemoTab.classList.toggle('expanded');
+        });
+
+        document.getElementById('demoTitleInput').addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        
+        function getGenericPlaceholder() {
+            return "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E";
+        }
+
+        // --- ACTUALIZAR LOWER THIRD ---
+        function updateLowerThird() {
+            const wt = document.getElementById('appWatermark');
+            if(!brandingState.name) { wt.classList.remove('visible'); return; }
+            
+            let html = '';
+            if(brandingState.avatar) html += `<img src="${brandingState.avatar}" class="lt-avatar">`;
+            
+            html += `<div class="lt-info">`;
+            html += `<div class="lt-name-row"><h2 class="lt-name">${brandingState.name}</h2>`;
+            if(brandingState.verified) {
+                html += `<svg class="lt-verified" viewBox="0 0 24 24"><path d="M22.5 12.5l-1.58 1.58.23 2.23-2.22.45-1.04 1.99-2.07-.88-1.78 1.39-1.78-1.39-2.07.88-1.04-1.99-2.22-.45.23-2.23L2.5 12.5l1.58-1.58-.23-2.23 2.22-.45 1.04-1.99 2.07.88 1.78-1.39 1.78 1.39 2.07-.88 1.04 1.99 2.22.45-.23 2.23 1.58 1.58z" fill="#1d9bf0"/><path d="M10.5 16.5l-4-4 1.41-1.41L10.5 13.67l7.09-7.09L19 8l-8.5 8.5z" fill="#fff"/></svg>`;
+            }
+            html += `</div>`;
+            
+            html += `<div class="lt-details">`;
+            if(brandingState.role) html += `<div class="lt-detail-item"><i data-lucide="briefcase"></i> ${brandingState.role}</div>`;
+            if(brandingState.location) html += `<div class="lt-detail-item"><i data-lucide="map-pin"></i> ${brandingState.location}</div>`;
+            if(brandingState.email) html += `<div class="lt-detail-item"><i data-lucide="mail"></i> ${brandingState.email}</div>`;
+            if(brandingState.phone) html += `<div class="lt-detail-item"><i data-lucide="phone"></i> ${brandingState.phone}</div>`;
+            html += `</div></div>`;
+            
+            wt.innerHTML = html;
+            wt.classList.add('visible');
+            lucide.createIcons();
+        }
+
+        // --- ACTUALIZAR TARJETA DE PRESENTACIÓN DE ARRIBA ---
+        function updateBusinessCard() {
+            const container = document.getElementById('businessCardContent');
+            if (!brandingState.name && !brandingState.avatar && !Object.values(brandingState.socials).some(s => s.enabled)) {
+                container.innerHTML = '<span style="color:#aaa; font-size:12px; font-family:system-ui;">Configura tu Marca Personal primero (Ícono de usuario).</span>';
+                return;
+            }
+
+            let html = '';
+            if (brandingState.avatar) html += `<img src="${brandingState.avatar}" class="bc-avatar">`;
+            
+            let vBadge = brandingState.verified ? `<svg style="width:16px;height:16px;margin-left:5px;fill:#1d9bf0;vertical-align:middle;" viewBox="0 0 24 24"><path d="M22.5 12.5l-1.58 1.58.23 2.23-2.22.45-1.04 1.99-2.07-.88-1.78 1.39-1.78-1.39-2.07.88-1.04-1.99-2.22-.45.23-2.23L2.5 12.5l1.58-1.58-.23-2.23 2.22-.45 1.04-1.99 2.07.88 1.78-1.39 1.78 1.39 2.07-.88 1.04 1.99 2.22.45-.23 2.23 1.58 1.58z"/><path d="M10.5 16.5l-4-4 1.41-1.41L10.5 13.67l7.09-7.09L19 8l-8.5 8.5z" fill="#fff"/></svg>` : '';
+            
+            if (brandingState.name) html += `<h4 class="bc-name">${brandingState.name}${vBadge}</h4>`;
+            
+            html += `<div class="bc-socials">`;
+            socialNetworksList.forEach(net => {
+                const s = brandingState.socials[net];
+                if (s.enabled && s.handle) {
+                    const logoSrc = s.logo ? s.logo : getGenericPlaceholder(); 
+                    html += `<div class="bc-social-row">
+                                <img src="${logoSrc}" class="bc-social-logo">
+                                <span class="bc-social-handle">${s.prefix ? s.prefix + ' ' : ''}${s.handle}</span>
+                             </div>`;
+                }
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        socialNetworksList.forEach(net => {
+            const uploader = document.getElementById(`up_${net}`);
+            const preview = document.getElementById(`prev_${net}`);
+            
+            uploader.addEventListener('change', (e) => {
+                const file = e.target.files[0]; 
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const tempCanvas = document.createElement('canvas');
+                        tempCanvas.width = 120; tempCanvas.height = 120; 
+                        const tCtx = tempCanvas.getContext('2d');
+                        tCtx.drawImage(img, 0, 0, 120, 120);
+                        const optimizedBase64 = tempCanvas.toDataURL('image/webp', 0.9);
+                        
+                        brandingState.socials[net].logo = optimizedBase64;
+                        preview.src = optimizedBase64;
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file); 
+                e.target.value = '';
+            });
+        });
+
+        function updateBrandingUIFromState() {
+            brandMasterToggle.checked = brandingState.active;
+            brandIntervalInput.value = brandingState.capsuleInterval;
+            
+            brandNameInput.value = brandingState.name;
+            brandVerifiedCheck.checked = brandingState.verified;
+            brandRoleInput.value = brandingState.role;
+            brandLocationInput.value = brandingState.location;
+            brandEmailInput.value = brandingState.email;
+            brandPhoneInput.value = brandingState.phone;
+            
+            if (brandingState.avatar) {
+                avatarPreview.src = brandingState.avatar;
+                avatarPreview.style.display = 'flex';
+                avatarPlaceholder.style.display = 'none';
+            }
+
+            socialNetworksList.forEach(net => {
+                const s = brandingState.socials[net];
+                document.getElementById(`chk_${net}`).checked = s.enabled;
+                document.getElementById(`pfx_${net}`).value = s.prefix || '';
+                document.getElementById(`val_${net}`).value = s.handle;
+                if(s.logo) document.getElementById(`prev_${net}`).src = s.logo;
+            });
+        }
+
+        document.getElementById('btn-branding').addEventListener('click', () => {
+            updateBrandingUIFromState();
+            brandingModalOverlay.style.display = 'flex';
+        });
+
+        window.closeBrandingModal = function() {
+            brandingModalOverlay.style.display = 'none';
+        };
+
+        window.saveBrandingConfig = function() {
+            brandingState.active = brandMasterToggle.checked;
+            brandingState.capsuleInterval = parseInt(brandIntervalInput.value) || 15;
+            
+            brandingState.name = brandNameInput.value.trim();
+            brandingState.verified = brandVerifiedCheck.checked;
+            brandingState.role = brandRoleInput.value.trim();
+            brandingState.location = brandLocationInput.value.trim();
+            brandingState.email = brandEmailInput.value.trim();
+            brandingState.phone = brandPhoneInput.value.trim();
+            
+            socialNetworksList.forEach(net => {
+                brandingState.socials[net].enabled = document.getElementById(`chk_${net}`).checked;
+                brandingState.socials[net].prefix = document.getElementById(`pfx_${net}`).value.trim();
+                brandingState.socials[net].handle = document.getElementById(`val_${net}`).value.trim();
+            });
+
+            saveBrandingToMemory();
+            buildBrandingPool();
+            updateLowerThird();
+            updateBusinessCard();
+            
+            if (brandingState.active) {
+                startBrandingLoop();
+                showMessage("Marca Personal guardada y Cápsulas Activadas");
+            } else {
+                stopBrandingLoop();
+                showMessage("Marca Personal guardada (Cápsulas Inactivas)");
+            }
+            closeBrandingModal();
+        };
+
+        avatarUploader.addEventListener('change', (e) => {
+            const file = e.target.files[0]; 
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const max_size = 300; 
+                    let w = img.width; let h = img.height;
+                    if (w > h) { if (w > max_size) { h *= max_size / w; w = max_size; } } 
+                    else { if (h > max_size) { w *= max_size / h; h = max_size; } }
+                    
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = w; tempCanvas.height = h;
+                    const tCtx = tempCanvas.getContext('2d');
+                    tCtx.drawImage(img, 0, 0, w, h);
+                    
+                    brandingState.avatar = tempCanvas.toDataURL('image/webp', 0.9);
+                    avatarPreview.src = brandingState.avatar;
+                    avatarPreview.style.display = 'flex';
+                    avatarPlaceholder.style.display = 'none';
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file); 
+            e.target.value = ''; 
+        });
+
+        function buildBrandingPool() {
+            brandingPool = [];
+            if (brandingState.name || brandingState.avatar) {
+                brandingPool.push({ type: 'profile', text: brandingState.name, img: brandingState.avatar });
+            }
+            socialNetworksList.forEach(net => {
+                const social = brandingState.socials[net];
+                if (social.enabled && social.handle) {
+                    brandingPool.push({ type: 'social', logo: social.logo, text: social.handle, prefix: social.prefix });
+                }
+            });
+        }
+
+        function startBrandingLoop() {
+            stopBrandingLoop(); 
+            buildBrandingPool();
+            if (brandingPool.length === 0) return;
+            
+            const intervalSecs = brandingState.capsuleInterval || 15;
+            brandingIntervalId = setInterval(popBrandingCapsule, intervalSecs * 1000);
+        }
+
+        function stopBrandingLoop() {
+            if (brandingIntervalId) clearInterval(brandingIntervalId);
+            brandingIntervalId = null;
+            document.getElementById('brandingCapsule').classList.remove('show');
+        }
+
+        function popBrandingCapsule() {
+            if (!brandingState.active || brandingPool.length === 0) return;
+            
+            if (currentBrandIndex >= brandingPool.length) currentBrandIndex = 0;
+            const item = brandingPool[currentBrandIndex];
+            currentBrandIndex++;
+
+            const cap = document.getElementById('brandingCapsule');
+            
+            if (item.type === 'profile') {
+                let imgHtml = item.img ? `<img src="${item.img}" class="avatar">` : ``;
+                cap.innerHTML = `${imgHtml}<span>${item.text}</span>`;
+            } else {
+                let imgHtml = item.logo ? `<img src="${item.logo}" class="logo">` : ``;
+                let pfxHtml = item.prefix ? `<span class="capsule-prefix">${item.prefix}</span>` : ``;
+                cap.innerHTML = `${imgHtml}<div class="capsule-text-col">${pfxHtml}<span class="capsule-handle">${item.text}</span></div>`;
+            }
+            
+            cap.classList.add('show');
+            setTimeout(() => { cap.classList.remove('show'); }, 6000);
+        }
+
+        loadBrandingConfig();
 
     </script>
 </body>
