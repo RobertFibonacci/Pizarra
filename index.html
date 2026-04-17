@@ -240,7 +240,7 @@
             scrollbar-width: thin; scrollbar-color: #555 #111;
         }
 
-        /* --- MODAL DE MARCA PERSONAL (BRANDING) V5 --- */
+        /* --- MODAL DE MARCA PERSONAL (BRANDING) V6 --- */
         .branding-setting-row {
             display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; margin-bottom: 8px;
         }
@@ -277,7 +277,7 @@
         }
         .avatar-preview:hover { border-color: #00ffff; }
 
-        /* --- PESTAÑA SUPERIOR Y TARJETA DE PRESENTACIÓN V3 --- */
+        /* --- PESTAÑA SUPERIOR Y TARJETA DE PRESENTACIÓN --- */
         #top-demo-tab {
             position: absolute; top: 0; left: 50%; transform: translateX(-50%);
             background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(10px);
@@ -322,7 +322,7 @@
         body.light-mode .bc-social-capsule { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
         body.light-mode .bc-social-capsule span { color: #000; }
 
-        /* --- CÁPSULA STREAMER V2 --- */
+        /* --- CÁPSULA STREAMER --- */
         .branding-capsule {
             position: fixed; top: -80px; left: 50%; transform: translateX(-50%);
             background: rgba(15, 15, 15, 0.85); backdrop-filter: blur(12px);
@@ -407,7 +407,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE DIAGRAMAS (REDISEÑADO PARA ARCHIVOS LOCALES) -->
+    <!-- MODAL DE DIAGRAMAS -->
     <div id="diagramsModalOverlay" class="modal-overlay">
         <div class="modal-box"> 
             <h3>Gestor de Pizarras</h3>
@@ -462,7 +462,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE MARCA PERSONAL (BRANDING) V5 CORPORATIVO -->
+    <!-- MODAL DE MARCA PERSONAL (BRANDING) V6 -->
     <div id="brandingModalOverlay" class="modal-overlay">
         <div class="modal-box large" style="max-height: 90vh; overflow-y: auto;">
             <h3>Mi Marca Personal</h3>
@@ -1362,6 +1362,92 @@
         window.closeDiagramsModal = function() {
             diagramsModalOverlay.style.display = 'none';
         };
+
+        window.saveCurrentDiagram = function() {
+            const name = diagramNameInput.value.trim();
+            if (!name) { showMessage("Ponle un nombre al diagrama", true); return; }
+            if (appState.paths.length === 0) { showMessage("La pizarra está vacía", true); return; }
+            
+            const newDiagram = {
+                id: generateId(),
+                name: name,
+                paths: JSON.parse(JSON.stringify(appState.paths)),
+                date: new Date().toLocaleDateString()
+            };
+            
+            savedDiagrams.push(newDiagram);
+            saveDiagramsToMemory();
+            diagramNameInput.value = '';
+            renderDiagramsList();
+            showMessage("Diagrama guardado");
+        };
+
+        window.loadDiagram = function(id) {
+            const diagram = savedDiagrams.find(d => d.id === id);
+            if (diagram) {
+                appState.paths = JSON.parse(JSON.stringify(diagram.paths));
+                saveHistory();
+                clearSelection();
+                redrawAll();
+                closeDiagramsModal();
+                showMessage("Diagrama cargado");
+            }
+        };
+
+        window.deleteDiagram = function(id) {
+            if (confirm("¿Eliminar este diagrama permanentemente?")) {
+                savedDiagrams = savedDiagrams.filter(d => d.id !== id);
+                saveDiagramsToMemory();
+                renderDiagramsList();
+            }
+        };
+
+        window.startNewDiagram = function() {
+            if (confirm("¿Crear nuevo diagrama? (Asegúrate de haber guardado el actual)")) {
+                saveHistory();
+                appState.paths = [];
+                clearSelection();
+                redrawAll();
+                closeDiagramsModal();
+                showMessage("Nueva pizarra lista");
+            }
+        };
+
+        function renderDiagramsList() {
+            diagramsListContainer.innerHTML = '';
+            if (savedDiagrams.length === 0) {
+                diagramsListContainer.innerHTML = '<span style="font-size:12px; color:#aaa; text-align:center; display:block;">No hay diagramas guardados.</span>';
+                return;
+            }
+            
+            [...savedDiagrams].reverse().forEach(diag => {
+                const item = document.createElement('div');
+                item.className = 'diagram-item';
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'diagram-name';
+                nameSpan.title = diag.name;
+                nameSpan.innerText = diag.name;
+                
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'diagram-actions';
+                
+                const loadBtn = document.createElement('button');
+                loadBtn.className = 'btn-load';
+                loadBtn.innerText = 'Abrir';
+                loadBtn.onclick = () => loadDiagram(diag.id);
+                
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn-delete';
+                delBtn.innerText = 'X';
+                delBtn.onclick = () => deleteDiagram(diag.id);
+                
+                actionsDiv.appendChild(loadBtn);
+                actionsDiv.appendChild(delBtn);
+                
+                diagramsListContainer.appendChild(item);
+            });
+        }
 
         // --- LÓGICA DE CONTROLES (TEMA Y MALLA) ---
         btnTheme.addEventListener('click', () => {
