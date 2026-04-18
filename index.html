@@ -6,7 +6,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#050505" id="theme-color-meta">
-    
+    <meta name="description" content="Pizarra Interactiva Profesional - Crea diagramas, presentaciones y contenido visual">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Pizarra Pro">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
     <link rel="icon" type="image/png" href="icono.png">
     <link rel="apple-touch-icon" href="icono.png">
     
@@ -369,6 +375,135 @@
         /* --- CSS DE PROTECCION ANTI-DUPLICADOS --- */
         .pizarra-instance-marker { display: none !important; }
         body[data-pizarra-initialized="true"] .pizarra-instance-marker { display: block !important; }
+
+        /* ============================================
+           THEME LIGHT MODE - COMPLETE OVERRIDES
+           ============================================ */
+        body.light-mode { background-color: #f5f5f5; }
+        body.light-mode #canvas-container { background-color: #f5f5f5; }
+
+        /* Pestaña superior */
+        body.light-mode #top-demo-tab {
+            background: rgba(240, 240, 240, 0.95);
+            border-color: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        body.light-mode .demo-title-input { color: #111; }
+        body.light-mode .demo-title-input::placeholder { color: #888; }
+        body.light-mode .demo-tab-toggle { color: #555; }
+        body.light-mode .demo-tab-toggle:hover { color: #000; }
+
+        /* Paneles */
+        body.light-mode .panel-content {
+            background: rgba(230, 230, 230, 0.92);
+            border-color: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        body.light-mode .toggle-btn {
+            background: rgba(220, 220, 220, 0.95);
+            border-color: rgba(0, 0, 0, 0.2);
+            color: #333;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+        body.light-mode .toggle-btn:hover { background: rgba(200, 200, 200, 0.95); }
+
+        /* Botones de herramienta */
+        body.light-mode .tool-btn { color: #555; }
+        body.light-mode .tool-btn:hover { color: #000; background: rgba(0, 0, 0, 0.08); }
+        body.light-mode .tool-btn.active { color: #000; background: rgba(0, 0, 0, 0.15); box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2); }
+        body.light-mode .tool-btn.action-btn:hover { color: #ff5555; background: rgba(255, 50, 50, 0.08); }
+        body.light-mode #tool-smart:hover { color: #cc9900; background: rgba(255, 200, 0, 0.1); }
+        body.light-mode #tool-smart.active { color: #cc9900; background: rgba(255, 200, 0, 0.15); box-shadow: inset 0 0 5px rgba(255, 200, 0, 0.3); }
+        body.light-mode .upload-btn { border-color: rgba(0, 0, 0, 0.3); color: #333; }
+        body.light-mode .upload-btn:hover { border-color: #000; background: rgba(0, 0, 0, 0.08); }
+
+        /* Titulos de seccion */
+        body.light-mode .section-title { color: #555; border-bottom-color: rgba(0, 0, 0, 0.1); }
+
+        /* Galeria */
+        body.light-mode .gallery-thumb { background: rgba(255, 255, 255, 0.8); border-color: transparent; }
+        body.light-mode .gallery-thumb.active { border-color: #0088aa; background: rgba(0, 0, 0, 0.05); }
+        body.light-mode .view-all-btn { background: rgba(0, 0, 0, 0.05); color: #555; border-color: rgba(0, 0, 0, 0.15); }
+        body.light-mode .view-all-btn:hover { background: rgba(0, 0, 0, 0.1); color: #000; }
+
+        /* Color picker */
+        body.light-mode .color-flyout {
+            background: rgba(230, 230, 230, 0.98);
+            border-color: rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        body.light-mode .current-color-btn { border-color: rgba(0, 0, 0, 0.4); box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); }
+        body.light-mode .current-color-btn:hover { border-color: #000; }
+        body.light-mode .color-btn.active { border-color: #000; }
+
+        /* Text controls */
+        body.light-mode .text-controls select { background: #fff; color: #111; border-color: #bbb; }
+        body.light-mode .size-control { color: #555; }
+
+        /* Text input */
+        body.light-mode #textInput { border-color: rgba(0, 0, 0, 0.3); caret-color: black; }
+
+        /* Zoom indicator */
+        body.light-mode .zoom-indicator { background: rgba(220, 220, 220, 0.9); color: #555; }
+
+        /* Floating actions */
+        body.light-mode .float-btn { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); }
+
+        /* Modales */
+        body.light-mode .modal-overlay { background: rgba(200, 200, 200, 0.6); }
+        body.light-mode .modal-box {
+            background: #f0f0f0;
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #111;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        body.light-mode .modal-box h3 { color: #111; }
+        body.light-mode .modal-box select,
+        body.light-mode .modal-box input[type="text"],
+        body.light-mode .modal-box input[type="number"] {
+            background: #fff; color: #111; border-color: #ccc;
+        }
+        body.light-mode .btn-cancel { background: #ddd; color: #111; }
+
+        /* Grid de reacciones y galeria */
+        body.light-mode .reaction-grid img,
+        body.light-mode .reaction-grid video { background: #eee; }
+        body.light-mode .full-gallery-item img,
+        body.light-mode .full-gallery-item video { background: #eee; }
+        body.light-mode .full-gallery-item img:hover,
+        body.light-mode .full-gallery-item video:hover { background: rgba(0, 0, 0, 0.05); }
+        body.light-mode .full-gallery-item img.active,
+        body.light-mode .full-gallery-item video.active { background: rgba(0, 0, 0, 0.05); }
+
+        /* Gestor de diagramas */
+        body.light-mode .diagram-item { background: rgba(0, 0, 0, 0.03); border-color: rgba(0, 0, 0, 0.08); }
+        body.light-mode .diagram-name { color: #111; }
+
+        /* Branding modal */
+        body.light-mode .branding-setting-row { background: rgba(0, 0, 0, 0.05); }
+        body.light-mode .master-switch-container { background: rgba(0, 180, 180, 0.08); border-color: rgba(0, 180, 180, 0.25); }
+        body.light-mode .avatar-preview { background: #ddd; border-color: #999; }
+        body.light-mode .avatar-preview:hover { border-color: #0088aa; }
+        body.light-mode .social-logo-preview { background: #ddd; border-color: #999; }
+        body.light-mode .social-logo-preview:hover { border-color: #0088aa; }
+
+        /* Capsula streamer */
+        body.light-mode .branding-capsule {
+            background: rgba(220, 220, 220, 0.9);
+            border-color: rgba(0, 0, 0, 0.15);
+            color: #111;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+        body.light-mode .capsule-prefix { color: #555; }
+        body.light-mode .capsule-handle { color: #000; }
+        body.light-mode .capsule-subs { color: #0088aa; }
+
+        /* Toast */
+        body.light-mode #toastMsg { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+
+        /* Toggle switch */
+        body.light-mode .toggle-switch .slider { background-color: #999; }
+        body.light-mode .toggle-switch input:checked + .slider { background-color: #0088aa; }
 
     </style>
 </head>
@@ -759,20 +894,157 @@
 
         lucide.createIcons();
 
+        // ==========================================
+        // SERVICE WORKER REGISTRATION (PWA)
+        // ==========================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    const CACHE_NAME = 'pizarra-v1';
+                    const urlsToCache = ['./', './index.html', './manifest.json'];
+
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(cache => cache.addAll(urlsToCache))
+                                .catch(() => {})
+                        );
+                        self.skipWaiting();
+                    });
+
+                    self.addEventListener('activate', event => {
+                        event.waitUntil(
+                            caches.keys().then(cacheNames =>
+                                Promise.all(cacheNames.map(name => {
+                                    if (name !== CACHE_NAME) return caches.delete(name);
+                                }))
+                            )
+                        );
+                        self.clients.claim();
+                    });
+
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then(response => {
+                                    if (response) return response;
+                                    return fetch(event.request).catch(() => null);
+                                })
+                        );
+                    });
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl).catch(() => {});
+            });
+        }
+
+        // ==========================================
+        // INDEXEDDB STORAGE MODULE (REPLACES localStorage)
+        // ==========================================
+        const DB_NAME = 'PizarraDB';
+        const DB_VERSION = 1;
+        let db = null;
+
+        function initIndexedDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => { db = request.result; resolve(db); };
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains('elements')) database.createObjectStore('elements', { keyPath: 'id' });
+                    if (!database.objectStoreNames.contains('videos')) database.createObjectStore('videos', { keyPath: 'id' });
+                    if (!database.objectStoreNames.contains('reactions')) database.createObjectStore('reactions', { keyPath: 'id' });
+                    if (!database.objectStoreNames.contains('diagrams')) database.createObjectStore('diagrams', { keyPath: 'id' });
+                    if (!database.objectStoreNames.contains('config')) database.createObjectStore('config', { keyPath: 'key' });
+                };
+            });
+        }
+
+        function dbPut(storeName, data) {
+            return new Promise((resolve, reject) => {
+                if (!db) { resolve(); return; }
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                const req = store.put(data);
+                req.onsuccess = () => resolve();
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        function dbGetAll(storeName) {
+            return new Promise((resolve) => {
+                if (!db) { resolve([]); return; }
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const req = store.getAll();
+                req.onsuccess = () => resolve(req.result || []);
+                req.onerror = () => resolve([]);
+            });
+        }
+
+        function dbDelete(storeName, id) {
+            return new Promise((resolve) => {
+                if (!db) { resolve(); return; }
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                store.delete(id);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => resolve();
+            });
+        }
+
+        function dbClear(storeName) {
+            return new Promise((resolve) => {
+                if (!db) { resolve(); return; }
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                store.clear();
+                tx.oncomplete = () => resolve();
+            });
+        }
+
+        // --- CONFIG WRAPPER ---
+        async function saveConfig(key, value) {
+            await dbPut('config', { key, value, timestamp: Date.now() });
+        }
+
+        async function loadConfig(key) {
+            if (!db) return null;
+            const tx = db.transaction('config', 'readonly');
+            const store = tx.objectStore('config');
+            return new Promise((resolve) => {
+                const req = store.get(key);
+                req.onsuccess = () => resolve(req.result ? req.result.value : null);
+                req.onerror = () => resolve(null);
+            });
+        }
+
+        // ==========================================
+        // VIEWPORT TRACKING FOR VIDEO OPTIMIZATION
+        // ==========================================
+        function isInViewport(shape) {
+            const pad = 100;
+            const left = -view.x / view.scale - pad;
+            const top = -view.y / view.scale - pad;
+            const right = left + canvas.width / view.scale + pad * 2;
+            const bottom = top + canvas.height / view.scale + pad * 2;
+            const box = getRawBounds(shape);
+            return !(box.maxX < left || box.minX > right || box.maxY < top || box.minY > bottom);
+        }
+
         let savedDiagrams = [];
         const diagramsListContainer = document.getElementById('diagramsListContainer');
 
-        function saveDiagramsToMemory() {
-            try { localStorage.setItem('piz_diagramas', JSON.stringify(savedDiagrams)); } catch(e) {}
+        async function saveDiagramsToMemory() {
+            await dbClear('diagrams');
+            for (const d of savedDiagrams) await dbPut('diagrams', d);
         }
 
-        function loadDiagramsFromMemory() {
-            try {
-                const stored = localStorage.getItem('piz_diagramas');
-                if (stored) savedDiagrams = JSON.parse(stored);
-            } catch(e) {}
+        async function loadDiagramsFromMemory() {
+            savedDiagrams = await dbGetAll('diagrams');
         }
-        loadDiagramsFromMemory();
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -888,22 +1160,33 @@
         const imageCache = {}; 
         const videoCache = {};
 
-        function loadGalleryFromMemory() {
+        async function loadGalleryFromMemory() {
             try {
-                const stElem = localStorage.getItem('piz_elementos');
-                if (stElem) savedElements = JSON.parse(stElem);
-                const stReact = localStorage.getItem('piz_reacciones');
-                if (stReact) savedReactions = JSON.parse(stReact);
+                const elems = await dbGetAll('elements');
+                const vids = await dbGetAll('videos');
+                const reacts = await dbGetAll('reactions');
+                savedElements = elems;
+                savedVideos = vids;
+                savedReactions = reacts;
             } catch(e) {}
             renderGalleryUI();
         }
 
-        function saveGalleryToMemory() {
-            try { 
-                localStorage.setItem('piz_elementos', JSON.stringify(savedElements));
-                localStorage.setItem('piz_reacciones', JSON.stringify(savedReactions));
-            } 
-            catch(e) { showMessage("Memoria llena. Borra algunas imagenes.", true); }
+        async function saveGalleryToMemory() {
+            try {
+                await dbClear('elements');
+                await dbClear('reactions');
+                for (const el of savedElements) await dbPut('elements', el);
+                for (const r of savedReactions) await dbPut('reactions', r);
+            }
+            catch(e) { showMessage("Error guardando galeria.", true); }
+        }
+
+        async function saveVideosToMemory() {
+            try {
+                await dbClear('videos');
+                for (const v of savedVideos) await dbPut('videos', v);
+            } catch(e) {}
         }
 
         window.downloadPizarra = function() {
@@ -979,22 +1262,22 @@
             const reader = new FileReader();
             reader.onload = (event) => {
                 const img = new Image();
-                img.onload = () => {
-                    const max_size = 1500; 
+                img.onload = async () => {
+                    const max_size = 1500;
                     let w = img.width; let h = img.height;
-                    if (w > h) { if (w > max_size) { h *= max_size / w; w = max_size; } } 
+                    if (w > h) { if (w > max_size) { h *= max_size / w; w = max_size; } }
                     else { if (h > max_size) { w *= max_size / h; h = max_size; } }
-                    
+
                     const tempCanvas = document.createElement('canvas');
                     tempCanvas.width = w; tempCanvas.height = h;
                     const tCtx = tempCanvas.getContext('2d');
                     tCtx.drawImage(img, 0, 0, w, h);
-                    
-                    const optimizedBase64 = tempCanvas.toDataURL('image/webp', 0.95);
-                    
+
+                    const optimizedBase64 = tempCanvas.toDataURL('image/webp', 0.85);
+
                     typeArray.push({ id: generateId(), data: optimizedBase64 });
-                    saveGalleryToMemory(); 
-                    renderGalleryUI(); 
+                    await saveGalleryToMemory();
+                    renderGalleryUI();
                     showMessage("Imagen guardada en alta calidad");
                 };
                 img.src = event.target.result;
@@ -1003,18 +1286,20 @@
             e.target.value = ''; 
         }
 
-        function handleVideoUpload(e) {
+        async function handleVideoUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
-            
+
             if (file.size > 20 * 1024 * 1024) {
-                showMessage("Precaucion: El video pesa mas de 20MB. El navegador podria ponerse lento.", true);
+                showMessage("Precaucion: El video pesa mas de 20MB. Se recomienda comprimirlo.", true);
             }
 
             const reader = new FileReader();
-            reader.onload = (event) => {
+            reader.onload = async (event) => {
                 const base64 = event.target.result;
-                savedVideos.push({ id: generateId(), data: base64 });
+                const vidObj = { id: generateId(), data: base64 };
+                savedVideos.push(vidObj);
+                await dbPut('videos', vidObj);
                 renderGalleryUI();
                 showMessage("Video listo para usar");
             };
@@ -1026,16 +1311,16 @@
         document.getElementById('reactionUploader').addEventListener('change', (e) => handleImageUpload(e, savedReactions));
         document.getElementById('videoUploader').addEventListener('change', handleVideoUpload);
 
-        window.deleteFromGallery = function(e, id, typeStr) {
+        window.deleteFromGallery = async function(e, id, typeStr) {
             e.stopPropagation();
             if(confirm("Eliminar archivo permanentemente?")) {
-                if(typeStr === 'element') { savedElements = savedElements.filter(img => img.id !== id); saveGalleryToMemory(); }
-                else if(typeStr === 'reaction') { savedReactions = savedReactions.filter(img => img.id !== id); saveGalleryToMemory(); }
-                else if(typeStr === 'video') { savedVideos = savedVideos.filter(vid => vid.id !== id); }
-                
+                if(typeStr === 'element') { savedElements = savedElements.filter(img => img.id !== id); await saveGalleryToMemory(); }
+                else if(typeStr === 'reaction') { savedReactions = savedReactions.filter(img => img.id !== id); await saveGalleryToMemory(); }
+                else if(typeStr === 'video') { savedVideos = savedVideos.filter(vid => vid.id !== id); await saveVideosToMemory(); }
+
                 renderGalleryUI();
                 if (document.getElementById('fullGalleryModalOverlay').style.display === 'flex') {
-                    openFullGalleryModal(typeStr); 
+                    openFullGalleryModal(typeStr);
                 }
             }
         };
@@ -1305,10 +1590,30 @@
             });
         }
 
-        let history = []; 
+        let history = [];
         function saveHistory() {
             history.push(JSON.parse(JSON.stringify(appState.paths)));
-            if(history.length > 20) history.shift(); 
+            if(history.length > 20) history.shift();
+        }
+
+        // ==========================================
+        // RENDER OPTIMIZATION: Dirty flag + FPS cap
+        // ==========================================
+        let needsRedraw = true;
+        let lastFrameTime = 0;
+        let isInteracting = false;
+        let interactionTimeout = null;
+        const FPS_IDLE = 30;
+        const FPS_ACTIVE = 60;
+        const FRAME_TIME_IDLE = 1000 / FPS_IDLE;
+        const FRAME_TIME_ACTIVE = 1000 / FPS_ACTIVE;
+
+        function requestRedraw() { needsRedraw = true; }
+
+        function markInteracting() {
+            isInteracting = true;
+            clearTimeout(interactionTimeout);
+            interactionTimeout = setTimeout(() => { isInteracting = false; }, 2000);
         }
 
         function undo() {
@@ -1320,38 +1625,68 @@
         let lastPanX = 0; let lastPanY = 0;
         let animationOffset = 0; const animationSpeed = 0.35; 
 
+        // ==========================================
+        // VIDEO VIEWPORT MANAGEMENT
+        // ==========================================
+        function updateVideoPlayback() {
+            appState.paths.forEach(shape => {
+                if (shape.type === 'video') {
+                    const vid = videoCache[shape.src];
+                    if (vid) {
+                        if (isInViewport(shape)) {
+                            if (vid.paused) vid.play().catch(() => {});
+                        } else {
+                            if (!vid.paused) vid.pause();
+                        }
+                    }
+                }
+            });
+        }
+
         // --- SISTEMA DE ANIMACION OPTIMIZADO ---
         function startAnimationLoop() {
-            function animate() {
-                let needsRedraw = false;
-                animationOffset -= animationSpeed; 
+            function animate(timestamp) {
+                const frameInterval = isInteracting ? FRAME_TIME_ACTIVE : FRAME_TIME_IDLE;
+                if (timestamp - lastFrameTime < frameInterval) {
+                    requestAnimationFrame(animate);
+                    return;
+                }
+                lastFrameTime = timestamp;
+
+                let hasChanges = needsRedraw;
+                needsRedraw = false;
+
+                animationOffset -= animationSpeed;
                 if (animationOffset <= -100) animationOffset = 0;
-                
+
                 const hasAnimatedLines = appState.paths.some(p => p.type === 'arrow');
                 const hasActiveAnims = appState.paths.some(p => p.popAnimTime || p.clickAnimTime);
 
                 if (hasAnimatedLines || hasActiveAnims) {
-                    needsRedraw = true;
+                    hasChanges = true;
                 }
-                
+
                 if (activeParticles.length > 0) {
                     activeParticles.forEach(p => {
                         p.x += p.vx; p.y += p.vy; p.life -= p.decay;
                     });
                     activeParticles = activeParticles.filter(p => p.life > 0);
-                    needsRedraw = true;
+                    hasChanges = true;
                 }
 
-                const hasVideos = appState.paths.some(p => p.type === 'video');
-                if (hasVideos) needsRedraw = true;
+                // Only redraw videos if at least one is visible
+                const hasVisibleVideos = appState.paths.some(p => p.type === 'video' && isInViewport(p));
+                if (hasVisibleVideos) {
+                    hasChanges = true;
+                    updateVideoPlayback();
+                }
 
-                if(needsRedraw) redrawAll();
+                if (hasChanges) redrawAll();
                 requestAnimationFrame(animate);
             }
-            animate();
+            requestAnimationFrame(animate);
         }
-        
-        loadGalleryFromMemory();
+
         startAnimationLoop();
 
         // --- LOGICA DE PANTALLA COMPLETA ---
@@ -1393,7 +1728,7 @@
             diagramsModalOverlay.style.display = 'none';
         };
 
-        window.saveCurrentDiagram = function() {
+        window.saveCurrentDiagram = async function() {
             const name = diagramNameInput.value.trim();
             if (!name) { showMessage("Ponle un nombre al diagrama", true); return; }
             if (appState.paths.length === 0) { showMessage("La pizarra esta vacia", true); return; }
@@ -1406,7 +1741,7 @@
             };
             
             savedDiagrams.push(newDiagram);
-            saveDiagramsToMemory();
+            await saveDiagramsToMemory();
             diagramNameInput.value = '';
             renderDiagramsList();
             showMessage("Diagrama guardado");
@@ -1424,10 +1759,10 @@
             }
         };
 
-        window.deleteDiagram = function(id) {
+        window.deleteDiagram = async function(id) {
             if (confirm("Eliminar este diagrama permanentemente?")) {
                 savedDiagrams = savedDiagrams.filter(d => d.id !== id);
-                saveDiagramsToMemory();
+                await saveDiagramsToMemory();
                 renderDiagramsList();
             }
         };
@@ -1473,16 +1808,24 @@
         // --- LOGICA DE CONTROLES (TEMA Y MALLA) ---
         btnTheme.addEventListener('click', () => {
             appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
-            btnTheme.innerHTML = appState.theme === 'dark' ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
+            const isDark = appState.theme === 'dark';
+            btnTheme.innerHTML = isDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
             lucide.createIcons();
-            
-            const bgColor = appState.theme === 'dark' ? '#050505' : '#ffffff';
-            document.body.style.backgroundColor = bgColor;
-            document.body.className = appState.theme === 'dark' ? '' : 'light-mode';
-            document.getElementById('theme-color-meta').content = bgColor; 
-            
-            textInput.style.caretColor = appState.theme === 'dark' ? 'white' : 'black';
 
+            const bgColor = isDark ? '#050505' : '#f5f5f5';
+            const themeMeta = isDark ? '#050505' : '#f5f5f5';
+            document.body.style.backgroundColor = bgColor;
+            document.body.className = isDark ? '' : 'light-mode';
+            document.getElementById('theme-color-meta').content = themeMeta;
+
+            // Update panel backgrounds dynamically for smooth transition
+            document.querySelectorAll('.panel-content').forEach(panel => {
+                panel.style.transition = 'background 0.3s ease, border-color 0.3s ease';
+            });
+
+            textInput.style.caretColor = isDark ? 'white' : 'black';
+
+            needsRedraw = true;
             redrawAll();
         });
 
@@ -2610,15 +2953,20 @@
 
         canvas.addEventListener('wheel', (e) => {
             e.preventDefault();
+            markInteracting();
             view.scale = Math.max(0.2, Math.min(view.scale * (1 + e.deltaY * -0.001), 5));
             const worldX = (e.clientX - view.x) / view.scale, worldY = (e.clientY - view.y) / view.scale;
             view.x = e.clientX - worldX * view.scale; view.y = e.clientY - worldY * view.scale;
-            redrawAll(); 
+            redrawAll();
         });
 
-        container.addEventListener('mousedown', handlePointerDown); window.addEventListener('mousemove', handlePointerMove); window.addEventListener('mouseup', handlePointerUp);
-        container.addEventListener('touchstart', handlePointerDown, { passive: false }); container.addEventListener('touchmove', handlePointerMove, { passive: false });
-        container.addEventListener('touchend', handlePointerUp); container.addEventListener('touchcancel', handlePointerUp);
+        container.addEventListener('mousedown', (e) => { markInteracting(); handlePointerDown(e); });
+        window.addEventListener('mousemove', (e) => { if (appState.isInteracting) markInteracting(); handlePointerMove(e); });
+        window.addEventListener('mouseup', handlePointerUp);
+        container.addEventListener('touchstart', (e) => { markInteracting(); handlePointerDown(e); }, { passive: false });
+        container.addEventListener('touchmove', (e) => { if (appState.isInteracting) markInteracting(); handlePointerMove(e); }, { passive: false });
+        container.addEventListener('touchend', handlePointerUp);
+        container.addEventListener('touchcancel', handlePointerUp);
 
         // =========================================================
         // --- LOGICA: BRANDING, TARJETA Y MODO STREAMER ---
@@ -2670,12 +3018,11 @@
 
         const socialNetworksList = ['instagram', 'tiktok', 'youtube', 'facebook', 'twitter', 'linkedin', 'whatsapp', 'globe', 'coffee'];
 
-        function loadBrandingConfig() {
+        async function loadBrandingConfig() {
             try {
-                const stored = localStorage.getItem('piz_branding_v6');
+                const stored = await loadConfig('branding_v6');
                 if (stored) {
-                    const parsed = JSON.parse(stored);
-                    // Deep merge para no perder estructura de socials
+                    const parsed = stored;
                     if (parsed.socials) {
                         for (const net in parsed.socials) {
                             if (brandingState.socials[net]) {
@@ -2683,11 +3030,10 @@
                             }
                         }
                     }
-                    // Copiar propiedades simples
                     ['active', 'capsuleInterval', 'avatar', 'name', 'verified', 'role', 'location', 'email', 'phone'].forEach(key => {
                         if (parsed[key] !== undefined) brandingState[key] = parsed[key];
                     });
-                    
+
                     socialNetworksList.forEach(net => {
                         if (!brandingState.socials[net]) {
                             brandingState.socials[net] = { enabled: false, prefix: '', handle: '', logo: '', subs: '' };
@@ -2696,7 +3042,7 @@
                             brandingState.socials[net].subs = '';
                         }
                     });
-                    
+
                     updateBrandingUIFromState();
                     updateBusinessCard();
                     if(brandingState.active) startBrandingLoop();
@@ -2704,8 +3050,8 @@
             } catch(e) {}
         }
 
-        function saveBrandingToMemory() {
-            try { localStorage.setItem('piz_branding_v6', JSON.stringify(brandingState)); } catch(e) {}
+        async function saveBrandingToMemory() {
+            await saveConfig('branding_v6', brandingState);
         }
 
         btnToggleDemoTab.addEventListener('click', (e) => {
@@ -2831,7 +3177,7 @@
             brandingModalOverlay.style.display = 'none';
         };
 
-        window.saveBrandingConfig = function() {
+        window.saveBrandingConfig = async function() {
             brandingState.active = brandMasterToggle.checked;
             brandingState.capsuleInterval = parseInt(brandIntervalInput.value) || 15;
             
@@ -2852,7 +3198,7 @@
                 }
             });
 
-            saveBrandingToMemory();
+            await saveBrandingToMemory();
             buildBrandingPool();
             updateBusinessCard();
             
@@ -2945,10 +3291,17 @@
             setTimeout(() => { cap.classList.remove('show'); }, 6000);
         }
 
-        loadBrandingConfig();
-
-        // Inicializar canvas al tamano correcto al cargar
-        resizeCanvas();
+        // ==========================================
+        // INITIALIZATION WITH INDEXEDDB
+        // ==========================================
+        async function initializeApp() {
+            await initIndexedDB();
+            await loadGalleryFromMemory();
+            await loadDiagramsFromMemory();
+            await loadBrandingConfig();
+            resizeCanvas();
+        }
+        initializeApp();
 
     </script>
 </body>
