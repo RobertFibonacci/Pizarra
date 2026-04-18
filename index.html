@@ -7,7 +7,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#050505" id="theme-color-meta">
     
-    <!-- ETIQUETAS PARA EL ÍCONO DE TU APP -->
     <link rel="icon" type="image/png" href="icono.png">
     <link rel="apple-touch-icon" href="icono.png">
     
@@ -357,14 +356,19 @@
         body.light-mode .lt-name { color: #0f172a; }
         body.light-mode .lt-detail-item { color: #475569; }
         body.light-mode .lt-avatar { border-color: rgba(0,0,0,0.1); }
+        
+        /* --- CSS DE PROTECCIÓN ANTI-DUPLICADOS --- */
+        .pizarra-instance-marker { display: none !important; }
+        body[data-pizarra-initialized="true"] .pizarra-instance-marker { display: block !important; }
 
     </style>
 </head>
 <body>
 
+    <div id="pizarraInstanceMarker" class="pizarra-instance-marker" data-instance-id=""></div>
+
     <div id="toastMsg">Mensaje</div>
 
-    <!-- PESTAÑA SUPERIOR Y TARJETA DE PRESENTACIÓN -->
     <div id="top-demo-tab">
         <div class="demo-tab-header">
             <i data-lucide="monitor-play" style="color: #00ffff; width: 18px; margin-right: 5px;"></i>
@@ -372,16 +376,12 @@
             <button class="demo-tab-toggle" id="btnToggleDemoTab"><i data-lucide="chevron-down"></i></button>
         </div>
         <div class="business-card-content" id="businessCardContent">
-            <!-- Rellenado por JS dinámicamente -->
-        </div>
+            </div>
     </div>
 
-    <!-- CÁPSULA DE BRANDING INDEPENDIENTE -->
     <div id="brandingCapsule" class="branding-capsule">
-        <!-- El contenido se inyecta por JS -->
-    </div>
+        </div>
 
-    <!-- MODAL DE REACCIÓN -->
     <div id="reactionModalOverlay" class="modal-overlay">
         <div class="modal-box">
             <h3>Configurar Animación</h3>
@@ -407,7 +407,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE DIAGRAMAS (REDISEÑADO PARA ARCHIVOS LOCALES) -->
     <div id="diagramsModalOverlay" class="modal-overlay">
         <div class="modal-box"> 
             <h3>Gestor de Pizarras</h3>
@@ -433,7 +432,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE PASOS -->
     <div id="stepModalOverlay" class="modal-overlay">
         <div class="modal-box">
             <h3>Asignar Paso</h3>
@@ -446,15 +444,13 @@
         </div>
     </div>
 
-    <!-- MODAL DE GALERÍA COMPLETA -->
     <div id="fullGalleryModalOverlay" class="modal-overlay">
         <div class="modal-box large">
             <h3 id="fullGalleryTitle">Mi Galería</h3>
             <p style="font-size:12px; color:#aaa; margin:0; text-align:center;">Selecciona para usar o elimina para limpiar espacio.</p>
             
             <div class="full-gallery-grid" id="fullGalleryGrid">
-                <!-- Se llena dinámicamente -->
-            </div>
+                </div>
 
             <div class="modal-btns">
                 <button class="btn-cancel" onclick="closeFullGalleryModal()">Cerrar</button>
@@ -462,7 +458,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE MARCA PERSONAL (BRANDING) V6 -->
     <div id="brandingModalOverlay" class="modal-overlay">
         <div class="modal-box large" style="max-height: 90vh; overflow-y: auto;">
             <h3>Mi Marca Personal</h3>
@@ -508,7 +503,6 @@
             <div>
                 <p style="font-size:11px; color:#aaa; margin:0 0 8px 0;">Redes y Contactos (Sube tu logo y se añadirá a la tarjeta y cápsulas):</p>
                 
-                <!-- Instagram -->
                 <div class="branding-setting-row">
                     <span style="width: 75px; font-size: 12px; color: #fff; font-weight: bold;">Instagram:</span>
                     <input type="checkbox" id="chk_instagram" title="Activar">
@@ -519,7 +513,6 @@
                     <input type="text" id="sub_instagram" placeholder="Subs (Ej: 10K)" style="flex: 0.6;">
                 </div>
 
-                <!-- TikTok -->
                 <div class="branding-setting-row">
                     <span style="width: 75px; font-size: 12px; color: #fff; font-weight: bold;">TikTok:</span>
                     <input type="checkbox" id="chk_tiktok" title="Activar">
@@ -530,7 +523,6 @@
                     <input type="text" id="sub_tiktok" placeholder="Subs" style="flex: 0.6;">
                 </div>
                 
-                <!-- YouTube -->
                 <div class="branding-setting-row">
                     <span style="width: 75px; font-size: 12px; color: #fff; font-weight: bold;">YouTube:</span>
                     <input type="checkbox" id="chk_youtube" title="Activar">
@@ -541,7 +533,6 @@
                     <input type="text" id="sub_youtube" placeholder="Subs" style="flex: 0.6;">
                 </div>
 
-                <!-- Facebook -->
                 <div class="branding-setting-row">
                     <span style="width: 75px; font-size: 12px; color: #fff; font-weight: bold;">Facebook:</span>
                     <input type="checkbox" id="chk_facebook" title="Activar">
@@ -552,7 +543,6 @@
                     <input type="text" id="sub_facebook" placeholder="Seguidores" style="flex: 0.6;">
                 </div>
 
-                <!-- Twitter / X -->
                 <div class="branding-setting-row">
                     <span style="width: 75px; font-size: 12px; color: #fff; font-weight: bold;">Twitter/X:</span>
                     <input type="checkbox" id="chk_twitter" title="Activar">
@@ -563,7 +553,6 @@
                     <input type="text" id="sub_twitter" placeholder="Seguidores" style="flex: 0.6;">
                 </div>
 
-                <!-- LinkedIn -->
                 <div class="branding-setting-row">
                     <span style="width: 75px; font-size: 12px; color: #fff; font-weight: bold;">LinkedIn:</span>
                     <input type="checkbox" id="chk_linkedin" title="Activar">
@@ -574,7 +563,6 @@
                     <input type="text" id="sub_linkedin" placeholder="Conexiones" style="flex: 0.6;">
                 </div>
 
-                <!-- WhatsApp -->
                 <div class="branding-setting-row">
                     <span style="width: 75px; font-size: 12px; color: #fff; font-weight: bold;">WhatsApp:</span>
                     <input type="checkbox" id="chk_whatsapp" title="Activar">
@@ -585,7 +573,6 @@
                     <input type="text" id="sub_whatsapp" placeholder="Extra (opcional)" style="flex: 0.6;">
                 </div>
 
-                <!-- Web -->
                 <div class="branding-setting-row">
                     <span style="width: 75px; font-size: 12px; color: #fff; font-weight: bold;">Pág. Web:</span>
                     <input type="checkbox" id="chk_globe" title="Activar">
@@ -596,7 +583,6 @@
                     <input type="text" id="sub_globe" placeholder="Extra" style="flex: 0.6;">
                 </div>
 
-                <!-- Café / Donaciones -->
                 <div class="branding-setting-row" style="border: 1px solid rgba(255, 153, 0, 0.4);">
                     <span style="width: 75px; font-size: 12px; color: #ff9900; font-weight: bold;">Donaciones:</span>
                     <input type="checkbox" id="chk_coffee" title="Activar">
@@ -636,7 +622,6 @@
 
     <div class="zoom-indicator" id="zoomText">100%</div>
 
-    <!-- PANEL TEXTO ANCLADO ABAJO -->
     <div class="panel-wrapper text-panel" id="panel-text">
         <div class="panel-content">
             <button class="tool-btn" id="tool-text" title="Activar Texto"><i data-lucide="type"></i></button>
@@ -659,7 +644,6 @@
         <button class="toggle-btn" onclick="togglePanel('panel-text')" title="Ocultar Textos"><i data-lucide="chevron-down"></i></button>
     </div>
 
-    <!-- PANEL DERECHO -->
     <div class="panel-wrapper right" id="panel-right">
         <div class="panel-content">
             <button class="tool-btn" id="tool-select" title="Seleccionar/Mover"><i data-lucide="mouse-pointer-2"></i></button>
@@ -699,7 +683,6 @@
             <button class="tool-btn action-btn" id="tool-undo" title="Deshacer"><i data-lucide="undo-2"></i></button>
             <button class="tool-btn action-btn" id="tool-clear" title="Borrar Todo"><i data-lucide="trash-2"></i></button>
 
-            <!-- BOTÓN DE MARCA PERSONAL (BRANDING) -->
             <div style="height: 1px; width: 24px; background: rgba(255,255,255,0.2); margin: 2px 0;"></div>
             <button class="tool-btn action-btn" id="btn-branding" title="Mi Marca Personal" style="color: #00ffff;"><i data-lucide="user"></i></button>
 
@@ -707,7 +690,6 @@
         <button class="toggle-btn" onclick="togglePanel('panel-right')" title="Ocultar Herramientas"><i data-lucide="chevron-right"></i></button>
     </div>
 
-    <!-- PANEL IZQUIERDO REDISEÑADO CON BORRADO RÁPIDO Y VIDEOS -->
     <div class="panel-wrapper left" id="panel-left">
         <div class="panel-content">
             <div style="width: 100%;">
@@ -721,7 +703,6 @@
                 <div id="elementsContainer" class="compact-gallery" style="margin-top: 8px;"></div>
             </div>
 
-            <!-- NUEVO SECTOR: VIDEOS -->
             <div style="width: 100%; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
                 <p class="section-title">Videos</p>
                 <div style="display: flex; gap: 5px; margin-top: 5px;">
@@ -748,6 +729,18 @@
     </div>
 
     <script>
+        // --- ESCUDO ANTI-DUPLICADOS (SINGLETON) ---
+        const INSTANCE_ID = 'pizarra_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        const marker = document.getElementById('pizarraInstanceMarker');
+        const existingInstance = marker.getAttribute('data-instance-id');
+
+        if (existingInstance && existingInstance !== INSTANCE_ID) {
+            document.body.style.display = 'none';
+            throw new Error('INSTANCIA_DUPLICADA_BLOQUEADA');
+        }
+        marker.setAttribute('data-instance-id', INSTANCE_ID);
+        document.body.setAttribute('data-pizarra-initialized', 'true');
+
         lucide.createIcons();
 
         function showMessage(msg, isError = false) {
@@ -875,7 +868,6 @@
             catch(e) { showMessage("Memoria llena. Borra algunas imágenes.", true); }
         }
 
-        // NUEVA LÓGICA DE GUARDADO/CARGA LOCAL EN PC (.pizarra)
         window.downloadPizarra = function() {
             if(appState.paths.length === 0) { showMessage("La pizarra está vacía", true); return; }
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState.paths));
@@ -1297,7 +1289,6 @@
                 animationOffset -= animationSpeed; 
                 if (animationOffset <= -100) animationOffset = 0;
                 
-                // OPTIMIZACIÓN CPU: Solo forzamos redibujado si hay elementos animados vivos
                 const hasAnimatedLines = appState.paths.some(p => p.type === 'arrow');
                 const hasActiveAnims = appState.paths.some(p => p.popAnimTime || p.clickAnimTime);
 
@@ -1313,7 +1304,6 @@
                     needsRedraw = true;
                 }
 
-                // Los videos también necesitan actualización constante si hay alguno en la pantalla
                 const hasVideos = appState.paths.some(p => p.type === 'video');
                 if (hasVideos) needsRedraw = true;
 
@@ -1351,7 +1341,7 @@
             setTimeout(resizeCanvas, 100); 
         });
 
-        // --- LÓGICA DEL GESTOR DE DIAGRAMAS (MODAL) ---
+        // --- LÓGICA DEL GESTOR DE DIAGRAMAS ---
         const diagramsModalOverlay = document.getElementById('diagramsModalOverlay');
         const btnDiagrams = document.getElementById('btn-diagrams');
 
@@ -1399,17 +1389,6 @@
                 savedDiagrams = savedDiagrams.filter(d => d.id !== id);
                 saveDiagramsToMemory();
                 renderDiagramsList();
-            }
-        };
-
-        window.startNewDiagram = function() {
-            if (confirm("¿Crear nuevo diagrama? (Asegúrate de haber guardado el actual)")) {
-                saveHistory();
-                appState.paths = [];
-                clearSelection();
-                redrawAll();
-                closeDiagramsModal();
-                showMessage("Nueva pizarra lista");
             }
         };
 
@@ -1592,14 +1571,12 @@
             }
             appState.isTyping = false; textInput.style.display = 'none'; textInput.value = '';
 
-            // CORRECCIÓN: Al terminar un texto, pasamos a flecha (Select)
             appState.tool = 'select';
             document.querySelectorAll('.tool-btn:not(.action-btn):not(.gallery-thumb):not(.btn-color)').forEach(b => b.classList.remove('active'));
             const selectBtn = document.getElementById('tool-select');
             if (selectBtn) selectBtn.classList.add('active');
             container.className = 'tool-select';
             
-            // Si acabamos de crear texto, lo dejamos seleccionado
             if (appState.paths.length > 0 && appState.paths[appState.paths.length-1].type === 'text') {
                 appState.selectedId = appState.paths[appState.paths.length-1].id;
                 updateFloatingBtnsPosition();
@@ -1686,7 +1663,6 @@
                 ctx.font = `${fSize}px ${font}`; 
                 const maxWidth = shape.width || 300;
                 
-                // OPTIMIZACIÓN CPU: Caché de líneas para evitar recalcular miles de veces
                 if (!shape._cachedLines || shape._cachedText !== shape.text || shape._cachedWidth !== maxWidth || shape._cachedSize !== fSize) {
                     shape._cachedLines = wrapText(ctx, shape.text, maxWidth);
                     shape._cachedText = shape.text;
@@ -2384,7 +2360,6 @@
 
             appState.isInteracting = true;
 
-            // CORRECCIÓN: Modo Smart puro. No selecciona ni muestra menús, solo hace panning o dispara reacciones.
             if (appState.tool === 'smart') {
                 clearSelection(); 
                 const clickedShape = getShapeAt(worldPos.x, worldPos.y);
@@ -2552,19 +2527,18 @@
                     if (appState.snapTargetShape) appState.currentPath.toId = appState.snapTargetShape.id; 
                 }
                 
-                // CORRECCIÓN: Prevención de Figuras Fantasma (Borrar si miden 0px o muy poco)
                 if (['rect', 'circle', 'image', 'video', 'line', 'arrow'].includes(appState.currentPath.type)) {
                     const w = Math.abs(appState.currentPath.endX - appState.currentPath.startX);
                     const h = Math.abs(appState.currentPath.endY - appState.currentPath.startY);
                     
                     if (w < 5 && h < 5 && appState.currentPath.type !== 'line' && appState.currentPath.type !== 'arrow') {
                         appState.currentPath = null; appState.snapTargetShape = null;
-                        redrawAll(); return; // Ignorar clic accidental
+                        redrawAll(); return; 
                     } else if (appState.currentPath.type === 'line' || appState.currentPath.type === 'arrow') {
                         const dist = Math.hypot(appState.currentPath.endX - appState.currentPath.startX, appState.currentPath.endY - appState.currentPath.startY);
                         if (dist < 5 && !appState.currentPath.toId) {
                             appState.currentPath = null; appState.snapTargetShape = null;
-                            redrawAll(); return; // Ignorar flecha sin destino si no se arrastró
+                            redrawAll(); return; 
                         }
                     }
                 }
@@ -2577,7 +2551,6 @@
                 appState.currentPath = null; appState.snapTargetShape = null; 
 
                 if (wasMedia || ['arrow', 'line', 'rect', 'circle'].includes(finishedType)) {
-                    // CORRECCIÓN: Regresamos a Seleccionar en lugar de Smart, para evitar reacciones raras y poder mover la figura
                     appState.tool = 'select';
                     document.querySelectorAll('.tool-btn:not(.action-btn):not(.gallery-thumb):not(.btn-color)').forEach(b => b.classList.remove('active'));
                     const selectBtn = document.getElementById('tool-select');
@@ -2598,7 +2571,7 @@
             view.scale = Math.max(0.2, Math.min(view.scale * (1 + e.deltaY * -0.001), 5));
             const worldX = (e.clientX - view.x) / view.scale, worldY = (e.clientY - view.y) / view.scale;
             view.x = e.clientX - worldX * view.scale; view.y = e.clientY - worldY * view.scale;
-            redrawAll(); // Es importante redibujar al hacer zoom para ver la respuesta inmediata
+            redrawAll(); 
         });
 
         container.addEventListener('mousedown', handlePointerDown); window.addEventListener('mousemove', handlePointerMove); window.addEventListener('mouseup', handlePointerUp);
@@ -2725,7 +2698,6 @@
                 const s = brandingState.socials[net];
                 if (s.enabled && s.handle) {
                     const logoSrc = s.logo ? s.logo : getGenericPlaceholder(); 
-                    // EN LA TARJETA: Solo ponemos el handle (ni prefix ni subs) para que se vea limpio
                     html += `<div class="bc-social-capsule">
                                 <img src="${logoSrc}">
                                 <span>${s.handle}</span>
@@ -2912,7 +2884,6 @@
             } else {
                 let imgHtml = item.logo ? `<img src="${item.logo}" class="logo">` : ``;
                 let pfxHtml = item.prefix ? `<span class="capsule-prefix">${item.prefix}</span>` : ``;
-                // EN LA CÁPSULA: Mostramos todo, incluido el nuevo campo de subs/seguidores
                 let subsHtml = item.subs ? `<span class="capsule-subs">${item.subs}</span>` : ``;
                 cap.innerHTML = `${imgHtml}<div class="capsule-text-col">${pfxHtml}<span class="capsule-handle">${item.text}</span>${subsHtml}</div>`;
             }
@@ -2925,4 +2896,4 @@
 
     </script>
 </body>
-</html
+</html>
