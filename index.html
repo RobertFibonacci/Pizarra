@@ -10,7 +10,6 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Pizarra Pro">
 
-    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
 
     <link rel="icon" type="image/png" href="icono.png">
@@ -56,7 +55,7 @@
         .toggle-btn svg { width: 18px; height: 18px; transition: transform 0.4s ease; }
         .is-collapsed svg { transform: rotate(180deg); }
 
-        .panel-wrapper.text-panel { bottom: 80px; left: 50%; transform: translateX(-50%); flex-direction: column-reverse; }
+        .panel-wrapper.text-panel { bottom: 15px; left: 50%; transform: translateX(-50%); flex-direction: column-reverse; }
         .panel-wrapper.text-panel .panel-content { border-radius: 12px; padding: 8px 15px; display: flex; gap: 15px; align-items: center; }
         .panel-wrapper.text-panel.collapsed .panel-content { transform: translateY(150%); opacity: 0; pointer-events: none; position: absolute; }
 
@@ -72,10 +71,6 @@
         }
         .panel-wrapper.left .panel-content::-webkit-scrollbar { display: none; }
         .panel-wrapper.left.collapsed .panel-content { transform: translateX(-150%); opacity: 0; pointer-events: none; position: absolute; }
-
-        .panel-wrapper.bottom { bottom: 15px; left: 50%; transform: translateX(-50%); flex-direction: column-reverse; }
-        .panel-wrapper.bottom .panel-content { border-radius: 50px; padding: 10px 15px; display: flex; gap: 15px; align-items: center; }
-        .panel-wrapper.bottom.collapsed .panel-content { transform: translateY(150%); opacity: 0; pointer-events: none; position: absolute; }
 
         .tool-btn {
             background: transparent; border: none; color: #888; padding: 6px;
@@ -353,17 +348,17 @@
         .branding-capsule img.logo {
             width: 28px; height: 28px; border-radius: 4px; object-fit: contain; margin: 3px;
         }
-        .capsule-text-col { display: flex; flex-direction: column; line-height: 1.2; }
+        .capsule-text-col { display: flex; flex-direction: column; line-height: 1.1; gap: 3px; }
         .capsule-prefix { font-size: 11px; color: #aaa; }
         .capsule-handle { font-size: 15px; font-weight: bold; }
-        .capsule-subs { font-size: 11px; color: #00ffff; font-weight: bold; margin-top: 2px; }
+        .capsule-subs { font-size: 11px; color: #fff; font-weight: bold; margin-top: 0; }
 
         /* Elementos compartidos Tarjeta */
         .lt-avatar { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); }
         .lt-info { display: flex; flex-direction: column; gap: 4px; }
         .lt-name-row { display: flex; align-items: center; gap: 6px; }
         .lt-name { font-size: 20px; font-weight: bold; color: white; font-family: system-ui; margin:0; line-height: 1; }
-        .lt-verified { width: 18px; height: 18px; fill: #1d9bf0; }
+        .lt-verified { width: 18px; height: 18px; fill: #1d9bf0; flex-shrink: 0; }
         .lt-details { display: grid; grid-template-columns: auto auto; column-gap: 15px; row-gap: 5px; margin-top: 2px;}
         .lt-detail-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #cbd5e1; font-family: system-ui; font-weight: 500;}
         .lt-detail-item svg { width: 14px; height: 14px; opacity: 0.8; }
@@ -515,7 +510,7 @@
 
     <div id="top-demo-tab">
         <div class="demo-tab-header">
-            <i data-lucide="monitor-play" style="color: #00ffff; width: 18px; margin-right: 5px;"></i>
+            <i data-lucide="monitor-play" style="width: 18px; margin-right: 5px; color: #888;"></i>
             <input type="text" class="demo-title-input" id="demoTitleInput" placeholder="Escribe el Titulo de tu Tema...">
             <button class="demo-tab-toggle" id="btnToggleDemoTab"><i data-lucide="chevron-down"></i></button>
         </div>
@@ -559,7 +554,7 @@
             <div style="display:flex; flex-direction: column; gap:15px; margin-top: 15px;">
                 <div style="display:flex; gap:8px;">
                     <input type="text" id="diagramNameInput" placeholder="Nombre de la pizarra..." style="flex:1;">
-                    <button class="btn-save" onclick="saveCurrentDiagram()" style="white-space:nowrap;">Guardar</button>
+                    <button class="btn-save" onclick="saveCurrentDiagram()" style="white-space:nowrap;">Guardar / Actualizar</button>
                 </div>
                 
                 <div id="diagramsListContainer" class="diagram-list"></div>
@@ -639,7 +634,7 @@
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <input type="text" id="brandNameInput" placeholder="Tu Nombre">
                         <label style="display:flex; align-items:center; gap:5px; font-size:12px; cursor:pointer;" title="Mostrar Insignia Azul">
-                            <input type="checkbox" id="brandVerifiedCheck"> <svg style="width:16px; height:16px;" viewBox="0 0 24 24"><path d="M22.5 12.5l-1.58 1.58.23 2.23-2.22.45-1.04 1.99-2.07-.88-1.78 1.39-1.78-1.39-2.07.88-1.04-1.99-2.22-.45.23-2.23L2.5 12.5l1.58-1.58-.23-2.23 2.22-.45 1.04-1.99 2.07.88 1.78-1.39 1.78 1.39 2.07-.88 1.04 1.99 2.22.45-.23 2.23 1.58 1.58z" fill="#1d9bf0"/><path d="M10.5 16.5l-4-4 1.41-1.41L10.5 13.67l7.09-7.09L19 8l-8.5 8.5z" fill="#fff"/></svg>
+                            <input type="checkbox" id="brandVerifiedCheck"> <svg style="width:16px; height:16px; flex-shrink: 0;" viewBox="0 0 24 24"><path d="M22.5 12.5l-1.58 1.58.23 2.23-2.22.45-1.04 1.99-2.07-.88-1.78 1.39-1.78-1.39-2.07.88-1.04-1.99-2.22-.45.23-2.23L2.5 12.5l1.58-1.58-.23-2.23 2.22-.45 1.04-1.99 2.07.88 1.78-1.39 1.78 1.39 2.07-.88 1.04 1.99 2.22.45-.23 2.23 1.58 1.58z" fill="#1d9bf0"/><path d="M10.5 16.5l-4-4 1.41-1.41L10.5 13.67l7.09-7.09L19 8l-8.5 8.5z" fill="#fff"/></svg>
                         </label>
                     </div>
                     <input type="text" id="brandRoleInput" placeholder="Tu Puesto (Ej. Ejecutivo Comercial)">
@@ -757,6 +752,7 @@
         <textarea id="textInput" autocomplete="off" spellcheck="false"></textarea>
         
         <div class="floating-actions" id="floatingActions">
+            <button class="float-btn btn-primary" id="editObjBtn" title="Editar Texto"><i data-lucide="edit-2"></i></button>
             <button class="float-btn btn-color" id="colorizeBtn" title="Pintar con el color activo"><i data-lucide="palette"></i></button>
             <button class="float-btn btn-neon" id="toggleNeonBtn" title="Alternar Efecto Neon"><i data-lucide="zap"></i></button>
             <button class="float-btn btn-primary" id="assignStepBtn" title="Asignar Paso de Presentacion"><i data-lucide="list-ordered"></i></button>
@@ -835,7 +831,7 @@
             <button class="tool-btn action-btn" id="tool-clear" title="Borrar Todo"><i data-lucide="trash-2"></i></button>
 
             <div style="height: 1px; width: 24px; background: rgba(255,255,255,0.2); margin: 2px 0;"></div>
-            <button class="tool-btn action-btn" id="btn-branding" title="Mi Marca Personal" style="color: #00ffff;"><i data-lucide="user"></i></button>
+            <button class="tool-btn action-btn" id="btn-branding" title="Mi Marca Personal"><i data-lucide="user"></i></button>
 
         </div>
         <button class="toggle-btn" onclick="togglePanel('panel-right')" title="Ocultar Herramientas"><i data-lucide="chevron-right"></i></button>
@@ -1035,6 +1031,7 @@
         }
 
         let savedDiagrams = [];
+        let currentDiagramId = null; // ID del diagrama actual para actualizar
         const diagramsListContainer = document.getElementById('diagramsListContainer');
 
         async function saveDiagramsToMemory() {
@@ -1076,6 +1073,7 @@
         const textInput = document.getElementById('textInput');
         
         const floatingActions = document.getElementById('floatingActions');
+        const editObjBtn = document.getElementById('editObjBtn');
         const deleteObjBtn = document.getElementById('deleteObjBtn');
         const reverseFlowBtn = document.getElementById('reverseFlowBtn');
         const configReactionBtn = document.getElementById('configReactionBtn');
@@ -1108,6 +1106,7 @@
             tool: 'draw', color: 'adaptive', isInteracting: false,
             startX: 0, startY: 0, paths: [], currentPath: null,
             isTyping: false, textPos: {x: 0, y: 0}, selectedId: null,
+            editingShapeId: null, // Para saber si estamos editando texto existente
             snapTargetShape: null, 
             currentImageId: null, currentImageData: null,
             currentFont: "'Pacifico', cursive", currentFontSize: 40,
@@ -1191,10 +1190,18 @@
 
         window.downloadPizarra = function() {
             if(appState.paths.length === 0) { showMessage("La pizarra esta vacia", true); return; }
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState.paths));
+            
+            const exportData = {
+                id: currentDiagramId || generateId(),
+                name: document.getElementById('diagramNameInput').value.trim() || 'mi_clase',
+                demoTitle: document.getElementById('demoTitleInput').value.trim(),
+                paths: appState.paths
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData));
             const downloadAnchorNode = document.createElement('a');
             downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "mi_clase.pizarra");
+            downloadAnchorNode.setAttribute("download", (exportData.name) + ".pizarra");
             document.body.appendChild(downloadAnchorNode);
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
@@ -1208,8 +1215,18 @@
             const reader = new FileReader();
             reader.onload = function(evt) {
                 try {
-                    const loadedPaths = JSON.parse(evt.target.result);
-                    appState.paths = loadedPaths;
+                    const loadedData = JSON.parse(evt.target.result);
+                    if (Array.isArray(loadedData)) {
+                        appState.paths = loadedData;
+                        currentDiagramId = null;
+                        document.getElementById('diagramNameInput').value = '';
+                        document.getElementById('demoTitleInput').value = '';
+                    } else {
+                        appState.paths = loadedData.paths || [];
+                        currentDiagramId = loadedData.id || null;
+                        document.getElementById('diagramNameInput').value = loadedData.name || '';
+                        document.getElementById('demoTitleInput').value = loadedData.demoTitle || '';
+                    }
                     saveHistory();
                     clearSelection();
                     redrawAll();
@@ -1224,9 +1241,12 @@
         });
 
         window.startNewDiagram = function() {
-            if (confirm("Borrar todo y empezar una nueva pizarra? (Asegurate de haber descargado si quieres guardarla)")) {
+            if (confirm("¿Borrar todo y empezar una nueva pizarra? (Asegurate de haber descargado si quieres guardarla)")) {
                 saveHistory();
                 appState.paths = [];
+                currentDiagramId = null;
+                document.getElementById('diagramNameInput').value = '';
+                document.getElementById('demoTitleInput').value = '';
                 clearSelection();
                 redrawAll();
                 closeDiagramsModal();
@@ -1730,19 +1750,37 @@
 
         window.saveCurrentDiagram = async function() {
             const name = diagramNameInput.value.trim();
+            const demoTitle = document.getElementById('demoTitleInput').value.trim();
+            
             if (!name) { showMessage("Ponle un nombre al diagrama", true); return; }
             if (appState.paths.length === 0) { showMessage("La pizarra esta vacia", true); return; }
             
+            if (currentDiagramId) {
+                const existingDiag = savedDiagrams.find(d => d.id === currentDiagramId);
+                if (existingDiag) {
+                    existingDiag.name = name;
+                    existingDiag.demoTitle = demoTitle;
+                    existingDiag.paths = JSON.parse(JSON.stringify(appState.paths));
+                    existingDiag.date = new Date().toLocaleDateString();
+                    await saveDiagramsToMemory();
+                    renderDiagramsList();
+                    showMessage("Avance guardado");
+                    return;
+                }
+            }
+
+            const newId = generateId();
             const newDiagram = {
-                id: generateId(),
+                id: newId,
                 name: name,
+                demoTitle: demoTitle,
                 paths: JSON.parse(JSON.stringify(appState.paths)),
                 date: new Date().toLocaleDateString()
             };
             
+            currentDiagramId = newId;
             savedDiagrams.push(newDiagram);
             await saveDiagramsToMemory();
-            diagramNameInput.value = '';
             renderDiagramsList();
             showMessage("Diagrama guardado");
         };
@@ -1751,6 +1789,9 @@
             const diagram = savedDiagrams.find(d => d.id === id);
             if (diagram) {
                 appState.paths = JSON.parse(JSON.stringify(diagram.paths));
+                currentDiagramId = id;
+                diagramNameInput.value = diagram.name;
+                document.getElementById('demoTitleInput').value = diagram.demoTitle || '';
                 saveHistory();
                 clearSelection();
                 redrawAll();
@@ -1762,6 +1803,7 @@
         window.deleteDiagram = async function(id) {
             if (confirm("Eliminar este diagrama permanentemente?")) {
                 savedDiagrams = savedDiagrams.filter(d => d.id !== id);
+                if (currentDiagramId === id) currentDiagramId = null;
                 await saveDiagramsToMemory();
                 renderDiagramsList();
             }
@@ -1945,16 +1987,39 @@
         // --- SISTEMA DE TEXTO MULTILINEA Y CAJAS ---
         function finalizeText() {
             if (!appState.isTyping) return;
+            saveHistory();
+            
             if (textInput.value.trim() !== '') {
-                saveHistory();
-                appState.paths.push({ 
-                    id: generateId(), type: 'text', color: appState.color, 
-                    text: textInput.value, x: appState.textPos.x, y: appState.textPos.y,
-                    font: appState.currentFont, fontSize: appState.currentFontSize, 
-                    isNeon: false, width: appState.currentTextWidth || 300
-                });
+                if (appState.editingShapeId) {
+                    const shape = appState.paths.find(p => p.id === appState.editingShapeId);
+                    if (shape) {
+                        shape.text = textInput.value;
+                        shape.font = appState.currentFont;
+                        shape.fontSize = appState.currentFontSize;
+                        shape.width = appState.currentTextWidth || 300;
+                        shape._cachedLines = null;
+                        delete shape._hiddenWhileEditing;
+                    }
+                } else {
+                    appState.paths.push({ 
+                        id: generateId(), type: 'text', color: appState.color, 
+                        text: textInput.value, x: appState.textPos.x, y: appState.textPos.y,
+                        font: appState.currentFont, fontSize: appState.currentFontSize, 
+                        isNeon: false, width: appState.currentTextWidth || 300
+                    });
+                }
+            } else {
+                if (appState.editingShapeId) {
+                    appState.paths = appState.paths.filter(p => p.id !== appState.editingShapeId);
+                }
             }
-            appState.isTyping = false; textInput.style.display = 'none'; textInput.value = '';
+
+            appState.paths.forEach(p => { if (p.type === 'text') delete p._hiddenWhileEditing; });
+
+            appState.isTyping = false;
+            appState.editingShapeId = null;
+            textInput.style.display = 'none'; 
+            textInput.value = '';
 
             appState.tool = 'select';
             document.querySelectorAll('.tool-btn:not(.action-btn):not(.gallery-thumb):not(.btn-color)').forEach(b => b.classList.remove('active'));
@@ -1962,10 +2027,11 @@
             if (selectBtn) selectBtn.classList.add('active');
             container.className = 'tool-select';
             
-            if (appState.paths.length > 0 && appState.paths[appState.paths.length-1].type === 'text') {
+            if (appState.paths.length > 0 && appState.paths[appState.paths.length-1].type === 'text' && !appState.editingShapeId) {
                 appState.selectedId = appState.paths[appState.paths.length-1].id;
-                updateFloatingBtnsPosition();
             }
+            
+            updateFloatingBtnsPosition();
             redrawAll();
         }
 
@@ -2187,7 +2253,7 @@
                 
                 if (appState.isTyping && toolId !== 'text') finalizeText();
                 if (toolId === 'clear') {
-                    if (confirm("Borrar todo?")) { saveHistory(); appState.paths = []; clearSelection(); redrawAll(); }
+                    if (confirm("Borrar todo?")) { saveHistory(); appState.paths = []; currentDiagramId = null; clearSelection(); redrawAll(); }
                     return;
                 }
                 
@@ -2207,6 +2273,38 @@
                 
                 updateTextPanelVisibility();
             });
+        });
+
+        editObjBtn.addEventListener('click', () => {
+            if (appState.selectedId) {
+                const shape = appState.paths.find(p => p.id === appState.selectedId);
+                if (shape && shape.type === 'text') {
+                    appState.editingShapeId = shape.id;
+                    appState.textPos = { x: shape.x, y: shape.y };
+                    appState.isTyping = true;
+                    appState.currentFont = shape.font || "'Pacifico', cursive";
+                    appState.currentFontSize = shape.fontSize || 40;
+                    appState.currentTextWidth = shape.width || 300;
+
+                    textInput.style.display = 'block';
+                    const screenPos = worldToScreen(shape.x, shape.y);
+                    textInput.style.left = screenPos.x + 'px';
+                    textInput.style.top = screenPos.y + 'px';
+                    textInput.style.fontFamily = appState.currentFont;
+                    textInput.style.fontSize = (appState.currentFontSize * view.scale) + 'px';
+                    textInput.style.width = (appState.currentTextWidth * view.scale) + 'px';
+                    textInput.value = shape.text;
+
+                    shape._hiddenWhileEditing = true;
+                    redrawAll();
+
+                    setTimeout(() => {
+                        textInput.focus();
+                        textInput.style.height = 'auto';
+                        textInput.style.height = textInput.scrollHeight + 'px';
+                    }, 50);
+                }
+            }
         });
 
         copyObjBtn.addEventListener('click', () => {
@@ -2301,6 +2399,7 @@
             floatingActions.style.left = screenPos.x + 'px'; 
             floatingActions.style.top = (screenPos.y - 15) + 'px';
             
+            editObjBtn.style.display = shape.type === 'text' ? 'flex' : 'none';
             reverseFlowBtn.style.display = shape.type === 'arrow' ? 'flex' : 'none';
             configReactionBtn.style.display = (shape.type !== 'arrow' && shape.type !== 'line') ? 'flex' : 'none';
             copyObjBtn.style.display = 'flex';
@@ -2434,6 +2533,12 @@
 
         function drawShape(ctxToUse, shape) {
             ctxToUse.save();
+            
+            if (shape.type === 'text' && shape._hiddenWhileEditing) {
+                ctxToUse.restore();
+                return;
+            }
+
             const actualColor = getActualColor(shape.color);
             
             let isHighlighted = false;
