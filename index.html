@@ -740,6 +740,21 @@
                 </div>
             </div>
 
+            <!-- NUEVA SECCIÓN DE EXPORTACIÓN / IMPORTACIÓN DE PERFIL -->
+            <div style="border-top: 1px solid #333; padding-top: 15px; margin-top: 10px;">
+                <p style="font-size:11px; color:#aaa; margin:0 0 8px 0; text-align: center;">Compartir Perfil y Galería (Exportar/Importar):</p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-action" onclick="exportFullProfile()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        <i data-lucide="download"></i> Exportar Perfil
+                    </button>
+                    <input type="file" id="importProfileInput" accept=".pizarraperfil,.json" style="display:none;">
+                    <button class="btn-action" onclick="document.getElementById('importProfileInput').click()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        <i data-lucide="upload"></i> Importar Perfil
+                    </button>
+                </div>
+            </div>
+            <!-- FIN NUEVA SECCIÓN -->
+
             <div class="modal-btns">
                 <button class="btn-cancel" onclick="closeBrandingModal()">Cerrar</button>
                 <button class="btn-save" onclick="saveBrandingConfig()">Guardar y Actualizar</button>
@@ -3395,6 +3410,89 @@
             cap.classList.add('show');
             setTimeout(() => { cap.classList.remove('show'); }, 6000);
         }
+
+        // ==========================================
+        // --- EXPORTAR E IMPORTAR PERFIL COMPLETO ---
+        // ==========================================
+        window.exportFullProfile = async function() {
+            try {
+                // Preparamos un objeto con todo el estado del perfil y galerías
+                const profileData = {
+                    type: "PizarraProfileV1",
+                    branding: brandingState,
+                    gallery: {
+                        elements: savedElements,
+                        videos: savedVideos,
+                        reactions: savedReactions
+                    }
+                };
+
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(profileData));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                
+                // Nombre del archivo basado en el nombre del usuario o genérico
+                const fileName = (brandingState.name ? brandingState.name.replace(/\s+/g, '_') : 'MiPerfil') + ".pizarraperfil";
+                downloadAnchorNode.setAttribute("download", fileName);
+                
+                document.body.appendChild(downloadAnchorNode);
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
+                
+                showMessage("Perfil y galería exportados con éxito");
+            } catch (e) {
+                showMessage("Error al exportar el perfil", true);
+            }
+        };
+
+        document.getElementById('importProfileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            
+            reader.onload = async function(evt) {
+                try {
+                    const loadedData = JSON.parse(evt.target.result);
+                    
+                    if (loadedData.type === "PizarraProfileV1") {
+                        // 1. Cargar la Marca Personal
+                        if (loadedData.branding) {
+                            brandingState = Object.assign(brandingState, loadedData.branding);
+                            await saveBrandingToMemory();
+                            updateBrandingUIFromState();
+                            updateBusinessCard();
+                            buildBrandingPool();
+                        }
+
+                        // 2. Cargar las Galerías
+                        if (loadedData.gallery) {
+                            // Concatenamos las existentes con las importadas
+                            if (loadedData.gallery.elements) savedElements = [...savedElements, ...loadedData.gallery.elements];
+                            if (loadedData.gallery.videos) savedVideos = [...savedVideos, ...loadedData.gallery.videos];
+                            if (loadedData.gallery.reactions) savedReactions = [...savedReactions, ...loadedData.gallery.reactions];
+
+                            // Limpiamos posibles duplicados (archivos con el mismo ID)
+                            savedElements = savedElements.filter((v,i,a) => a.findIndex(v2 => (v2.id === v.id)) === i);
+                            savedVideos = savedVideos.filter((v,i,a) => a.findIndex(v2 => (v2.id === v.id)) === i);
+                            savedReactions = savedReactions.filter((v,i,a) => a.findIndex(v2 => (v2.id === v.id)) === i);
+
+                            await saveGalleryToMemory();
+                            await saveVideosToMemory();
+                            renderGalleryUI();
+                        }
+
+                        showMessage("Perfil y galería importados con éxito");
+                        closeBrandingModal();
+                    } else {
+                        showMessage("El archivo seleccionado no es un perfil válido.", true);
+                    }
+                } catch(err) {
+                    showMessage("Error al leer el archivo del perfil", true);
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = ''; // Resetear el input
+        });
 
         // ==========================================
         // INITIALIZATION WITH INDEXEDDB
