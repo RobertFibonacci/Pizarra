@@ -158,6 +158,15 @@
             color: #aaa; padding: 5px 10px; border-radius: 6px; font-size: 12px; pointer-events: none; z-index: 5;
         }
 
+        /* --- MEDIDOR DE PROGRESO DE TAREAS --- */
+        #progressTracker {
+            position: absolute; top: 20px; right: 20px; background: rgba(20, 20, 20, 0.85);
+            border: 1px solid rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px;
+            color: #fff; font-family: system-ui; font-size: 14px; font-weight: bold;
+            display: none; z-index: 5; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px); align-items: center; gap: 10px;
+        }
+
         #textInput {
             position: absolute; display: none; background: transparent;
             border: 1px dashed rgba(255,255,255,0.5); color: transparent;
@@ -363,6 +372,23 @@
         .lt-detail-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #cbd5e1; font-family: system-ui; font-weight: 500;}
         .lt-detail-item svg { width: 14px; height: 14px; opacity: 0.8; }
 
+        /* ====== SOLUCION MÓVILES (Tarjetas no amontonadas) ====== */
+        @media (max-width: 600px) {
+            .lt-details { 
+                grid-template-columns: 1fr; /* Una sola columna en móvil */
+                row-gap: 8px; 
+            }
+            .bc-socials-grid { 
+                flex-direction: column; 
+                align-items: stretch; 
+            }
+            .bc-social-capsule { 
+                width: auto; 
+                justify-content: flex-start; 
+            }
+        }
+        /* ======================================================== */
+
         body.light-mode .lt-name { color: #0f172a; }
         body.light-mode .lt-detail-item { color: #475569; }
         body.light-mode .lt-avatar { border-color: rgba(0,0,0,0.1); }
@@ -434,6 +460,7 @@
         /* Text controls */
         body.light-mode .text-controls select { background: #fff; color: #111; border-color: #bbb; }
         body.light-mode .size-control { color: #555; }
+        body.light-mode #progressTracker { background: rgba(240, 240, 240, 0.95); color: #333; border-color: rgba(0,0,0,0.1); }
 
         /* Text input */
         body.light-mode #textInput { border-color: rgba(0, 0, 0, 0.3); caret-color: black; }
@@ -516,6 +543,15 @@
         </div>
         <div class="business-card-content" id="businessCardContent">
             </div>
+    </div>
+
+    <!-- UI MEDIDOR DE PROGRESO DE TAREAS (NUEVO) -->
+    <div id="progressTracker">
+        <div style="flex:1;">Progreso</div>
+        <div id="progressText">0%</div>
+        <div style="width: 100px; height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden;">
+            <div id="progressBarFill" style="width: 0%; height: 100%; background: #00ffff; transition: width 0.3s ease;"></div>
+        </div>
     </div>
 
     <div id="brandingCapsule" class="branding-capsule">
@@ -789,6 +825,14 @@
             <button class="tool-btn" id="tool-text" title="Activar Texto"><i data-lucide="type"></i></button>
             <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2);"></div>
             <div class="text-controls">
+                
+                <!-- NUEVO: Controles de Alineación -->
+                <div style="display: flex; gap: 5px; margin-right: 10px;" id="textAlignControls">
+                    <button class="tool-btn action-btn active" data-align="left" title="Izquierda"><i data-lucide="align-left"></i></button>
+                    <button class="tool-btn action-btn" data-align="center" title="Centro"><i data-lucide="align-center"></i></button>
+                    <button class="tool-btn action-btn" data-align="right" title="Derecha"><i data-lucide="align-right"></i></button>
+                </div>
+
                 <select id="fontFamilySelect" title="Tipografia">
                     <option value="'Pacifico', cursive" style="font-family: 'Pacifico', cursive;">Letra Neon</option>
                     <option value="system-ui, sans-serif" style="font-family: system-ui, sans-serif;">Nativa Limpia</option>
@@ -800,6 +844,8 @@
                 <div class="size-control">
                     <label for="fontSizeSlider">Tamano</label>
                     <input type="range" id="fontSizeSlider" min="10" max="150" value="40">
+                    <!-- NUEVO: Etiqueta numérica del tamaño -->
+                    <span id="fontSizeDisplay" style="width: 30px; text-align: right;">40</span>
                 </div>
             </div>
         </div>
@@ -818,6 +864,8 @@
             <button class="tool-btn" id="tool-arrow" title="Flujo Dinamico"><i data-lucide="git-merge"></i></button>
             <button class="tool-btn" id="tool-rect" title="Rectangulo"><i data-lucide="square"></i></button>
             <button class="tool-btn" id="tool-circle" title="Circulo"><i data-lucide="circle"></i></button>
+            <!-- NUEVA HERRAMIENTA: CASILLA DE TAREA -->
+            <button class="tool-btn" id="tool-checkbox" title="Añadir Tarea (Casilla de progreso)"><i data-lucide="check-square"></i></button>
             
             <div style="height: 1px; width: 24px; background: rgba(255,255,255,0.2); margin: 2px 0;"></div>
             
@@ -1101,6 +1149,7 @@
         
         const fontFamilySelect = document.getElementById('fontFamilySelect');
         const fontSizeSlider = document.getElementById('fontSizeSlider');
+        const fontSizeDisplay = document.getElementById('fontSizeDisplay');
         
         const elementsContainer = document.getElementById('elementsContainer');
         const videosContainer = document.getElementById('videosContainer');
@@ -1125,6 +1174,7 @@
             snapTargetShape: null, 
             currentImageId: null, currentImageData: null,
             currentFont: "'Pacifico', cursive", currentFontSize: 40,
+            textAlign: 'left', // Nueva propiedad
             theme: 'dark', 
             showGrid: true,
             isPanning: false,
@@ -1164,6 +1214,52 @@
         window.addEventListener('touchstart', (e) => {
             if (!e.target.closest('.color-picker-container')) {
                 colorFlyout.classList.remove('open');
+            }
+        });
+
+        // --- MANEJADORES DE NUEVOS CONTROLES DE TEXTO (ALINEACION Y TAMAÑO) ---
+        document.querySelectorAll('#textAlignControls .tool-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('#textAlignControls .tool-btn').forEach(b => b.classList.remove('active'));
+                const align = e.currentTarget.getAttribute('data-align');
+                e.currentTarget.classList.add('active');
+                appState.textAlign = align;
+
+                if (appState.isTyping) {
+                    textInput.style.textAlign = align;
+                    redrawAll();
+                }
+
+                if (appState.selectedId) {
+                    const shape = appState.paths.find(p => p.id === appState.selectedId);
+                    if (shape && shape.type === 'text') {
+                        saveHistory();
+                        shape.align = align;
+                        shape._cachedLines = null; // forzar recalculado
+                        redrawAll();
+                    }
+                }
+            });
+        });
+
+        fontSizeSlider.addEventListener('input', (e) => {
+            appState.currentFontSize = parseInt(e.target.value);
+            fontSizeDisplay.innerText = appState.currentFontSize; // Actualizar UI numérico
+
+            if (appState.isTyping) { 
+                textInput.style.fontSize = (appState.currentFontSize * view.scale) + 'px'; 
+                textInput.style.height = 'auto';
+                textInput.style.height = textInput.scrollHeight + 'px';
+                redrawAll(); 
+            }
+            if (appState.selectedId) {
+                const shape = appState.paths.find(p => p.id === appState.selectedId);
+                if (shape && shape.type === 'text') { 
+                    saveHistory(); 
+                    shape.fontSize = appState.currentFontSize; 
+                    shape._cachedLines = null; 
+                    redrawAll(); 
+                }
             }
         });
 
@@ -1937,7 +2033,7 @@
         toggleNeonBtn.addEventListener('click', () => {
             if (appState.selectedId) {
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
-                if (shape && shape.type !== 'image' && shape.type !== 'video') {
+                if (shape && shape.type !== 'image' && shape.type !== 'video' && shape.type !== 'checkbox') {
                     saveHistory();
                     shape.isNeon = !shape.isNeon;
                     updateFloatingBtnsPosition();
@@ -2011,8 +2107,11 @@
                         shape.text = textInput.value;
                         shape.font = appState.currentFont;
                         shape.fontSize = appState.currentFontSize;
-                        shape.width = appState.currentTextWidth || 300;
-                        shape._cachedLines = null;
+                        if(shape.type === 'text') {
+                            shape.width = appState.currentTextWidth || 300;
+                            shape.align = appState.textAlign || 'left';
+                            shape._cachedLines = null;
+                        }
                         delete shape._hiddenWhileEditing;
                     }
                 } else {
@@ -2020,7 +2119,8 @@
                         id: generateId(), type: 'text', color: appState.color, 
                         text: textInput.value, x: appState.textPos.x, y: appState.textPos.y,
                         font: appState.currentFont, fontSize: appState.currentFontSize, 
-                        isNeon: false, width: appState.currentTextWidth || 300
+                        isNeon: false, width: appState.currentTextWidth || 300,
+                        align: appState.textAlign || 'left'
                     });
                 }
             } else {
@@ -2029,7 +2129,7 @@
                 }
             }
 
-            appState.paths.forEach(p => { if (p.type === 'text') delete p._hiddenWhileEditing; });
+            appState.paths.forEach(p => { if (p.type === 'text' || p.type === 'checkbox') delete p._hiddenWhileEditing; });
 
             appState.isTyping = false;
             appState.editingShapeId = null;
@@ -2042,7 +2142,7 @@
             if (selectBtn) selectBtn.classList.add('active');
             container.className = 'tool-select';
             
-            if (appState.paths.length > 0 && appState.paths[appState.paths.length-1].type === 'text' && !appState.editingShapeId) {
+            if (appState.paths.length > 0 && (appState.paths[appState.paths.length-1].type === 'text' || appState.paths[appState.paths.length-1].type === 'checkbox') && !appState.editingShapeId) {
                 appState.selectedId = appState.paths[appState.paths.length-1].id;
             }
             
@@ -2055,21 +2155,7 @@
             if (appState.isTyping) { textInput.style.fontFamily = appState.currentFont; redrawAll(); }
             if (appState.selectedId) {
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
-                if (shape && shape.type === 'text') { saveHistory(); shape.font = appState.currentFont; shape._cachedLines = null; redrawAll(); }
-            }
-        });
-
-        fontSizeSlider.addEventListener('input', (e) => {
-            appState.currentFontSize = parseInt(e.target.value);
-            if (appState.isTyping) { 
-                textInput.style.fontSize = (appState.currentFontSize * view.scale) + 'px'; 
-                textInput.style.height = 'auto';
-                textInput.style.height = textInput.scrollHeight + 'px';
-                redrawAll(); 
-            }
-            if (appState.selectedId) {
-                const shape = appState.paths.find(p => p.id === appState.selectedId);
-                if (shape && shape.type === 'text') { saveHistory(); shape.fontSize = appState.currentFontSize; shape._cachedLines = null; redrawAll(); }
+                if (shape && (shape.type === 'text' || shape.type === 'checkbox')) { saveHistory(); shape.font = appState.currentFont; shape._cachedLines = null; redrawAll(); }
             }
         });
 
@@ -2078,12 +2164,26 @@
             if (appState.tool === 'text') showPanel = true;
             if (appState.tool === 'select' && appState.selectedId) {
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
-                if (shape && shape.type === 'text') {
+                if (shape && (shape.type === 'text' || shape.type === 'checkbox')) {
                     showPanel = true;
                     fontFamilySelect.value = shape.font || "'Pacifico', cursive";
                     fontSizeSlider.value = shape.fontSize || 40;
+                    fontSizeDisplay.innerText = shape.fontSize || 40; // update val
                     appState.currentFont = shape.font || "'Pacifico', cursive";
                     appState.currentFontSize = shape.fontSize || 40;
+                    
+                    if (shape.type === 'text') {
+                        document.getElementById('textAlignControls').style.display = 'flex';
+                        if (shape.align) {
+                            document.querySelectorAll('#textAlignControls .tool-btn').forEach(b => {
+                                b.classList.remove('active');
+                                if (b.getAttribute('data-align') === shape.align) b.classList.add('active');
+                            });
+                            appState.textAlign = shape.align;
+                        }
+                    } else {
+                        document.getElementById('textAlignControls').style.display = 'none';
+                    }
                 }
             }
             const topPanel = document.getElementById('panel-text');
@@ -2141,6 +2241,15 @@
                 maxX = shape.x + maxWidth; 
                 minY = shape.y; 
                 maxY = shape.y + (lines.length * fSize * 1.2); 
+            } else if (shape.type === 'checkbox') {
+                const fSize = shape.fontSize || 40;
+                ctx.font = `${fSize}px ${shape.font || "'Pacifico', cursive"}`;
+                const textWidth = ctx.measureText(shape.text).width;
+                const boxSize = fSize * 0.8;
+                minX = shape.x;
+                maxX = shape.x + boxSize + (15 / view.scale) + textWidth;
+                minY = shape.y;
+                maxY = shape.y + Math.max(boxSize, fSize);
             } else if (shape.type === 'circle') {
                 const r = Math.hypot(shape.endX - shape.startX, shape.endY - shape.startY);
                 minX = shape.startX - r; maxX = shape.startX + r; minY = shape.startY - r; maxY = shape.startY + r;
@@ -2187,7 +2296,7 @@
                 const shape = appState.paths[i];
                 if (shape.id === ignoreId) continue;
                 
-                if (['rect', 'circle', 'text', 'image', 'video'].includes(shape.type)) {
+                if (['rect', 'circle', 'text', 'image', 'video', 'checkbox'].includes(shape.type)) {
                      const box = getBoundingBox(shape);
                      const magnetism = 40 / view.scale;
                      if (x >= box.minX - magnetism && x <= box.maxX + magnetism && y >= box.minY - magnetism && y <= box.maxY + magnetism) return shape;
@@ -2238,7 +2347,7 @@
 
         function moveShape(shape, dx, dy) {
             if (shape.type === 'draw') { shape.points.forEach(p => { p.x += dx; p.y += dy; }); }
-            else if (shape.type === 'text') { shape.x += dx; shape.y += dy; }
+            else if (shape.type === 'text' || shape.type === 'checkbox') { shape.x += dx; shape.y += dy; }
             else { shape.startX += dx; shape.startY += dy; shape.endX += dx; shape.endY += dy; }
         }
 
@@ -2260,6 +2369,9 @@
         document.querySelectorAll('.tool-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 if(e.currentTarget.classList.contains('gallery-thumb') || e.currentTarget.classList.contains('upload-btn')) return;
+                
+                // Ignoramos si damos click a los controles de texto de alineación aquí (se manejan arriba)
+                if(e.currentTarget.parentElement.id === 'textAlignControls') return;
 
                 const toolId = e.currentTarget.id.replace('tool-', '');
 
@@ -2282,7 +2394,7 @@
                 
                 container.className = '';
                 if (toolId === 'smart') container.classList.add('tool-smart');
-                if (toolId === 'text') container.classList.add('tool-text');
+                if (toolId === 'text' || toolId === 'checkbox') container.classList.add('tool-text');
                 if (toolId === 'select') container.classList.add('tool-select');
                 if (toolId !== 'select' && toolId !== 'smart') clearSelection();
                 
@@ -2300,6 +2412,7 @@
                     appState.currentFont = shape.font || "'Pacifico', cursive";
                     appState.currentFontSize = shape.fontSize || 40;
                     appState.currentTextWidth = shape.width || 300;
+                    appState.textAlign = shape.align || 'left';
 
                     textInput.style.display = 'block';
                     const screenPos = worldToScreen(shape.x, shape.y);
@@ -2308,6 +2421,35 @@
                     textInput.style.fontFamily = appState.currentFont;
                     textInput.style.fontSize = (appState.currentFontSize * view.scale) + 'px';
                     textInput.style.width = (appState.currentTextWidth * view.scale) + 'px';
+                    textInput.style.textAlign = appState.textAlign;
+                    textInput.value = shape.text;
+
+                    shape._hiddenWhileEditing = true;
+                    redrawAll();
+
+                    setTimeout(() => {
+                        textInput.focus();
+                        textInput.style.height = 'auto';
+                        textInput.style.height = textInput.scrollHeight + 'px';
+                    }, 50);
+                } else if (shape && shape.type === 'checkbox') {
+                    appState.editingShapeId = shape.id;
+                    appState.isTyping = true;
+                    appState.currentFont = shape.font || "'Pacifico', cursive";
+                    appState.currentFontSize = shape.fontSize || 40;
+                    
+                    const boxSize = appState.currentFontSize * 0.8;
+                    const spacing = 15 / view.scale;
+
+                    textInput.style.display = 'block';
+                    // Editamos justo al lado de la cajita del checkbox
+                    const screenPos = worldToScreen(shape.x + boxSize + spacing, shape.y);
+                    textInput.style.left = screenPos.x + 'px';
+                    textInput.style.top = screenPos.y + 'px';
+                    textInput.style.fontFamily = appState.currentFont;
+                    textInput.style.fontSize = (appState.currentFontSize * view.scale) + 'px';
+                    textInput.style.width = '300px'; 
+                    textInput.style.textAlign = 'left';
                     textInput.value = shape.text;
 
                     shape._hiddenWhileEditing = true;
@@ -2331,7 +2473,7 @@
                     clone.id = generateId(); 
                     
                     const offset = 30 / view.scale;
-                    if (clone.type === 'text') {
+                    if (clone.type === 'text' || clone.type === 'checkbox') {
                         clone.x += offset; clone.y += offset;
                     } else if (clone.type === 'draw') {
                         clone.points.forEach(pt => { pt.x += offset; pt.y += offset; });
@@ -2400,9 +2542,10 @@
             const shape = appState.paths.find(p => p.id === appState.selectedId);
             if (!shape) return;
             
-            if (shape.type === 'text') {
+            if (shape.type === 'text' || shape.type === 'checkbox') {
                 fontFamilySelect.value = shape.font || "'Pacifico', cursive";
                 fontSizeSlider.value = shape.fontSize || 40;
+                fontSizeDisplay.innerText = shape.fontSize || 40;
                 appState.currentFont = shape.font || "'Pacifico', cursive";
                 appState.currentFontSize = shape.fontSize || 40;
             }
@@ -2414,9 +2557,9 @@
             floatingActions.style.left = screenPos.x + 'px'; 
             floatingActions.style.top = (screenPos.y - 15) + 'px';
             
-            editObjBtn.style.display = shape.type === 'text' ? 'flex' : 'none';
+            editObjBtn.style.display = (shape.type === 'text' || shape.type === 'checkbox') ? 'flex' : 'none';
             reverseFlowBtn.style.display = shape.type === 'arrow' ? 'flex' : 'none';
-            configReactionBtn.style.display = (shape.type !== 'arrow' && shape.type !== 'line') ? 'flex' : 'none';
+            configReactionBtn.style.display = (shape.type !== 'arrow' && shape.type !== 'line' && shape.type !== 'checkbox') ? 'flex' : 'none';
             copyObjBtn.style.display = 'flex';
             
             swapObjBtn.style.display = (shape.type === 'video' || shape.type === 'image') ? 'flex' : 'none';
@@ -2426,7 +2569,7 @@
             if (shape.type === 'image' && shape.colorize) colorizeBtn.classList.add('active'); 
             else colorizeBtn.classList.remove('active');
 
-            toggleNeonBtn.style.display = (shape.type === 'image' || shape.type === 'video') ? 'none' : 'flex';
+            toggleNeonBtn.style.display = (shape.type === 'image' || shape.type === 'video' || shape.type === 'checkbox') ? 'none' : 'flex';
             if (shape.isNeon) toggleNeonBtn.classList.add('active');
             else toggleNeonBtn.classList.remove('active');
         }
@@ -2449,6 +2592,7 @@
             textInput.style.fontSize = (appState.currentFontSize * view.scale) + 'px';
             textInput.style.lineHeight = '1.2';
             textInput.style.width = (appState.currentTextWidth * view.scale) + 'px';
+            textInput.style.textAlign = appState.textAlign;
             
             textInput.value = ''; 
             textInput.style.height = 'auto'; 
@@ -2522,34 +2666,41 @@
             }
         }
 
-        function drawTextElement(ctxToUse, text, x, y, color, font = "'Pacifico', cursive", size = 40, isNeon = false, isHighlighted = false, maxWidth = 300) {
+        function drawTextElement(ctxToUse, text, x, y, color, font = "'Pacifico', cursive", size = 40, isNeon = false, isHighlighted = false, maxWidth = 300, align = 'left') {
             const actualColor = getActualColor(color);
             ctxToUse.font = `${size}px ${font}`; ctxToUse.textBaseline = 'top';
             
             const lines = wrapText(ctxToUse, text, maxWidth);
             const lineHeight = size * 1.2;
             
+            let renderX = x;
+            if (align === 'center') { ctxToUse.textAlign = 'center'; renderX = x + maxWidth / 2; }
+            else if (align === 'right') { ctxToUse.textAlign = 'right'; renderX = x + maxWidth; }
+            else { ctxToUse.textAlign = 'left'; renderX = x; }
+            
             if (isNeon || isHighlighted) {
                 const glowColor = (actualColor === '#000000' || actualColor === '#111111') && appState.theme === 'dark' ? '#ffffff' : actualColor;
                 ctxToUse.shadowBlur = isHighlighted ? (20 / view.scale) : (10 / view.scale); 
                 ctxToUse.shadowColor = glowColor; 
                 ctxToUse.fillStyle = actualColor;
-                lines.forEach((line, i) => ctxToUse.fillText(line, x, y + (i * lineHeight)));
+                lines.forEach((line, i) => ctxToUse.fillText(line, renderX, y + (i * lineHeight)));
                 
                 ctxToUse.shadowBlur = 0; 
                 ctxToUse.fillStyle = appState.theme === 'dark' ? '#ffffff' : '#111111'; 
-                lines.forEach((line, i) => ctxToUse.fillText(line, x, y + (i * lineHeight)));
+                lines.forEach((line, i) => ctxToUse.fillText(line, renderX, y + (i * lineHeight)));
             } else {
                 ctxToUse.shadowBlur = 0;
                 ctxToUse.fillStyle = actualColor;
-                lines.forEach((line, i) => ctxToUse.fillText(line, x, y + (i * lineHeight)));
+                lines.forEach((line, i) => ctxToUse.fillText(line, renderX, y + (i * lineHeight)));
             }
+            // Restaurar a la normalidad para el resto
+            ctxToUse.textAlign = 'left';
         }
 
         function drawShape(ctxToUse, shape) {
             ctxToUse.save();
             
-            if (shape.type === 'text' && shape._hiddenWhileEditing) {
+            if ((shape.type === 'text' || shape.type === 'checkbox') && shape._hiddenWhileEditing) {
                 ctxToUse.restore();
                 return;
             }
@@ -2589,8 +2740,48 @@
             }
 
             if (shape.type === 'text') { 
-                drawTextElement(ctxToUse, shape.text, shape.x, shape.y, shape.color, shape.font, shape.fontSize, shape.isNeon, isHighlighted, shape.width || 300); 
+                drawTextElement(ctxToUse, shape.text, shape.x, shape.y, shape.color, shape.font, shape.fontSize, shape.isNeon, isHighlighted, shape.width || 300, shape.align || 'left'); 
                 ctxToUse.restore(); return; 
+            }
+
+            // --- CASILLA DE TAREA (Checkbox) ---
+            if (shape.type === 'checkbox') {
+                const fSize = shape.fontSize || 40;
+                const boxSize = fSize * 0.8;
+                const spacing = 15 / view.scale;
+
+                // Dibujar caja
+                ctxToUse.lineWidth = 2 / view.scale;
+                ctxToUse.strokeStyle = actualColor;
+                ctxToUse.fillStyle = shape.checked ? actualColor : 'transparent';
+                ctxToUse.beginPath();
+                ctxToUse.roundRect(shape.x, shape.y, boxSize, boxSize, 4 / view.scale);
+                ctxToUse.stroke();
+                if (shape.checked) ctxToUse.fill();
+
+                // Dibujar Check mark interno
+                if (shape.checked) {
+                    ctxToUse.strokeStyle = appState.theme === 'dark' ? '#000' : '#fff';
+                    ctxToUse.lineWidth = 3 / view.scale;
+                    ctxToUse.lineCap = 'round';
+                    ctxToUse.lineJoin = 'round';
+                    ctxToUse.beginPath();
+                    ctxToUse.moveTo(shape.x + boxSize * 0.2, shape.y + boxSize * 0.5);
+                    ctxToUse.lineTo(shape.x + boxSize * 0.45, shape.y + boxSize * 0.75);
+                    ctxToUse.lineTo(shape.x + boxSize * 0.8, shape.y + boxSize * 0.2);
+                    ctxToUse.stroke();
+                }
+
+                // Dibujar Texto
+                ctxToUse.fillStyle = actualColor;
+                if(shape.checked) ctxToUse.globalAlpha = 0.5; // Apaga un poco el texto si está listo
+                ctxToUse.font = `${fSize}px ${shape.font || "'Pacifico', cursive"}`;
+                ctxToUse.textBaseline = 'top';
+                ctxToUse.textAlign = 'left';
+                ctxToUse.fillText(shape.text, shape.x + boxSize + spacing, shape.y);
+                ctxToUse.globalAlpha = 1.0;
+
+                ctxToUse.restore(); return;
             }
 
             if (shape.type === 'arrow' || shape.type === 'line') {
@@ -2740,7 +2931,7 @@
         function drawAnchors() {
             if (appState.tool === 'arrow' || appState.tool === 'line') {
                 appState.paths.forEach(shape => {
-                    if (['rect', 'circle', 'text', 'image', 'video'].includes(shape.type)) {
+                    if (['rect', 'circle', 'text', 'image', 'video', 'checkbox'].includes(shape.type)) {
                         const isSource = appState.currentPath && appState.currentPath.fromId === shape.id;
                         const isTarget = appState.snapTargetShape && appState.snapTargetShape.id === shape.id;
                         if(isSource || isTarget || !appState.currentPath) {
@@ -2763,6 +2954,23 @@
                     }
                 });
             }
+        }
+
+        // --- ACTUALIZACION DEL MEDIDOR DE PROGRESO ---
+        function updateProgressUI() {
+            const checkboxes = appState.paths.filter(p => p.type === 'checkbox');
+            const progressTracker = document.getElementById('progressTracker');
+            if (checkboxes.length === 0) {
+                progressTracker.style.display = 'none';
+                return;
+            }
+            const checkedCount = checkboxes.filter(p => p.checked).length;
+            const percentage = Math.round((checkedCount / checkboxes.length) * 100);
+
+            progressTracker.style.display = 'flex';
+            document.getElementById('progressText').innerText = percentage + '%';
+            document.getElementById('progressBarFill').style.width = percentage + '%';
+            document.getElementById('progressBarFill').style.background = percentage === 100 ? '#39ff14' : '#00ffff';
         }
 
         function redrawAll() {
@@ -2808,16 +3016,30 @@
             }
 
             if (appState.isTyping && textInput.value) {
-                drawTextElement(ctx, textInput.value, appState.textPos.x, appState.textPos.y, appState.color, appState.currentFont, appState.currentFontSize, false, false, appState.currentTextWidth);
+                // Al tipear una tarea usa la UI simple, para textos normales usa drawTextElement
+                const editingShape = appState.editingShapeId ? appState.paths.find(p => p.id === appState.editingShapeId) : null;
+                if (!editingShape || editingShape.type !== 'checkbox') {
+                    drawTextElement(ctx, textInput.value, appState.textPos.x, appState.textPos.y, appState.color, appState.currentFont, appState.currentFontSize, false, false, appState.currentTextWidth, appState.textAlign);
+                }
             }
 
             zoomText.innerText = Math.round(view.scale * 100) + '%';
             if(appState.isTyping) {
-                const screenPos = worldToScreen(appState.textPos.x, appState.textPos.y);
+                // Posicionar el text input correctamente si se edita texto o checkbox
+                const editingShape = appState.editingShapeId ? appState.paths.find(p => p.id === appState.editingShapeId) : null;
+                let screenPos;
+                if (editingShape && editingShape.type === 'checkbox') {
+                    const boxSize = editingShape.fontSize * 0.8;
+                    const spacing = 15 / view.scale;
+                    screenPos = worldToScreen(editingShape.x + boxSize + spacing, editingShape.y);
+                } else {
+                    screenPos = worldToScreen(appState.textPos.x, appState.textPos.y);
+                }
                 textInput.style.left = screenPos.x + 'px'; 
                 textInput.style.top = screenPos.y + 'px';
             }
             updateFloatingBtnsPosition();
+            updateProgressUI(); // Llamar actualización gráfica de porcentaje
         }
 
         function drawGrid() {
@@ -2842,12 +3064,12 @@
             }
             if (e.touches && e.touches.length > 1) return;
             
-            if (e.target !== textInput && !e.target.closest('.floating-actions') && !e.target.closest('.panel-wrapper') && !e.target.closest('.modal-overlay') && !e.target.closest('#top-demo-tab')) e.preventDefault();
+            if (e.target !== textInput && !e.target.closest('.floating-actions') && !e.target.closest('.panel-wrapper') && !e.target.closest('.modal-overlay') && !e.target.closest('#top-demo-tab') && !e.target.closest('#progressTracker')) e.preventDefault();
             
             const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             const worldPos = screenToWorld(clientX, clientY);
 
-            if(e.target.closest('.panel-wrapper') || e.target.closest('.floating-actions') || e.target.closest('.modal-overlay') || e.target.closest('#top-demo-tab')) return;
+            if(e.target.closest('.panel-wrapper') || e.target.closest('.floating-actions') || e.target.closest('.modal-overlay') || e.target.closest('#top-demo-tab') || e.target.closest('#progressTracker')) return;
 
             if (appState.tool === 'select' && appState.selectedId) {
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
@@ -2870,7 +3092,12 @@
                 const clickedShape = getShapeAt(worldPos.x, worldPos.y);
                 if (clickedShape) {
                     appState.isPanning = false; 
-                    clickedShape.clickAnimTime = Date.now(); 
+                    clickedShape.clickAnimTime = Date.now();
+                    // LÓGICA DE CHECKBOX INTERACTIVO
+                    if (clickedShape.type === 'checkbox') {
+                        saveHistory();
+                        clickedShape.checked = !clickedShape.checked;
+                    }
                     if(clickedShape.reaction && clickedShape.reaction.type !== 'none') triggerReaction(clickedShape);
                     redrawAll();
                 } else {
@@ -2908,6 +3135,13 @@
                         id: generateId(), type: appState.tool, src: appState.currentImageData, color: appState.color, 
                         startX: worldPos.x, startY: worldPos.y, endX: worldPos.x, endY: worldPos.y,
                         colorize: false 
+                    };
+                } else if (appState.tool === 'checkbox') {
+                    // Creador directo al click, no se arrastra
+                    appState.currentPath = {
+                        id: generateId(), type: 'checkbox', color: appState.color,
+                        x: worldPos.x, y: worldPos.y, text: 'Nueva Tarea', checked: false,
+                        font: appState.currentFont, fontSize: appState.currentFontSize
                     };
                 } else {
                     appState.currentPath = { id: generateId(), type: appState.tool, color: appState.color, startX: worldPos.x, startY: worldPos.y, endX: worldPos.x, endY: worldPos.y, isNeon: false };
@@ -2996,7 +3230,7 @@
                     }
                     redrawAll();
                 }
-            } else if (appState.currentPath && appState.tool !== 'text') {
+            } else if (appState.currentPath && appState.tool !== 'text' && appState.tool !== 'checkbox') {
                 if (appState.tool === 'draw') appState.currentPath.points.push(worldPos);
                 else { 
                     appState.currentPath.endX = worldPos.x; appState.currentPath.endY = worldPos.y; 
@@ -3055,7 +3289,21 @@
                 appState.paths.push(appState.currentPath);
                 appState.currentPath = null; appState.snapTargetShape = null; 
 
-                if (wasMedia || ['arrow', 'line', 'rect', 'circle'].includes(finishedType)) {
+                // Si creamos un checkbox, abrimos de inmediato el cuadro de texto
+                if (finishedType === 'checkbox') {
+                    appState.tool = 'select';
+                    document.querySelectorAll('.tool-btn:not(.action-btn):not(.gallery-thumb):not(.btn-color)').forEach(b => b.classList.remove('active'));
+                    const selectBtn = document.getElementById('tool-select');
+                    if (selectBtn) selectBtn.classList.add('active');
+                    container.className = 'tool-select';
+                    appState.selectedId = newlyAddedId;
+                    
+                    updateFloatingBtnsPosition();
+                    redrawAll();
+                    // Simulamos click en editar para cambiarle el texto
+                    document.getElementById('editObjBtn').click();
+                } 
+                else if (wasMedia || ['arrow', 'line', 'rect', 'circle'].includes(finishedType)) {
                     appState.tool = 'select';
                     document.querySelectorAll('.tool-btn:not(.action-btn):not(.gallery-thumb):not(.btn-color)').forEach(b => b.classList.remove('active'));
                     const selectBtn = document.getElementById('tool-select');
