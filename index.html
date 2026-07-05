@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -56,11 +57,19 @@
         .is-collapsed svg { transform: rotate(180deg); }
 
         .panel-wrapper.text-panel { bottom: 15px; left: 50%; transform: translateX(-50%); flex-direction: column-reverse; }
-        .panel-wrapper.text-panel .panel-content { border-radius: 12px; padding: 8px 15px; display: flex; gap: 15px; align-items: center; }
+        .panel-wrapper.text-panel .panel-content { 
+            border-radius: 12px; padding: 8px 15px; display: flex; gap: 15px; align-items: center;
+            max-width: 90vw; overflow-x: auto; scrollbar-width: none; /* Mejorado Celular */
+        }
+        .panel-wrapper.text-panel .panel-content::-webkit-scrollbar { display: none; }
         .panel-wrapper.text-panel.collapsed .panel-content { transform: translateY(150%); opacity: 0; pointer-events: none; position: absolute; }
 
         .panel-wrapper.right { right: 15px; top: 50%; transform: translateY(-50%); flex-direction: row-reverse; }
-        .panel-wrapper.right .panel-content { border-radius: 12px; padding: 12px 8px; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+        .panel-wrapper.right .panel-content { 
+            border-radius: 12px; padding: 12px 8px; display: flex; flex-direction: column; gap: 8px; align-items: center;
+            max-height: 80vh; overflow-y: auto; scrollbar-width: none; /* Mejorado Celular */
+        }
+        .panel-wrapper.right .panel-content::-webkit-scrollbar { display: none; }
         .panel-wrapper.right.collapsed .panel-content { transform: translateX(150%); opacity: 0; pointer-events: none; position: absolute; }
 
         .panel-wrapper.left { left: 15px; top: 50%; transform: translateY(-50%); flex-direction: row; }
@@ -76,6 +85,7 @@
             background: transparent; border: none; color: #888; padding: 6px;
             border-radius: 8px; cursor: pointer; transition: all 0.2s;
             display: flex; align-items: center; justify-content: center; position: relative; width: 32px; height: 32px;
+            flex-shrink: 0; /* Para evitar encogimientos al scrollear */
         }
         .tool-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
         .tool-btn.active { color: #fff; background: rgba(255,255,255,0.2); box-shadow: inset 0 0 5px rgba(0,0,0,0.5); }
@@ -121,7 +131,7 @@
         }
 
         /* --- PALETA DE COLORES EN PANEL DERECHO --- */
-        .color-picker-container { position: relative; display: flex; justify-content: center; align-items: center; }
+        .color-picker-container { position: relative; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
         
         .current-color-btn {
             width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5);
@@ -145,12 +155,12 @@
         }
         .color-btn.active { border-color: #fff; transform: scale(1.2); }
 
-        .text-controls { display: flex; align-items: center; gap: 12px; }
+        .text-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
         .text-controls select {
             background: #111; color: #fff; border: 1px solid #444; border-radius: 6px;
             padding: 6px 10px; outline: none; font-size: 14px; cursor: pointer;
         }
-        .size-control { display: flex; align-items: center; gap: 8px; color: #aaa; font-size: 14px; font-weight: bold; }
+        .size-control { display: flex; align-items: center; gap: 8px; color: #aaa; font-size: 14px; font-weight: bold; flex-shrink: 0; }
         .size-control input[type="range"] { width: 100px; cursor: pointer; }
 
         .zoom-indicator {
@@ -378,14 +388,7 @@
                 grid-template-columns: 1fr; /* Una sola columna en móvil */
                 row-gap: 8px; 
             }
-            .bc-socials-grid { 
-                flex-direction: column; 
-                align-items: stretch; 
-            }
-            .bc-social-capsule { 
-                width: auto; 
-                justify-content: flex-start; 
-            }
+            /* Eliminamos la sobreescritura de las redes sociales para que sigan agrupándose juntas y bajen al chocar (flex-wrap) */
         }
         /* ======================================================== */
 
@@ -2215,7 +2218,7 @@
             return lines;
         }
 
-        // --- Geometria OPTIMIZADA CON CACHE ---
+        // --- Geometria OPTIMIZADA CON CACHE Y BOUNDING BOX CORREGIDO ---
         function getRawBounds(shape) {
             let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
             if (shape.type === 'draw') {
@@ -2237,8 +2240,27 @@
                 }
                 const lines = shape._cachedLines;
                 
-                minX = shape.x; 
-                maxX = shape.x + maxWidth; 
+                // NUEVO: Calculamos el ancho exacto del texto renderizado para que no bloquee clics
+                let actualMaxWidth = 0;
+                lines.forEach(line => {
+                    const w = ctx.measureText(line).width;
+                    if (w > actualMaxWidth) actualMaxWidth = w;
+                });
+                
+                // Pequeño margen para facilitar selección
+                actualMaxWidth += (10 / view.scale);
+
+                if (shape.align === 'center') {
+                    minX = shape.x + maxWidth / 2 - actualMaxWidth / 2;
+                    maxX = shape.x + maxWidth / 2 + actualMaxWidth / 2;
+                } else if (shape.align === 'right') {
+                    minX = shape.x + maxWidth - actualMaxWidth;
+                    maxX = shape.x + maxWidth;
+                } else {
+                    minX = shape.x;
+                    maxX = shape.x + actualMaxWidth;
+                }
+
                 minY = shape.y; 
                 maxY = shape.y + (lines.length * fSize * 1.2); 
             } else if (shape.type === 'checkbox') {
