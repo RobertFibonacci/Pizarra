@@ -1,4 +1,3 @@
-html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -174,8 +173,9 @@ html
             border: 1px solid rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px;
             color: #fff; font-family: system-ui; font-size: 14px; font-weight: bold;
             display: none; z-index: 5; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px); align-items: center; gap: 10px;
+            backdrop-filter: blur(5px); align-items: center; gap: 10px; cursor: pointer; transition: 0.2s;
         }
+        #progressTracker:hover { transform: scale(1.05); }
 
         #textInput {
             position: absolute; display: none; background: transparent;
@@ -554,6 +554,37 @@ html
         <div id="progressText">0%</div>
         <div style="width: 100px; height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden;">
             <div id="progressBarFill" style="width: 0%; height: 100%; background: #00ffff; transition: width 0.3s ease;"></div>
+        </div>
+    </div>
+
+    <!-- UI BARRA DE NAVEGACION DE TAREAS -->
+    <div id="taskNavBar" class="panel-content" style="position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); display: none; align-items: center; gap: 15px; padding: 10px 20px; border-radius: 30px; z-index: 15;">
+        <button class="tool-btn action-btn" id="prevTaskBtn"><i data-lucide="chevron-left"></i></button>
+        <span id="taskNavCounter" style="color: white; font-weight: bold; cursor: pointer; font-family: system-ui; font-size: 14px; padding: 0 5px;" title="Ver lista de tareas">1/5 Tareas</span>
+        <button class="tool-btn action-btn" id="nextTaskBtn"><i data-lucide="chevron-right"></i></button>
+        <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.2);"></div>
+        <button class="tool-btn action-btn" id="closeTaskNavBtn" title="Ocultar barra"><i data-lucide="x"></i></button>
+    </div>
+
+    <!-- UI MODAL LISTA DE TAREAS -->
+    <div id="tasksListModalOverlay" class="modal-overlay">
+        <div class="modal-box large">
+            <h3>Lista de Tareas</h3>
+            <p style="font-size:12px; color:#aaa; margin:0; text-align:center;">Selecciona una tarea para navegar a ella.</p>
+            <div style="display: flex; gap: 15px; margin-top: 15px; max-height: 50vh; overflow-y: auto;">
+                <div style="flex: 1;">
+                    <h4 style="color: #ff9900; margin-top: 0; text-align: center;">Pendientes</h4>
+                    <div id="pendingTasksList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+                <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
+                <div style="flex: 1;">
+                    <h4 style="color: #00ffff; margin-top: 0; text-align: center;">Realizadas</h4>
+                    <div id="completedTasksList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+            </div>
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeTasksListModal()">Cerrar</button>
+            </div>
         </div>
     </div>
 
@@ -2654,10 +2685,10 @@ html
                 for (let i = 1; i < finalPath.length; i++) ctxToUse.lineTo(finalPath[i].x, finalPath[i].y);
                 
                 if (isNeon || isHighlighted) {
-                    ctxToUse.shadowBlur = isHighlighted ? (15 / view.scale) : (4 / view.scale); 
-                    ctxToUse.shadowColor = glowColor; 
-                    ctxToUse.stroke();
-                    ctxToUse.lineWidth = 0.5 / view.scale; 
+                ctxToUse.shadowBlur = appState.isPanning ? 0 : (isHighlighted ? (15 / view.scale) : (4 / view.scale)); 
+                ctxToUse.shadowColor = glowColor; 
+                ctxToUse.stroke();
+                ctxToUse.lineWidth = 0.5 / view.scale; 
                     ctxToUse.strokeStyle = appState.theme === 'dark' ? '#ffffff' : '#222222'; 
                     ctxToUse.shadowBlur = 0; ctxToUse.stroke();
                 } else {
@@ -2680,7 +2711,9 @@ html
             ctxToUse.closePath();
             
             if (isNeon || isHighlighted) {
-                ctxToUse.fillStyle = actualColor; ctxToUse.shadowBlur = 6 / view.scale; ctxToUse.shadowColor = glowColor; ctxToUse.fill();
+                ctxToUse.fillStyle = actualColor; 
+                ctxToUse.shadowBlur = appState.isPanning ? 0 : (6 / view.scale); 
+                ctxToUse.shadowColor = glowColor; ctxToUse.fill();
                 ctxToUse.fillStyle = appState.theme === 'dark' ? '#ffffff' : '#222222'; 
                 ctxToUse.shadowBlur = 0; ctxToUse.fill();
             } else {
@@ -2702,7 +2735,7 @@ html
             
             if (isNeon || isHighlighted) {
                 const glowColor = (actualColor === '#000000' || actualColor === '#111111') && appState.theme === 'dark' ? '#ffffff' : actualColor;
-                ctxToUse.shadowBlur = isHighlighted ? (20 / view.scale) : (10 / view.scale); 
+                ctxToUse.shadowBlur = appState.isPanning ? 0 : (isHighlighted ? (20 / view.scale) : (10 / view.scale)); 
                 ctxToUse.shadowColor = glowColor; 
                 ctxToUse.fillStyle = actualColor;
                 lines.forEach((line, i) => ctxToUse.fillText(line, renderX, y + (i * lineHeight)));
@@ -2723,8 +2756,11 @@ html
             ctxToUse.save();
             
             if ((shape.type === 'text' || shape.type === 'checkbox') && shape._hiddenWhileEditing) {
-                ctxToUse.restore();
-                return;
+                if (shape.type === 'text') {
+                    ctxToUse.restore();
+                    return;
+                }
+                // Si es checkbox, continuamos para dibujar el cuadro, pero omitiremos el texto más abajo
             }
 
             const actualColor = getActualColor(shape.color);
@@ -2795,13 +2831,15 @@ html
                 }
 
                 // Dibujar Texto
-                ctxToUse.fillStyle = actualColor;
-                if(shape.checked) ctxToUse.globalAlpha = 0.5; // Apaga un poco el texto si está listo
-                ctxToUse.font = `${fSize}px ${shape.font || "'Pacifico', cursive"}`;
-                ctxToUse.textBaseline = 'top';
-                ctxToUse.textAlign = 'left';
-                ctxToUse.fillText(shape.text, shape.x + boxSize + spacing, shape.y);
-                ctxToUse.globalAlpha = 1.0;
+                if (!shape._hiddenWhileEditing) {
+                    ctxToUse.fillStyle = actualColor;
+                    if(shape.checked) ctxToUse.globalAlpha = 0.5; // Apaga un poco el texto si está listo
+                    ctxToUse.font = `${fSize}px ${shape.font || "'Pacifico', cursive"}`;
+                    ctxToUse.textBaseline = 'top';
+                    ctxToUse.textAlign = 'left';
+                    ctxToUse.fillText(shape.text, shape.x + boxSize + spacing, shape.y);
+                    ctxToUse.globalAlpha = 1.0;
+                }
 
                 ctxToUse.restore(); return;
             }
@@ -2834,34 +2872,10 @@ html
                 if (media && mediaW > 0 && w > 5 && h > 5) {
                     
                     if (shape.colorize && shape.type === 'image') {
-                        const cacheKey = shape.src + '_tint_' + actualColor;
-                        if (imageCache[cacheKey]) {
-                            imgToDraw = imageCache[cacheKey];
-                        } else {
-                            const tCanvas = document.createElement('canvas');
-                            tCanvas.width = media.width; tCanvas.height = media.height;
-                            const tCtx = tCanvas.getContext('2d');
-                            tCtx.drawImage(media, 0, 0);
-                            tCtx.globalCompositeOperation = 'source-in'; 
-                            tCtx.fillStyle = actualColor;
-                            tCtx.fillRect(0, 0, tCanvas.width, tCanvas.height);
-                            imageCache[cacheKey] = tCanvas;
-                            imgToDraw = tCanvas;
-                        }
-                    }
-
-                    ctxToUse.save();
-                    const aspect = mediaW / mediaH; const boxAspect = w / h;
-                    let drawW = w; let drawH = h;
-                    if (boxAspect > aspect) { drawW = h * aspect; } else { drawH = w / aspect; }
-                    const cx = (shape.startX + shape.endX) / 2; const cy = (shape.startY + shape.endY) / 2;
-                    ctxToUse.translate(cx, cy);
-                    
-                    if (shape.colorize && shape.type === 'image') {
-                        ctxToUse.shadowBlur = (isHighlighted ? 30 : 10) / view.scale; 
+                        ctxToUse.shadowBlur = appState.isPanning ? 0 : ((isHighlighted ? 30 : 10) / view.scale); 
                         ctxToUse.shadowColor = actualColor; 
                     } else {
-                        ctxToUse.shadowBlur = isHighlighted ? (30 / view.scale) : 0; 
+                        ctxToUse.shadowBlur = appState.isPanning ? 0 : (isHighlighted ? (30 / view.scale) : 0); 
                         ctxToUse.shadowColor = isHighlighted ? (appState.theme === 'dark' ? '#ffffff' : '#000000') : 'transparent'; 
                     }
                     
@@ -2912,7 +2926,7 @@ html
             if (shape.isNeon || isHighlighted) {
                 ctxToUse.lineWidth = 2.5 / view.scale; 
                 ctxToUse.strokeStyle = actualColor; 
-                ctxToUse.shadowBlur = isHighlighted ? (20 / view.scale) : (6 / view.scale); 
+                ctxToUse.shadowBlur = appState.isPanning ? 0 : (isHighlighted ? (20 / view.scale) : (6 / view.scale)); 
                 ctxToUse.shadowColor = glowColor;
                 ctxToUse.stroke();
                 
@@ -2979,11 +2993,16 @@ html
         }
 
         // --- ACTUALIZACION DEL MEDIDOR DE PROGRESO ---
+        let currentTaskIndex = -1;
+
         function updateProgressUI() {
             const checkboxes = appState.paths.filter(p => p.type === 'checkbox');
             const progressTracker = document.getElementById('progressTracker');
+            const taskNavBar = document.getElementById('taskNavBar');
+            
             if (checkboxes.length === 0) {
                 progressTracker.style.display = 'none';
+                if(taskNavBar) taskNavBar.style.display = 'none';
                 return;
             }
             const checkedCount = checkboxes.filter(p => p.checked).length;
@@ -2993,7 +3012,85 @@ html
             document.getElementById('progressText').innerText = percentage + '%';
             document.getElementById('progressBarFill').style.width = percentage + '%';
             document.getElementById('progressBarFill').style.background = percentage === 100 ? '#39ff14' : '#00ffff';
+
+            if (taskNavBar && taskNavBar.style.display === 'flex') {
+                if (currentTaskIndex >= checkboxes.length) currentTaskIndex = checkboxes.length - 1;
+                document.getElementById('taskNavCounter').innerText = `${currentTaskIndex + 1}/${checkboxes.length} Tareas`;
+            }
         }
+
+        document.getElementById('progressTracker').addEventListener('click', openTasksListModal);
+        document.getElementById('taskNavCounter').addEventListener('click', openTasksListModal);
+        document.getElementById('closeTaskNavBtn').addEventListener('click', () => document.getElementById('taskNavBar').style.display = 'none');
+
+        function focusOnTask(index) {
+            const checkboxes = appState.paths.filter(p => p.type === 'checkbox');
+            if (index < 0 || index >= checkboxes.length) return;
+            currentTaskIndex = index;
+            const task = checkboxes[index];
+            
+            const box = getBoundingBox(task);
+            const cx = (box.minX + box.maxX) / 2;
+            const cy = (box.minY + box.maxY) / 2;
+            
+            view.x = (canvas.width / 2) - (cx * view.scale);
+            view.y = (canvas.height / 2) - (cy * view.scale);
+            
+            task.popAnimTime = Date.now();
+            
+            document.getElementById('taskNavBar').style.display = 'flex';
+            updateProgressUI();
+            redrawAll();
+        }
+
+        document.getElementById('prevTaskBtn').addEventListener('click', () => {
+            const checkboxes = appState.paths.filter(p => p.type === 'checkbox');
+            if (currentTaskIndex > 0) focusOnTask(currentTaskIndex - 1);
+            else if (checkboxes.length > 0) focusOnTask(checkboxes.length - 1); 
+        });
+
+        document.getElementById('nextTaskBtn').addEventListener('click', () => {
+            const checkboxes = appState.paths.filter(p => p.type === 'checkbox');
+            if (currentTaskIndex < checkboxes.length - 1) focusOnTask(currentTaskIndex + 1);
+            else if (checkboxes.length > 0) focusOnTask(0);
+        });
+
+        function openTasksListModal() {
+            const checkboxes = appState.paths.filter(p => p.type === 'checkbox');
+            const pendingList = document.getElementById('pendingTasksList');
+            const completedList = document.getElementById('completedTasksList');
+            
+            pendingList.innerHTML = ''; completedList.innerHTML = '';
+            
+            checkboxes.forEach((task, index) => {
+                const div = document.createElement('div');
+                div.style.padding = '10px'; div.style.background = 'rgba(255,255,255,0.05)';
+                div.style.border = '1px solid rgba(255,255,255,0.1)'; div.style.borderRadius = '8px';
+                div.style.cursor = 'pointer'; div.style.fontSize = '14px'; div.style.transition = '0.2s';
+                div.innerText = (index + 1) + '. ' + task.text;
+                
+                div.onmouseover = () => div.style.background = 'rgba(255,255,255,0.1)';
+                div.onmouseout = () => div.style.background = 'rgba(255,255,255,0.05)';
+                
+                div.onclick = () => { closeTasksListModal(); focusOnTask(index); };
+                
+                if (task.checked) {
+                    div.style.textDecoration = 'line-through'; div.style.opacity = '0.7';
+                    completedList.appendChild(div);
+                } else {
+                    pendingList.appendChild(div);
+                }
+            });
+            
+            if (pendingList.children.length === 0) pendingList.innerHTML = '<span style="color:#aaa; font-size:12px; text-align:center;">No hay pendientes</span>';
+            if (completedList.children.length === 0) completedList.innerHTML = '<span style="color:#aaa; font-size:12px; text-align:center;">No hay realizadas</span>';
+            
+            document.getElementById('tasksListModalOverlay').style.display = 'flex';
+        }
+
+        window.closeTasksListModal = function() {
+            document.getElementById('tasksListModalOverlay').style.display = 'none';
+        };
 
         function redrawAll() {
             ctx.setTransform(1, 0, 0, 1, 0, 0); 
@@ -3040,7 +3137,15 @@ html
             if (appState.isTyping && textInput.value) {
                 // Al tipear una tarea usa la UI simple, para textos normales usa drawTextElement
                 const editingShape = appState.editingShapeId ? appState.paths.find(p => p.id === appState.editingShapeId) : null;
-                if (!editingShape || editingShape.type !== 'checkbox') {
+                if (editingShape && editingShape.type === 'checkbox') {
+                    const boxSize = editingShape.fontSize * 0.8;
+                    const spacing = 15 / view.scale;
+                    drawTextElement(ctx, textInput.value, editingShape.x + boxSize + spacing, editingShape.y, appState.color, appState.currentFont, appState.currentFontSize, false, false, 300, 'left');
+                } else if (appState.tool === 'checkbox' && !editingShape) {
+                    const boxSize = appState.currentFontSize * 0.8;
+                    const spacing = 15 / view.scale;
+                    drawTextElement(ctx, textInput.value, appState.textPos.x + boxSize + spacing, appState.textPos.y, appState.color, appState.currentFont, appState.currentFontSize, false, false, 300, 'left');
+                } else {
                     drawTextElement(ctx, textInput.value, appState.textPos.x, appState.textPos.y, appState.color, appState.currentFont, appState.currentFontSize, false, false, appState.currentTextWidth, appState.textAlign);
                 }
             }
@@ -3115,12 +3220,12 @@ html
                 if (clickedShape) {
                     appState.isPanning = false; 
                     clickedShape.clickAnimTime = Date.now();
-                    // LÓGICA DE CHECKBOX INTERACTIVO
-                    if (clickedShape.type === 'checkbox') {
-                        saveHistory();
-                        clickedShape.checked = !clickedShape.checked;
-                    }
-                    if(clickedShape.reaction && clickedShape.reaction.type !== 'none') triggerReaction(clickedShape);
+                    textInput.style.fontSize = (appState.currentFontSize * view.scale) + 'px';
+                    textInput.style.width = '300px'; 
+                    textInput.style.textAlign = 'left';
+                    textInput.value = shape.text === 'Nueva Tarea' ? '' : shape.text;
+
+                    shape._hiddenWhileEditing = true;
                     redrawAll();
                 } else {
                     appState.isPanning = true;
@@ -3302,6 +3407,12 @@ html
                             redrawAll(); return; 
                         }
                     }
+                }
+
+                if (appState.currentPath.type === 'draw' && appState.currentPath.points.length <= 1) {
+                    appState.currentPath = null;
+                    redrawAll();
+                    return;
                 }
 
                 let wasMedia = (appState.currentPath.type === 'image' || appState.currentPath.type === 'video');
