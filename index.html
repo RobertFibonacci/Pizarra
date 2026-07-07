@@ -3223,6 +3223,15 @@
                     textInput.style.fontSize = (appState.currentFontSize * view.scale) + 'px';
                     textInput.style.width = '300px'; 
                     textInput.style.textAlign = 'left';
+                    const shape = appState.paths.find(p => p.id === appState.selectedId);
+                    // Ahora, usamos un 'if' de seguridad para evitar el error:
+if (shape) {
+    textInput.value = (shape.text === 'Nueva Tarea') ? '' : shape.text;
+    // ... resto de tu lógica de edición
+} else {
+    // Si no hay shape, limpiamos el input para evitar basura
+    textInput.value = '';
+}
                     textInput.value = shape.text === 'Nueva Tarea' ? '' : shape.text;
 
                     shape._hiddenWhileEditing = true;
