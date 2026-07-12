@@ -2133,6 +2133,8 @@
                             shape.width = appState.currentTextWidth || 300;
                             shape.align = appState.textAlign || 'left';
                             shape._cachedLines = null;
+                        } else if (shape.type === 'checkbox') {
+                            shape._cachedLines = null;
                         }
                         delete shape._hiddenWhileEditing;
                     }
@@ -2237,7 +2239,7 @@
             return lines;
         }
 
-        // --- Geometria OPTIMIZADA CON CACHE ---
+        // --- Geometria OPTIMIZADA CON CACHE Y CORRECCIONES DE CHECKBOX ---
         function getRawBounds(shape) {
             let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
             if (shape.type === 'draw') {
@@ -2265,13 +2267,23 @@
                 maxY = shape.y + (lines.length * fSize * 1.2); 
             } else if (shape.type === 'checkbox') {
                 const fSize = shape.fontSize || 40;
-                ctx.font = `${fSize}px ${shape.font || "'Pacifico', cursive"}`;
-                const textWidth = ctx.measureText(shape.text).width;
+                const font = shape.font || "'Pacifico', cursive";
+                ctx.font = `${fSize}px ${font}`;
+                const maxWidth = 300;
+                
+                if (!shape._cachedLines || shape._cachedText !== shape.text || shape._cachedSize !== fSize) {
+                    shape._cachedLines = wrapText(ctx, shape.text, maxWidth);
+                    shape._cachedText = shape.text;
+                    shape._cachedSize = fSize;
+                }
+                const lines = shape._cachedLines;
+
                 const boxSize = fSize * 0.8;
+                const spacing = 15 / view.scale;
                 minX = shape.x;
-                maxX = shape.x + boxSize + (15 / view.scale) + textWidth;
+                maxX = shape.x + boxSize + spacing + maxWidth;
                 minY = shape.y;
-                maxY = shape.y + Math.max(boxSize, fSize);
+                maxY = shape.y + Math.max(boxSize, lines.length * fSize * 1.2);
             } else if (shape.type === 'circle') {
                 const r = Math.hypot(shape.endX - shape.startX, shape.endY - shape.startY);
                 minX = shape.startX - r; maxX = shape.startX + r; minY = shape.startY - r; maxY = shape.startY + r;
@@ -2451,6 +2463,7 @@
 
                     setTimeout(() => {
                         textInput.focus();
+                        textInput.select();
                         textInput.style.height = 'auto';
                         textInput.style.height = textInput.scrollHeight + 'px';
                     }, 50);
@@ -2479,6 +2492,7 @@
 
                     setTimeout(() => {
                         textInput.focus();
+                        textInput.select(); // Selecciona el texto (ej. "Nueva Tarea") automáticamente
                         textInput.style.height = 'auto';
                         textInput.style.height = textInput.scrollHeight + 'px';
                     }, 50);
@@ -2766,7 +2780,7 @@
                 ctxToUse.restore(); return; 
             }
 
-            // --- CASILLA DE TAREA (Checkbox) ---
+            // --- CORRECCIÓN: CASILLA DE TAREA Y SU TEXTO MULTILÍNEA ---
             if (shape.type === 'checkbox') {
                 const fSize = shape.fontSize || 40;
                 const boxSize = fSize * 0.8;
@@ -2794,13 +2808,10 @@
                     ctxToUse.stroke();
                 }
 
-                // Dibujar Texto
-                ctxToUse.fillStyle = actualColor;
-                if(shape.checked) ctxToUse.globalAlpha = 0.5; // Apaga un poco el texto si está listo
-                ctxToUse.font = `${fSize}px ${shape.font || "'Pacifico', cursive"}`;
-                ctxToUse.textBaseline = 'top';
-                ctxToUse.textAlign = 'left';
-                ctxToUse.fillText(shape.text, shape.x + boxSize + spacing, shape.y);
+                // Dibujar Texto Multilínea usando drawTextElement (Soluciona el problema de visibilidad y envoltura)
+                const textAlpha = shape.checked ? 0.5 : 1.0;
+                ctxToUse.globalAlpha = textAlpha;
+                drawTextElement(ctxToUse, shape.text, shape.x + boxSize + spacing, shape.y, shape.color, shape.font || "'Pacifico', cursive", fSize, false, false, 300, 'left');
                 ctxToUse.globalAlpha = 1.0;
 
                 ctxToUse.restore(); return;
@@ -3038,9 +3049,14 @@
             }
 
             if (appState.isTyping && textInput.value) {
-                // Al tipear una tarea usa la UI simple, para textos normales usa drawTextElement
+                // CORRECCIÓN: Renderizar también el texto para el Checkbox mientras se tipea
                 const editingShape = appState.editingShapeId ? appState.paths.find(p => p.id === appState.editingShapeId) : null;
-                if (!editingShape || editingShape.type !== 'checkbox') {
+                if (editingShape && editingShape.type === 'checkbox') {
+                    const fSize = editingShape.fontSize || 40;
+                    const boxSize = fSize * 0.8;
+                    const spacing = 15 / view.scale;
+                    drawTextElement(ctx, textInput.value, editingShape.x + boxSize + spacing, editingShape.y, appState.color, appState.currentFont, appState.currentFontSize, false, false, 300, 'left');
+                } else if (!editingShape || editingShape.type !== 'checkbox') {
                     drawTextElement(ctx, textInput.value, appState.textPos.x, appState.textPos.y, appState.color, appState.currentFont, appState.currentFontSize, false, false, appState.currentTextWidth, appState.textAlign);
                 }
             }
