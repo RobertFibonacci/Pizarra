@@ -55,12 +55,26 @@
         .toggle-btn svg { width: 18px; height: 18px; transition: transform 0.4s ease; }
         .is-collapsed svg { transform: rotate(180deg); }
 
-        .panel-wrapper.text-panel { bottom: 15px; left: 50%; transform: translateX(-50%); flex-direction: column-reverse; }
-        .panel-wrapper.text-panel .panel-content { border-radius: 12px; padding: 8px 15px; display: flex; gap: 15px; align-items: center; }
+        .panel-wrapper.text-panel { bottom: 15px; left: 50%; transform: translateX(-50%); flex-direction: column-reverse; max-width: calc(100vw - 30px); }
+        .panel-wrapper.text-panel .panel-content { 
+            border-radius: 12px; padding: 8px 15px; display: flex; gap: 15px; align-items: center;
+            width: max-content; max-width: calc(100vw - 30px); box-sizing: border-box;
+            overflow-x: auto; overflow-y: hidden; scrollbar-width: thin;
+            overscroll-behavior-x: contain; touch-action: pan-x; -webkit-overflow-scrolling: touch;
+        }
+        .panel-wrapper.text-panel .panel-content > *, .panel-wrapper.text-panel .text-controls { flex-shrink: 0; }
+        .panel-wrapper.text-panel .panel-content::-webkit-scrollbar { height: 5px; }
+        .panel-wrapper.text-panel .panel-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 5px; }
         .panel-wrapper.text-panel.collapsed .panel-content { transform: translateY(150%); opacity: 0; pointer-events: none; position: absolute; }
 
         .panel-wrapper.right { right: 15px; top: 50%; transform: translateY(-50%); flex-direction: row-reverse; }
-        .panel-wrapper.right .panel-content { border-radius: 12px; padding: 12px 8px; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+        .panel-wrapper.right .panel-content { 
+            border-radius: 12px; padding: 12px 8px; display: flex; flex-direction: column; gap: 8px; align-items: center;
+            max-height: calc(100vh - 30px); box-sizing: border-box; overflow-y: auto; overflow-x: hidden;
+            scrollbar-width: thin; overscroll-behavior-y: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch;
+        }
+        .panel-wrapper.right .panel-content::-webkit-scrollbar { width: 5px; }
+        .panel-wrapper.right .panel-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 5px; }
         .panel-wrapper.right.collapsed .panel-content { transform: translateX(150%); opacity: 0; pointer-events: none; position: absolute; }
 
         .panel-wrapper.left { left: 15px; top: 50%; transform: translateY(-50%); flex-direction: row; }
@@ -130,19 +144,24 @@
         .current-color-btn:hover { transform: scale(1.1); border-color: #fff; }
         
         .color-flyout {
-            position: absolute; right: 120%; top: 50%; transform: translateY(-50%) translateX(10px);
+            position: fixed; left: 0; top: 0; transform: translateY(-50%) translateX(10px);
             background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 18px;
             padding: 8px 12px; display: flex; gap: 10px;
+            max-width: min(430px, calc(100vw - 85px)); overflow-x: auto; overflow-y: hidden;
+            scrollbar-width: thin; overscroll-behavior-x: contain; touch-action: pan-x; -webkit-overflow-scrolling: touch;
             opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 100;
         }
+        .color-flyout::-webkit-scrollbar { height: 5px; }
+        .color-flyout::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 5px; }
         .color-flyout.open { opacity: 1; pointer-events: auto; transform: translateY(-50%) translateX(0); }
         
         .color-btn {
             width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent;
-            cursor: pointer; transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer; transition: transform 0.2s, border-color 0.2s; flex: 0 0 24px;
         }
+        .color-btn[data-color="#ffffff"], .color-btn[data-color="#212121"] { border-color: #777; }
         .color-btn.active { border-color: #fff; transform: scale(1.2); }
 
         .text-controls { display: flex; align-items: center; gap: 12px; }
@@ -155,8 +174,11 @@
 
         .zoom-indicator {
             position: absolute; bottom: 20px; right: 20px; background: rgba(20, 20, 20, 0.8);
-            color: #aaa; padding: 5px 10px; border-radius: 6px; font-size: 12px; pointer-events: none; z-index: 5;
+            color: #aaa; padding: 5px 10px; border-radius: 6px; font-size: 12px; z-index: 5;
+            border: 1px solid rgba(255,255,255,0.12); cursor: pointer; pointer-events: auto;
+            user-select: none; touch-action: manipulation;
         }
+        .zoom-indicator:hover, .zoom-indicator:focus-visible { color: #fff; background: rgba(35,35,35,0.95); outline: none; }
 
         /* --- MEDIDOR DE PROGRESO DE TAREAS --- */
         #progressTracker {
@@ -174,10 +196,18 @@
             transform-origin: top left; z-index: 5; caret-color: white; resize: none; overflow: hidden;
         }
 
-        .floating-actions { position: absolute; display: none; gap: 10px; z-index: 15; transform: translate(-50%, -120%); }
+        .floating-actions { 
+            position: absolute; display: none; gap: 10px; z-index: 15; transform: translate(-50%, -120%);
+            max-width: calc(100vw - 20px); padding: 4px; box-sizing: border-box;
+            overflow-x: auto; overflow-y: hidden; scrollbar-width: thin;
+            overscroll-behavior-x: contain; touch-action: pan-x; -webkit-overflow-scrolling: touch;
+        }
+        .floating-actions::-webkit-scrollbar { height: 5px; }
+        .floating-actions::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 5px; }
         .float-btn {
             color: white; border: none; border-radius: 50%; width: 40px; height: 40px;
             cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; transition: 0.1s;
+            flex: 0 0 40px;
         }
         .float-btn:active { transform: scale(0.9); }
         .float-btn.active { box-shadow: inset 0 0 10px rgba(0,0,0,0.8); border: 2px solid white; }
@@ -205,7 +235,7 @@
             color: white; font-family: system-ui; width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             display: flex; flex-direction: column; gap: 15px;
         }
-        .modal-box.large { width: 600px; max-width: 95vw; }
+        .modal-box.large { width: 600px; max-width: 95vw; box-sizing: border-box; overscroll-behavior-y: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
         .modal-box h3 { margin: 0; font-size: 18px; text-align: center; }
         .modal-box select, .modal-box input[type="text"], .modal-box input[type="number"] {
             width: 100%; padding: 10px; background: #0d0d0d; color: white; border: 1px solid #333;
@@ -260,11 +290,18 @@
 
         /* --- MODAL DE MARCA PERSONAL (BRANDING) V6 --- */
         .branding-setting-row {
-            display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; margin-bottom: 8px;
+            display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px;
+            background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; margin-bottom: 8px;
         }
+        .branding-setting-row > span { width: auto !important; min-width: 0; }
         .branding-setting-row input[type="checkbox"] {
-            width: 18px; height: 18px; cursor: pointer; accent-color: #00ffff; margin: 0; flex-shrink:0;
+            width: 18px; height: 18px; cursor: pointer; accent-color: #00ffff; margin: 0; justify-self: end;
         }
+        .branding-fields {
+            grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr) minmax(0, 0.8fr);
+            gap: 8px; width: 100%;
+        }
+        .branding-fields input[type="text"] { min-width: 0; width: 100%; }
         .social-logo-preview {
             width: 28px; height: 28px; border-radius: 5px; background: #222; object-fit: contain;
             border: 1px dashed #555; cursor: pointer; flex-shrink: 0; transition: 0.2s;
@@ -328,14 +365,15 @@
         
         .bc-socials-grid { 
             display: flex; flex-wrap: wrap; 
-            gap: 12px; width: 100%; margin-top: 20px; justify-content: flex-start;
+            gap: 12px; width: 100%; margin-top: 20px; justify-content: flex-start; align-items: flex-start;
         }
         .bc-social-capsule { 
             display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); 
-            padding: 8px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); 
+            padding: 8px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);
+            width: fit-content; max-width: 100%; min-width: 0; flex: 0 1 auto; box-sizing: border-box;
         }
-        .bc-social-capsule img { width: 20px; height: 20px; border-radius: 4px; object-fit: contain; }
-        .bc-social-capsule span { color: #fff; font-size: 13px; font-family: system-ui; font-weight: 500; }
+        .bc-social-capsule img { width: 20px; height: 20px; border-radius: 4px; object-fit: contain; flex-shrink: 0; }
+        .bc-social-capsule span { color: #fff; font-size: 14px; line-height: 1.25; font-family: system-ui; font-weight: 500; min-width: 0; overflow-wrap: anywhere; }
 
         body.light-mode .bc-social-capsule { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
         body.light-mode .bc-social-capsule span { color: #000; }
@@ -369,7 +407,7 @@
         .lt-name { font-size: 20px; font-weight: bold; color: white; font-family: system-ui; margin:0; line-height: 1; }
         .lt-verified { width: 18px; height: 18px; fill: #1d9bf0; flex-shrink: 0; }
         .lt-details { display: grid; grid-template-columns: auto auto; column-gap: 15px; row-gap: 5px; margin-top: 2px;}
-        .lt-detail-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #cbd5e1; font-family: system-ui; font-weight: 500;}
+        .lt-detail-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: #cbd5e1; font-family: system-ui; font-weight: 500;}
         .lt-detail-item svg { width: 14px; height: 14px; opacity: 0.8; }
 
         /* ====== SOLUCION MÓVILES (Tarjetas no amontonadas) ====== */
@@ -379,13 +417,14 @@
                 row-gap: 8px; 
             }
             .bc-socials-grid { 
-                flex-direction: column; 
-                align-items: stretch; 
+                flex-direction: row; flex-wrap: wrap;
+                align-items: flex-start; gap: 8px;
             }
             .bc-social-capsule { 
-                width: auto; 
+                width: fit-content; max-width: 100%;
                 justify-content: flex-start; 
             }
+            .branding-fields { grid-template-columns: 1fr; }
         }
         /* ======================================================== */
 
@@ -690,9 +729,11 @@
                     <input type="checkbox" id="chk_instagram" title="Activar">
                     <input type="file" id="up_instagram" accept="image/*" style="display:none;">
                     <img id="prev_instagram" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E" onclick="document.getElementById('up_instagram').click()" title="Subir Logo">
-                    <input type="text" id="pfx_instagram" placeholder="Prefijo (Ej: Sigueme en)" style="flex: 0.7;">
-                    <input type="text" id="val_instagram" placeholder="@usuario_ig" style="flex: 1;">
-                    <input type="text" id="sub_instagram" placeholder="Subs (Ej: 10K)" style="flex: 0.6;">
+                    <div class="branding-fields">
+                        <input type="text" id="pfx_instagram" placeholder="Prefijo (Ej: Sigueme en)" style="flex: 0.7;">
+                        <input type="text" id="val_instagram" placeholder="@usuario_ig" style="flex: 1;">
+                        <input type="text" id="sub_instagram" placeholder="Subs (Ej: 10K)" style="flex: 0.6;">
+                    </div>
                 </div>
 
                 <div class="branding-setting-row">
@@ -700,9 +741,11 @@
                     <input type="checkbox" id="chk_tiktok" title="Activar">
                     <input type="file" id="up_tiktok" accept="image/*" style="display:none;">
                     <img id="prev_tiktok" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E" onclick="document.getElementById('up_tiktok').click()" title="Subir Logo">
-                    <input type="text" id="pfx_tiktok" placeholder="Prefijo (Ej: Sigueme en)" style="flex: 0.7;">
-                    <input type="text" id="val_tiktok" placeholder="@usuario_tt" style="flex: 1;">
-                    <input type="text" id="sub_tiktok" placeholder="Subs" style="flex: 0.6;">
+                    <div class="branding-fields">
+                        <input type="text" id="pfx_tiktok" placeholder="Prefijo (Ej: Sigueme en)" style="flex: 0.7;">
+                        <input type="text" id="val_tiktok" placeholder="@usuario_tt" style="flex: 1;">
+                        <input type="text" id="sub_tiktok" placeholder="Subs" style="flex: 0.6;">
+                    </div>
                 </div>
                 
                 <div class="branding-setting-row">
@@ -710,9 +753,11 @@
                     <input type="checkbox" id="chk_youtube" title="Activar">
                     <input type="file" id="up_youtube" accept="image/*" style="display:none;">
                     <img id="prev_youtube" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E" onclick="document.getElementById('up_youtube').click()" title="Subir Logo">
-                    <input type="text" id="pfx_youtube" placeholder="Prefijo (Ej: Suscribete)" style="flex: 0.7;">
-                    <input type="text" id="val_youtube" placeholder="/c/TuCanal" style="flex: 1;">
-                    <input type="text" id="sub_youtube" placeholder="Subs" style="flex: 0.6;">
+                    <div class="branding-fields">
+                        <input type="text" id="pfx_youtube" placeholder="Prefijo (Ej: Suscribete)" style="flex: 0.7;">
+                        <input type="text" id="val_youtube" placeholder="/c/TuCanal" style="flex: 1;">
+                        <input type="text" id="sub_youtube" placeholder="Subs" style="flex: 0.6;">
+                    </div>
                 </div>
 
                 <div class="branding-setting-row">
@@ -720,9 +765,11 @@
                     <input type="checkbox" id="chk_facebook" title="Activar">
                     <input type="file" id="up_facebook" accept="image/*" style="display:none;">
                     <img id="prev_facebook" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E" onclick="document.getElementById('up_facebook').click()" title="Subir Logo">
-                    <input type="text" id="pfx_facebook" placeholder="Prefijo (Ej: Sigueme en)" style="flex: 0.7;">
-                    <input type="text" id="val_facebook" placeholder="/pagina" style="flex: 1;">
-                    <input type="text" id="sub_facebook" placeholder="Seguidores" style="flex: 0.6;">
+                    <div class="branding-fields">
+                        <input type="text" id="pfx_facebook" placeholder="Prefijo (Ej: Sigueme en)" style="flex: 0.7;">
+                        <input type="text" id="val_facebook" placeholder="/pagina" style="flex: 1;">
+                        <input type="text" id="sub_facebook" placeholder="Seguidores" style="flex: 0.6;">
+                    </div>
                 </div>
 
                 <div class="branding-setting-row">
@@ -730,9 +777,11 @@
                     <input type="checkbox" id="chk_twitter" title="Activar">
                     <input type="file" id="up_twitter" accept="image/*" style="display:none;">
                     <img id="prev_twitter" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E" onclick="document.getElementById('up_twitter').click()" title="Subir Logo">
-                    <input type="text" id="pfx_twitter" placeholder="Prefijo" style="flex: 0.7;">
-                    <input type="text" id="val_twitter" placeholder="@usuario_x" style="flex: 1;">
-                    <input type="text" id="sub_twitter" placeholder="Seguidores" style="flex: 0.6;">
+                    <div class="branding-fields">
+                        <input type="text" id="pfx_twitter" placeholder="Prefijo" style="flex: 0.7;">
+                        <input type="text" id="val_twitter" placeholder="@usuario_x" style="flex: 1;">
+                        <input type="text" id="sub_twitter" placeholder="Seguidores" style="flex: 0.6;">
+                    </div>
                 </div>
 
                 <div class="branding-setting-row">
@@ -740,9 +789,11 @@
                     <input type="checkbox" id="chk_linkedin" title="Activar">
                     <input type="file" id="up_linkedin" accept="image/*" style="display:none;">
                     <img id="prev_linkedin" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E" onclick="document.getElementById('up_linkedin').click()" title="Subir Logo">
-                    <input type="text" id="pfx_linkedin" placeholder="Prefijo" style="flex: 0.7;">
-                    <input type="text" id="val_linkedin" placeholder="/in/tu-perfil" style="flex: 1;">
-                    <input type="text" id="sub_linkedin" placeholder="Conexiones" style="flex: 0.6;">
+                    <div class="branding-fields">
+                        <input type="text" id="pfx_linkedin" placeholder="Prefijo" style="flex: 0.7;">
+                        <input type="text" id="val_linkedin" placeholder="/in/tu-perfil" style="flex: 1;">
+                        <input type="text" id="sub_linkedin" placeholder="Conexiones" style="flex: 0.6;">
+                    </div>
                 </div>
 
                 <div class="branding-setting-row">
@@ -750,9 +801,11 @@
                     <input type="checkbox" id="chk_whatsapp" title="Activar">
                     <input type="file" id="up_whatsapp" accept="image/*" style="display:none;">
                     <img id="prev_whatsapp" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E" onclick="document.getElementById('up_whatsapp').click()" title="Subir Logo">
-                    <input type="text" id="pfx_whatsapp" placeholder="Prefijo" style="flex: 0.7;">
-                    <input type="text" id="val_whatsapp" placeholder="+52 1 234 567" style="flex: 1;">
-                    <input type="text" id="sub_whatsapp" placeholder="Extra (opcional)" style="flex: 0.6;">
+                    <div class="branding-fields">
+                        <input type="text" id="pfx_whatsapp" placeholder="Prefijo" style="flex: 0.7;">
+                        <input type="text" id="val_whatsapp" placeholder="+52 1 234 567" style="flex: 1;">
+                        <input type="text" id="sub_whatsapp" placeholder="Extra (opcional)" style="flex: 0.6;">
+                    </div>
                 </div>
 
                 <div class="branding-setting-row">
@@ -760,9 +813,11 @@
                     <input type="checkbox" id="chk_globe" title="Activar">
                     <input type="file" id="up_globe" accept="image/*" style="display:none;">
                     <img id="prev_globe" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E" onclick="document.getElementById('up_globe').click()" title="Subir Logo">
-                    <input type="text" id="pfx_globe" placeholder="Prefijo" style="flex: 0.7;">
-                    <input type="text" id="val_globe" placeholder="tu-sitio.com" style="flex: 1;">
-                    <input type="text" id="sub_globe" placeholder="Extra" style="flex: 0.6;">
+                    <div class="branding-fields">
+                        <input type="text" id="pfx_globe" placeholder="Prefijo" style="flex: 0.7;">
+                        <input type="text" id="val_globe" placeholder="tu-sitio.com" style="flex: 1;">
+                        <input type="text" id="sub_globe" placeholder="Extra" style="flex: 0.6;">
+                    </div>
                 </div>
 
                 <div class="branding-setting-row" style="border: 1px solid rgba(255, 153, 0, 0.4);">
@@ -770,9 +825,11 @@
                     <input type="checkbox" id="chk_coffee" title="Activar">
                     <input type="file" id="up_coffee" accept="image/*" style="display:none;">
                     <img id="prev_coffee" class="social-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ff9900' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 8h1a4 4 0 0 1 0 8h-1'%3E%3C/path%3E%3Cpath d='M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z'%3E%3C/path%3E%3Cline x1='6' y1='1' x2='6' y2='4'%3E%3C/line%3E%3Cline x1='10' y1='1' x2='10' y2='4'%3E%3C/line%3E%3Cline x1='14' y1='1' x2='14' y2='4'%3E%3C/line%3E%3C/svg%3E" onclick="document.getElementById('up_coffee').click()" title="Subir Logo">
-                    <input type="text" id="pfx_coffee" placeholder="Invitame un cafe" style="flex: 0.7;">
-                    <input type="text" id="val_coffee" placeholder="Cuenta/CLABE/Link" style="flex: 1;">
-                    <input type="text" id="sub_coffee" placeholder="Gracias!" style="flex: 0.6;">
+                    <div class="branding-fields">
+                        <input type="text" id="pfx_coffee" placeholder="Invitame un cafe" style="flex: 0.7;">
+                        <input type="text" id="val_coffee" placeholder="Cuenta/CLABE/Link" style="flex: 1;">
+                        <input type="text" id="sub_coffee" placeholder="Gracias!" style="flex: 0.6;">
+                    </div>
                 </div>
             </div>
 
@@ -818,7 +875,7 @@
         </div>
     </div>
 
-    <div class="zoom-indicator" id="zoomText">100%</div>
+    <div class="zoom-indicator" id="zoomText" role="button" tabindex="0" title="Restablecer visualizacion al 100%" aria-label="Restablecer visualizacion al 100%">100%</div>
 
     <div class="panel-wrapper text-panel" id="panel-text">
         <div class="panel-content">
@@ -872,12 +929,23 @@
             <div class="color-picker-container" title="Elegir Color">
                 <button id="currentColorBtn" class="current-color-btn" style="background: linear-gradient(135deg, #ffffff 50%, #111111 50%);"></button>
                 <div class="color-flyout" id="colorFlyout">
-                    <button class="color-btn active" style="background: linear-gradient(135deg, #ffffff 50%, #111111 50%); box-shadow: 0 0 8px rgba(255,255,255,0.6);" data-color="adaptive" title="Inteligente (Blanco/Negro)"></button>
-                    <button class="color-btn" style="background-color: #00ffff; box-shadow: 0 0 8px #00ffff;" data-color="#00ffff"></button>
-                    <button class="color-btn" style="background-color: #ff00ff; box-shadow: 0 0 8px #ff00ff;" data-color="#ff00ff"></button>
-                    <button class="color-btn" style="background-color: #39ff14; box-shadow: 0 0 8px #39ff14;" data-color="#39ff14"></button>
-                    <button class="color-btn" style="background-color: #ffff00; box-shadow: 0 0 8px #ffff00;" data-color="#ffff00"></button>
-                    <button class="color-btn" style="background-color: #ff9900; box-shadow: 0 0 8px #ff9900;" data-color="#ff9900"></button>
+                    <button class="color-btn active" style="background: linear-gradient(135deg, #ffffff 50%, #111111 50%);" data-color="adaptive" title="Inteligente (Blanco/Negro)"></button>
+                    <button class="color-btn" style="background-color: #ffffff;" data-color="#ffffff" title="Blanco"></button>
+                    <button class="color-btn" style="background-color: #212121;" data-color="#212121" title="Negro"></button>
+                    <button class="color-btn" style="background-color: #616161;" data-color="#616161" title="Gris"></button>
+                    <button class="color-btn" style="background-color: #e53935;" data-color="#e53935" title="Rojo"></button>
+                    <button class="color-btn" style="background-color: #f4511e;" data-color="#f4511e" title="Coral"></button>
+                    <button class="color-btn" style="background-color: #fb8c00;" data-color="#fb8c00" title="Naranja"></button>
+                    <button class="color-btn" style="background-color: #fdd835;" data-color="#fdd835" title="Amarillo"></button>
+                    <button class="color-btn" style="background-color: #7cb342;" data-color="#7cb342" title="Verde lima"></button>
+                    <button class="color-btn" style="background-color: #43a047;" data-color="#43a047" title="Verde"></button>
+                    <button class="color-btn" style="background-color: #00897b;" data-color="#00897b" title="Turquesa"></button>
+                    <button class="color-btn" style="background-color: #00acc1;" data-color="#00acc1" title="Cian"></button>
+                    <button class="color-btn" style="background-color: #1e88e5;" data-color="#1e88e5" title="Azul"></button>
+                    <button class="color-btn" style="background-color: #3949ab;" data-color="#3949ab" title="Indigo"></button>
+                    <button class="color-btn" style="background-color: #8e24aa;" data-color="#8e24aa" title="Morado"></button>
+                    <button class="color-btn" style="background-color: #d81b60;" data-color="#d81b60" title="Rosa"></button>
+                    <button class="color-btn" style="background-color: #6d4c41;" data-color="#6d4c41" title="Cafe"></button>
                 </div>
             </div>
             
@@ -1162,6 +1230,7 @@
 
         const currentColorBtn = document.getElementById('currentColorBtn');
         const colorFlyout = document.getElementById('colorFlyout');
+        document.body.appendChild(colorFlyout);
 
         const generateId = () => Math.random().toString(36).substr(2, 9);
 
@@ -1189,8 +1258,16 @@
         }
 
         // --- SISTEMA DE COLOR DESPLEGABLE ---
+        function positionColorFlyout() {
+            const buttonRect = currentColorBtn.getBoundingClientRect();
+            colorFlyout.style.left = 'auto';
+            colorFlyout.style.right = Math.max(8, window.innerWidth - buttonRect.left + 8) + 'px';
+            colorFlyout.style.top = (buttonRect.top + buttonRect.height / 2) + 'px';
+        }
+
         currentColorBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            positionColorFlyout();
             colorFlyout.classList.toggle('open');
         });
 
@@ -1207,14 +1284,17 @@
         });
 
         window.addEventListener('mousedown', (e) => {
-            if (!e.target.closest('.color-picker-container')) {
+            if (!e.target.closest('.color-picker-container') && !e.target.closest('#colorFlyout')) {
                 colorFlyout.classList.remove('open');
             }
         });
         window.addEventListener('touchstart', (e) => {
-            if (!e.target.closest('.color-picker-container')) {
+            if (!e.target.closest('.color-picker-container') && !e.target.closest('#colorFlyout')) {
                 colorFlyout.classList.remove('open');
             }
+        });
+        window.addEventListener('resize', () => {
+            if (colorFlyout.classList.contains('open')) positionColorFlyout();
         });
 
         // --- MANEJADORES DE NUEVOS CONTROLES DE TEXTO (ALINEACION Y TAMAÑO) ---
@@ -1776,6 +1856,9 @@
         let view = { x: 0, y: 0, scale: 1 };
         let initialPinchDistance = null; let initialViewScale = 1;
         let lastPanX = 0; let lastPanY = 0;
+        const POINTER_DRAG_THRESHOLD = 7;
+        let gestureStartClientX = 0; let gestureStartClientY = 0;
+        let smartTapCandidate = null; let selectionDragStarted = false;
         let animationOffset = 0; const animationSpeed = 0.35; 
 
         // ==========================================
@@ -2608,6 +2691,11 @@
             toggleNeonBtn.style.display = (shape.type === 'image' || shape.type === 'video' || shape.type === 'checkbox') ? 'none' : 'flex';
             if (shape.isNeon) toggleNeonBtn.classList.add('active');
             else toggleNeonBtn.classList.remove('active');
+
+            const actionsWidth = Math.min(floatingActions.offsetWidth, Math.max(0, canvas.width - 20));
+            const safeHalfWidth = actionsWidth / 2;
+            const safeCenterX = Math.max(safeHalfWidth + 10, Math.min(screenPos.x, canvas.width - safeHalfWidth - 10));
+            floatingActions.style.left = safeCenterX + 'px';
         }
 
         function screenToWorld(screenX, screenY) { return { x: (screenX - view.x) / view.scale, y: (screenY - view.y) / view.scale }; }
@@ -3100,7 +3188,16 @@
                 finalizeText();
                 return;
             }
-            if (e.touches && e.touches.length > 1) return;
+            if (e.touches && e.touches.length > 1) {
+                smartTapCandidate = null;
+                selectionDragStarted = false;
+                appState.isPanning = true;
+                if (appState.currentPath) {
+                    appState.currentPath = null;
+                    appState.snapTargetShape = null;
+                }
+                return;
+            }
             
             if (e.target !== textInput && !e.target.closest('.floating-actions') && !e.target.closest('.panel-wrapper') && !e.target.closest('.modal-overlay') && !e.target.closest('#top-demo-tab') && !e.target.closest('#progressTracker')) e.preventDefault();
             
@@ -3108,6 +3205,12 @@
             const worldPos = screenToWorld(clientX, clientY);
 
             if(e.target.closest('.panel-wrapper') || e.target.closest('.floating-actions') || e.target.closest('.modal-overlay') || e.target.closest('#top-demo-tab') || e.target.closest('#progressTracker')) return;
+
+            gestureStartClientX = clientX;
+            gestureStartClientY = clientY;
+            smartTapCandidate = null;
+            selectionDragStarted = false;
+            appState.isPanning = false;
 
             if (appState.tool === 'select' && appState.selectedId) {
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
@@ -3127,21 +3230,8 @@
 
             if (appState.tool === 'smart') {
                 clearSelection(); 
-                const clickedShape = getShapeAt(worldPos.x, worldPos.y);
-                if (clickedShape) {
-                    appState.isPanning = false; 
-                    clickedShape.clickAnimTime = Date.now();
-                    // LÓGICA DE CHECKBOX INTERACTIVO
-                    if (clickedShape.type === 'checkbox') {
-                        saveHistory();
-                        clickedShape.checked = !clickedShape.checked;
-                    }
-                    if(clickedShape.reaction && clickedShape.reaction.type !== 'none') triggerReaction(clickedShape);
-                    redrawAll();
-                } else {
-                    appState.isPanning = true;
-                    lastPanX = clientX; lastPanY = clientY;
-                }
+                smartTapCandidate = getShapeAt(worldPos.x, worldPos.y);
+                lastPanX = clientX; lastPanY = clientY;
                 return; 
             }
 
@@ -3151,7 +3241,11 @@
                     appState.selectedId = clickedShape.id; lastPanX = worldPos.x; lastPanY = worldPos.y; 
                     saveHistory(); updateTextPanelVisibility();
                 } 
-                else clearSelection();
+                else {
+                    clearSelection();
+                    appState.isPanning = true;
+                    lastPanX = clientX; lastPanY = clientY;
+                }
             } else {
                 clearSelection();
                 appState.startX = worldPos.x; appState.startY = worldPos.y;
@@ -3191,6 +3285,13 @@
             if (e.target !== textInput && !e.target.closest('.floating-actions') && !e.target.closest('.panel-wrapper') && !e.target.closest('.modal-overlay') && !e.target.closest('#top-demo-tab')) e.preventDefault();
 
             if (e.touches && e.touches.length === 2) {
+                smartTapCandidate = null;
+                selectionDragStarted = false;
+                appState.isPanning = true;
+                if (appState.currentPath) {
+                    appState.currentPath = null;
+                    appState.snapTargetShape = null;
+                }
                 const touch1 = e.touches[0], touch2 = e.touches[1];
                 const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
                 const midX = (touch1.clientX + touch2.clientX) / 2, midY = (touch1.clientY + touch2.clientY) / 2;
@@ -3200,6 +3301,7 @@
                     const worldX = (midX - view.x) / view.scale, worldY = (midY - view.y) / view.scale;
                     view.x = midX - worldX * view.scale + (midX - lastPanX); view.y = midY - worldY * view.scale + (midY - lastPanY);
                     lastPanX = midX; lastPanY = midY;
+                    redrawAll();
                 }
                 return;
             }
@@ -3208,6 +3310,7 @@
 
             const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             const worldPos = screenToWorld(clientX, clientY);
+            const gestureDistance = Math.hypot(clientX - gestureStartClientX, clientY - gestureStartClientY);
 
             if (appState.isResizingText && appState.selectedId) {
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
@@ -3219,11 +3322,20 @@
             }
 
             if (appState.tool === 'smart') {
+                if (!appState.isPanning && gestureDistance >= POINTER_DRAG_THRESHOLD) {
+                    appState.isPanning = true;
+                    smartTapCandidate = null;
+                }
                 if (appState.isPanning) {
                     view.x += clientX - lastPanX; view.y += clientY - lastPanY; lastPanX = clientX; lastPanY = clientY;
                     redrawAll();
                 }
+            } else if (appState.tool === 'select' && appState.isPanning) {
+                view.x += clientX - lastPanX; view.y += clientY - lastPanY; lastPanX = clientX; lastPanY = clientY;
+                redrawAll();
             } else if (appState.tool === 'select' && appState.selectedId) {
+                if (!selectionDragStarted && gestureDistance < POINTER_DRAG_THRESHOLD) return;
+                selectionDragStarted = true;
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
                 if (shape) { 
                     moveShape(shape, worldPos.x - lastPanX, worldPos.y - lastPanY); 
@@ -3284,6 +3396,11 @@
             initialPinchDistance = null;
             if (!appState.isInteracting) return;
             appState.isInteracting = false;
+            const wasPanning = appState.isPanning;
+            const pendingSmartShape = smartTapCandidate;
+            appState.isPanning = false;
+            smartTapCandidate = null;
+            selectionDragStarted = false;
             
             appState.snapLines = [];
             
@@ -3295,8 +3412,22 @@
             }
 
             if (appState.tool === 'smart') {
-                appState.isPanning = false;
+                if (!wasPanning && pendingSmartShape && e.type !== 'touchcancel') {
+                    pendingSmartShape.clickAnimTime = Date.now();
+                    // LÓGICA DE CHECKBOX INTERACTIVO
+                    if (pendingSmartShape.type === 'checkbox') {
+                        saveHistory();
+                        pendingSmartShape.checked = !pendingSmartShape.checked;
+                    }
+                    if (pendingSmartShape.reaction && pendingSmartShape.reaction.type !== 'none') triggerReaction(pendingSmartShape);
+                    redrawAll();
+                }
                 return; 
+            }
+
+            if (appState.tool === 'select' && wasPanning) {
+                redrawAll();
+                return;
             }
 
             if (appState.currentPath && appState.tool !== 'text' && appState.tool !== 'select') {
@@ -3364,6 +3495,26 @@
             const worldX = (e.clientX - view.x) / view.scale, worldY = (e.clientY - view.y) / view.scale;
             view.x = e.clientX - worldX * view.scale; view.y = e.clientY - worldY * view.scale;
             redrawAll();
+        });
+
+        function resetZoomTo100() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const worldCenterX = (centerX - view.x) / view.scale;
+            const worldCenterY = (centerY - view.y) / view.scale;
+            view.scale = 1;
+            view.x = centerX - worldCenterX;
+            view.y = centerY - worldCenterY;
+            redrawAll();
+            showMessage("Visualizacion restablecida al 100%");
+        }
+
+        zoomText.addEventListener('click', resetZoomTo100);
+        zoomText.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                resetZoomTo100();
+            }
         });
 
         container.addEventListener('mousedown', (e) => { markInteracting(); handlePointerDown(e); });
