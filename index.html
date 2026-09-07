@@ -170,7 +170,18 @@
             padding: 6px 10px; outline: none; font-size: 14px; cursor: pointer;
         }
         .size-control { display: flex; align-items: center; gap: 8px; color: #aaa; font-size: 14px; font-weight: bold; }
-        .size-control input[type="range"] { width: 100px; cursor: pointer; }
+        .size-control input[type="range"] { display: none; }
+        .font-size-btn {
+            width: 38px; height: 38px; flex: 0 0 38px; border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08);
+            color: #fff; font-size: 22px; font-weight: 700; line-height: 1; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; touch-action: manipulation;
+        }
+        .font-size-btn:hover { background: rgba(255,255,255,0.16); }
+        .font-size-btn:active { transform: scale(0.94); }
+        #fontSizeDisplay { min-width: 34px; text-align: center; color: #fff; font-variant-numeric: tabular-nums; }
+        body.light-mode .font-size-btn { color: #222; border-color: rgba(0,0,0,0.18); background: rgba(0,0,0,0.06); }
+        body.light-mode #fontSizeDisplay { color: #222; }
 
         .zoom-indicator {
             position: absolute; bottom: 20px; right: 20px; background: rgba(20, 20, 20, 0.8);
@@ -185,8 +196,80 @@
             position: absolute; top: 20px; right: 20px; background: rgba(20, 20, 20, 0.85);
             border: 1px solid rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px;
             color: #fff; font-family: system-ui; font-size: 14px; font-weight: bold;
-            display: none; z-index: 5; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: none; z-index: 15; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             backdrop-filter: blur(5px); align-items: center; gap: 10px;
+        }
+
+        /* --- NAVEGADOR ORDENADO DE PASOS --- */
+        .step-navigator {
+            position: absolute; left: 50%; bottom: 72px; transform: translateX(-50%);
+            z-index: 14; display: none; flex-direction: column; align-items: center; gap: 8px;
+            width: min(390px, calc(100vw - 24px)); pointer-events: none;
+            transition: bottom 0.25s ease;
+        }
+        .step-navigator.visible { display: flex; }
+        .step-nav-bar {
+            display: flex; align-items: center; gap: 6px; max-width: 100%; padding: 5px;
+            border-radius: 24px; background: rgba(20, 20, 20, 0.92);
+            border: 1px solid rgba(255,255,255,0.16); box-shadow: 0 5px 20px rgba(0,0,0,0.55);
+            backdrop-filter: blur(10px); pointer-events: auto;
+        }
+        .step-nav-toggle, .step-nav-btn {
+            min-width: 38px; height: 38px; border: 0; border-radius: 19px;
+            background: rgba(255,255,255,0.08); color: #fff; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            font: 700 13px system-ui, sans-serif; touch-action: manipulation;
+        }
+        .step-nav-toggle { padding: 0 12px; color: #00c2b8; }
+        .step-nav-btn:hover, .step-nav-toggle:hover { background: rgba(255,255,255,0.16); }
+        .step-nav-btn:disabled { opacity: 0.32; cursor: default; }
+        .step-nav-controls { display: flex; align-items: center; gap: 6px; }
+        .step-navigator.collapsed .step-nav-controls { display: none; }
+        .step-list-panel {
+            display: none; flex-direction: column; gap: 6px; width: 100%; max-height: min(42vh, 330px);
+            padding: 8px; box-sizing: border-box; overflow-y: auto; overscroll-behavior: contain;
+            background: rgba(20, 20, 20, 0.95); border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 14px; box-shadow: 0 8px 26px rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px); pointer-events: auto; scrollbar-width: thin;
+            touch-action: pan-y; -webkit-overflow-scrolling: touch;
+        }
+        .step-navigator.list-open .step-list-panel { display: flex; }
+        .step-list-item {
+            width: 100%; min-height: 42px; display: grid; grid-template-columns: 30px minmax(0, 1fr) auto;
+            align-items: center; gap: 8px; padding: 7px 10px; box-sizing: border-box;
+            border: 1px solid transparent; border-radius: 10px; background: rgba(255,255,255,0.06);
+            color: #fff; text-align: left; cursor: pointer; touch-action: manipulation;
+        }
+        .step-list-item:hover { background: rgba(255,255,255,0.12); }
+        .step-list-item.current { border-color: #00c2b8; background: rgba(0,194,184,0.14); }
+        .step-list-item.completed .step-list-title { text-decoration: line-through; opacity: 0.65; }
+        .step-list-number {
+            width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; background: rgba(0,194,184,0.18); color: #5de1d9; font-weight: 800;
+        }
+        .step-list-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+        .step-list-state { font-size: 15px; color: #8b949e; }
+        .step-list-item.completed .step-list-state { color: #43a047; }
+        body.light-mode .step-nav-bar, body.light-mode .step-list-panel {
+            background: rgba(255,255,255,0.95); border-color: rgba(0,0,0,0.16);
+            box-shadow: 0 5px 18px rgba(0,0,0,0.18);
+        }
+        body.light-mode .step-nav-btn, body.light-mode .step-nav-toggle,
+        body.light-mode .step-list-item { color: #202124; background: rgba(0,0,0,0.06); }
+        body.light-mode .step-nav-toggle { color: #007f78; }
+        body.light-mode .step-list-item.current { border-color: #00897b; background: rgba(0,137,123,0.12); }
+
+        @media (max-width: 560px) {
+            #progressTracker {
+                top: calc(54px + env(safe-area-inset-top, 0px)); right: 8px;
+                max-width: calc(100vw - 16px); padding: 7px 10px; gap: 7px;
+                box-sizing: border-box;
+            }
+            #progressTracker > div:last-child { width: min(100px, 25vw) !important; }
+            .step-navigator { width: min(360px, calc(100vw - 16px)); z-index: 25; }
+            .step-nav-toggle, .step-nav-btn { min-width: 42px; height: 42px; }
+            .font-size-btn { width: 42px; height: 42px; flex-basis: 42px; }
+            .panel-wrapper.text-panel { bottom: calc(15px + env(safe-area-inset-bottom, 0px)); }
         }
 
         #textInput {
@@ -276,8 +359,12 @@
         /* --- GESTOR DE DIAGRAMAS --- */
         .diagram-list {
             display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; padding: 5px 0;
-            scrollbar-width: thin; scrollbar-color: #555 #111;
+            scrollbar-width: thin; scrollbar-color: #555 #111; overscroll-behavior-y: contain;
+            touch-action: pan-y; -webkit-overflow-scrolling: touch;
         }
+        .diagram-save-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+        .diagram-save-row #saveAsNewBtn { grid-column: 1 / -1; min-height: 38px; }
+        .diagram-list-count { color: #aaa; font-size: 12px; text-align: right; min-height: 15px; }
         .diagram-item {
             display: flex; justify-content: space-between; align-items: center;
             background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px;
@@ -342,7 +429,7 @@
             width: 480px; max-width: 95vw; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             max-height: 45px; overflow: hidden;
         }
-        #top-demo-tab.expanded { max-height: 600px; }
+        #top-demo-tab.expanded { max-height: 600px; z-index: 40; }
         .demo-tab-header {
             display: flex; width: 100%; align-items: center; justify-content: space-between;
             padding: 5px 15px; box-sizing: border-box; height: 45px; cursor: pointer;
@@ -627,11 +714,13 @@
             <p style="font-size:12px; color:#aaa; margin:0; text-align:center;">Guarda tus clases en alta calidad en tu computadora.</p>
             
             <div style="display:flex; flex-direction: column; gap:15px; margin-top: 15px;">
-                <div style="display:flex; gap:8px;">
+                <div class="diagram-save-row">
                     <input type="text" id="diagramNameInput" placeholder="Nombre de la pizarra..." style="flex:1;">
                     <button class="btn-save" onclick="saveCurrentDiagram()" style="white-space:nowrap;">Guardar / Actualizar</button>
+                    <button class="btn-action" id="saveAsNewBtn" onclick="saveCurrentDiagram(true)" type="button">Guardar como nueva pizarra</button>
                 </div>
-                
+
+                <div class="diagram-list-count" id="diagramListCount">0 pizarras guardadas</div>
                 <div id="diagramsListContainer" class="diagram-list"></div>
                 
                 <button class="btn-save" onclick="downloadPizarra()" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
@@ -656,8 +745,8 @@
     <div id="stepModalOverlay" class="modal-overlay">
         <div class="modal-box">
             <h3>Asignar Paso</h3>
-            <p style="font-size:12px; color:#aaa; margin:0; text-align:center;">En que numero de paso debe aparecer?</p>
-            <input type="number" id="stepNumberInput" placeholder="Ej: 1, 2... (Vacio = Fondo)" min="1" style="margin-top: 10px;">
+            <p style="font-size:12px; color:#aaa; margin:0; text-align:center;">Elige su lugar en el recorrido. Al guardar también se captura la posición y el zoom actuales.</p>
+            <input type="number" id="stepNumberInput" placeholder="Ej: 1, 2, 3..." min="1" style="margin-top: 10px;">
             <div class="modal-btns">
                 <button class="btn-cancel" onclick="closeStepModal()">Cancelar</button>
                 <button class="btn-save" onclick="saveStepConfig()">Guardar</button>
@@ -877,6 +966,20 @@
 
     <div class="zoom-indicator" id="zoomText" role="button" tabindex="0" title="Restablecer visualizacion al 100%" aria-label="Restablecer visualizacion al 100%">100%</div>
 
+    <div class="step-navigator collapsed" id="stepNavigator" aria-label="Navegador de pasos de presentación">
+        <div class="step-list-panel" id="stepListPanel" aria-label="Lista ordenada de pasos"></div>
+        <div class="step-nav-bar">
+            <button class="step-nav-toggle" id="stepNavToggleBtn" type="button" aria-expanded="false" title="Mostrar u ocultar controles de pasos">
+                <span aria-hidden="true">☰</span><span id="stepStatusText">Pasos 0</span>
+            </button>
+            <div class="step-nav-controls">
+                <button class="step-nav-btn" id="stepPrevBtn" type="button" aria-label="Paso anterior" title="Paso anterior">←</button>
+                <button class="step-nav-btn" id="stepListBtn" type="button" aria-label="Abrir lista de pasos" aria-expanded="false" title="Abrir lista de pasos">Lista</button>
+                <button class="step-nav-btn" id="stepNextBtn" type="button" aria-label="Paso siguiente" title="Paso siguiente">→</button>
+            </div>
+        </div>
+    </div>
+
     <div class="panel-wrapper text-panel" id="panel-text">
         <div class="panel-content">
             <button class="tool-btn" id="tool-text" title="Activar Texto"><i data-lucide="type"></i></button>
@@ -893,16 +996,18 @@
                 <select id="fontFamilySelect" title="Tipografia">
                     <option value="'Pacifico', cursive" style="font-family: 'Pacifico', cursive;">Letra Neon</option>
                     <option value="system-ui, sans-serif" style="font-family: system-ui, sans-serif;">Nativa Limpia</option>
-                    <option value="Arial, sans-serif" style="font-family: Arial, sans-serif;">Arial</option>
+                    <option value="Arial, sans-serif" style="font-family: Arial, sans-serif;" selected>Arial</option>
                     <option value="'Courier New', monospace" style="font-family: 'Courier New', monospace;">Codigo (Courier)</option>
                     <option value="'Times New Roman', serif" style="font-family: 'Times New Roman', serif;">Elegante (Times)</option>
                     <option value="Impact, sans-serif" style="font-family: Impact, sans-serif;">Impact</option>
                 </select>
                 <div class="size-control">
                     <label for="fontSizeSlider">Tamano</label>
-                    <input type="range" id="fontSizeSlider" min="10" max="150" value="40">
+                    <input type="range" id="fontSizeSlider" min="10" max="150" value="40" tabindex="-1" aria-hidden="true">
+                    <button class="font-size-btn" id="fontSizeDecreaseBtn" type="button" aria-label="Reducir tamaño de letra" title="Reducir tamaño">−</button>
                     <!-- NUEVO: Etiqueta numérica del tamaño -->
-                    <span id="fontSizeDisplay" style="width: 30px; text-align: right;">40</span>
+                    <span id="fontSizeDisplay" aria-live="polite">40</span>
+                    <button class="font-size-btn" id="fontSizeIncreaseBtn" type="button" aria-label="Aumentar tamaño de letra" title="Aumentar tamaño">+</button>
                 </div>
             </div>
         </div>
@@ -1027,8 +1132,8 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const swCode = `
-                    const CACHE_NAME = 'pizarra-v1';
-                    const urlsToCache = ['./', './index.html', './manifest.json'];
+                    const CACHE_NAME = 'pizarra-v2-20260907';
+                    const urlsToCache = ['./manifest.json'];
 
                     self.addEventListener('install', event => {
                         event.waitUntil(
@@ -1051,12 +1156,22 @@
                     });
 
                     self.addEventListener('fetch', event => {
+                        if (event.request.mode === 'navigate' || event.request.destination === 'document') {
+                            event.respondWith(
+                                fetch(event.request)
+                                    .then(response => {
+                                        const responseCopy = response.clone();
+                                        caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseCopy));
+                                        return response;
+                                    })
+                                    .catch(() => caches.match(event.request))
+                            );
+                            return;
+                        }
+
                         event.respondWith(
                             caches.match(event.request)
-                                .then(response => {
-                                    if (response) return response;
-                                    return fetch(event.request).catch(() => null);
-                                })
+                                .then(response => response || fetch(event.request))
                         );
                     });
                 `;
@@ -1164,6 +1279,7 @@
         let savedDiagrams = [];
         let currentDiagramId = null; // ID del diagrama actual para actualizar
         const diagramsListContainer = document.getElementById('diagramsListContainer');
+        const diagramListCount = document.getElementById('diagramListCount');
 
         async function saveDiagramsToMemory() {
             await dbClear('diagrams');
@@ -1189,12 +1305,20 @@
             setTimeout(() => { toast.style.opacity = '0'; }, 3000);
         }
 
-        window.togglePanel = function(panelId) {
+        function setPanelCollapsedState(panelId, shouldCollapse) {
             const panel = document.getElementById(panelId);
+            if (!panel || panel.classList.contains('collapsed') === shouldCollapse) return;
             const btn = panel.querySelector('.toggle-btn');
-            panel.classList.toggle('collapsed');
+            panel.classList.toggle('collapsed', shouldCollapse);
             if (panel.classList.contains('collapsed')) btn.classList.add('is-collapsed');
             else btn.classList.remove('is-collapsed');
+            if (panelId === 'panel-text') scheduleStepNavigatorPosition();
+        }
+
+        window.togglePanel = function(panelId) {
+            const panel = document.getElementById(panelId);
+            if (!panel) return;
+            setPanelCollapsedState(panelId, !panel.classList.contains('collapsed'));
         };
 
         const canvas = document.getElementById('drawingBoard');
@@ -1214,10 +1338,22 @@
         const copyObjBtn = document.getElementById('copyObjBtn'); 
         const swapObjBtn = document.getElementById('swapObjBtn');
         const swapVideoInput = document.getElementById('swapVideoInput');
+
+        const stepModalOverlay = document.getElementById('stepModalOverlay');
+        const stepNumberInput = document.getElementById('stepNumberInput');
+        const stepNavigator = document.getElementById('stepNavigator');
+        const stepListPanel = document.getElementById('stepListPanel');
+        const stepNavToggleBtn = document.getElementById('stepNavToggleBtn');
+        const stepStatusText = document.getElementById('stepStatusText');
+        const stepPrevBtn = document.getElementById('stepPrevBtn');
+        const stepListBtn = document.getElementById('stepListBtn');
+        const stepNextBtn = document.getElementById('stepNextBtn');
         
         const fontFamilySelect = document.getElementById('fontFamilySelect');
         const fontSizeSlider = document.getElementById('fontSizeSlider');
         const fontSizeDisplay = document.getElementById('fontSizeDisplay');
+        const fontSizeDecreaseBtn = document.getElementById('fontSizeDecreaseBtn');
+        const fontSizeIncreaseBtn = document.getElementById('fontSizeIncreaseBtn');
         
         const elementsContainer = document.getElementById('elementsContainer');
         const videosContainer = document.getElementById('videosContainer');
@@ -1233,6 +1369,9 @@
         document.body.appendChild(colorFlyout);
 
         const generateId = () => Math.random().toString(36).substr(2, 9);
+        const DEFAULT_EDITOR_FONT = 'Arial, sans-serif';
+        const DEFAULT_CHECKBOX_FONT = 'Arial, sans-serif';
+        const DEFAULT_CHECKBOX_FONT_SIZE = 24;
 
         // --- ESTADO INICIAL ---
         let appState = {
@@ -1242,7 +1381,7 @@
             editingShapeId: null, // Para saber si estamos editando texto existente
             snapTargetShape: null, 
             currentImageId: null, currentImageData: null,
-            currentFont: "'Pacifico', cursive", currentFontSize: 40,
+            currentFont: DEFAULT_EDITOR_FONT, currentFontSize: 40,
             textAlign: 'left', // Nueva propiedad
             theme: 'dark', 
             showGrid: true,
@@ -1334,7 +1473,7 @@
             }
             if (appState.selectedId) {
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
-                if (shape && shape.type === 'text') { 
+                if (shape && (shape.type === 'text' || shape.type === 'checkbox')) { 
                     saveHistory(); 
                     shape.fontSize = appState.currentFontSize; 
                     shape._cachedLines = null; 
@@ -1342,6 +1481,19 @@
                 }
             }
         });
+
+        function adjustFontSize(direction) {
+            const minSize = Number(fontSizeSlider.min) || 10;
+            const maxSize = Number(fontSizeSlider.max) || 150;
+            const currentSize = Number(appState.currentFontSize) || Number(fontSizeSlider.value) || 40;
+            const nextSize = Math.max(minSize, Math.min(maxSize, currentSize + direction * 2));
+            if (nextSize === currentSize) return;
+            fontSizeSlider.value = String(nextSize);
+            fontSizeSlider.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        fontSizeDecreaseBtn.addEventListener('click', () => adjustFontSize(-1));
+        fontSizeIncreaseBtn.addEventListener('click', () => adjustFontSize(1));
 
         // --- SISTEMA DE MEMORIA Y DESCARGA LOCAL ---
         let savedElements = [];
@@ -1411,11 +1563,13 @@
                     const loadedData = JSON.parse(evt.target.result);
                     if (Array.isArray(loadedData)) {
                         appState.paths = loadedData;
+                        currentPresentationStepId = null;
                         currentDiagramId = null;
                         document.getElementById('diagramNameInput').value = '';
                         document.getElementById('demoTitleInput').value = '';
                     } else {
                         appState.paths = loadedData.paths || [];
+                        currentPresentationStepId = null;
                         currentDiagramId = loadedData.id || null;
                         document.getElementById('diagramNameInput').value = loadedData.name || '';
                         document.getElementById('demoTitleInput').value = loadedData.demoTitle || '';
@@ -1437,6 +1591,7 @@
             if (confirm("¿Borrar todo y empezar una nueva pizarra? (Asegurate de haber descargado si quieres guardarla)")) {
                 saveHistory();
                 appState.paths = [];
+                currentPresentationStepId = null;
                 currentDiagramId = null;
                 document.getElementById('diagramNameInput').value = '';
                 document.getElementById('demoTitleInput').value = '';
@@ -1859,7 +2014,283 @@
         const POINTER_DRAG_THRESHOLD = 7;
         let gestureStartClientX = 0; let gestureStartClientY = 0;
         let smartTapCandidate = null; let selectionDragStarted = false;
+        let touchSelectionCandidate = null;
+        let lastTouchEventTime = 0;
         let animationOffset = 0; const animationSpeed = 0.35; 
+
+        // ==========================================
+        // RECORRIDO ORDENADO DE CASILLAS / PRESENTACION
+        // ==========================================
+        let currentPresentationStepId = null;
+        let stepConfigTargetId = null;
+        let lastStepListSignature = '';
+        let stepPositionFrame = null;
+        let stepPositionTimer = null;
+
+        function captureCurrentPresentationView() {
+            return {
+                centerX: (canvas.width / 2 - view.x) / view.scale,
+                centerY: (canvas.height / 2 - view.y) / view.scale,
+                scale: view.scale
+            };
+        }
+
+        function getPresentationSteps() {
+            const steps = [];
+            let creationOrder = 0;
+            appState.paths.forEach((shape, sourceIndex) => {
+                if (shape.type !== 'checkbox') return;
+                creationOrder += 1;
+                const storedOrder = Number(shape.presentationStep);
+                const explicitOrder = Number.isFinite(storedOrder) && storedOrder > 0 ? storedOrder : null;
+                steps.push({
+                    shape,
+                    sourceIndex,
+                    explicitOrder,
+                    effectiveOrder: explicitOrder !== null ? explicitOrder : creationOrder
+                });
+            });
+            return steps.sort((a, b) => a.effectiveOrder - b.effectiveOrder || a.sourceIndex - b.sourceIndex);
+        }
+
+        function getNextPresentationStepNumber() {
+            const checkboxes = appState.paths.filter(shape => shape.type === 'checkbox');
+            const highestExplicitStep = checkboxes.reduce((highest, shape) => {
+                const value = Number(shape.presentationStep);
+                return Number.isFinite(value) && value > highest ? value : highest;
+            }, 0);
+            return Math.max(checkboxes.length, highestExplicitStep) + 1;
+        }
+
+        function updateStepNavigatorPosition() {
+            if (!stepNavigator) return;
+            let bottom = window.innerWidth <= 560 ? 86 : 72;
+            const textPanel = document.getElementById('panel-text');
+            const textContent = textPanel ? textPanel.querySelector('.panel-content') : null;
+            if (textPanel && textContent && !textPanel.classList.contains('collapsed')) {
+                const rect = textContent.getBoundingClientRect();
+                if (rect.height > 0 && rect.top < window.innerHeight) {
+                    bottom = Math.max(bottom, window.innerHeight - rect.top + 12);
+                }
+            }
+            stepNavigator.style.bottom = `${Math.round(bottom)}px`;
+        }
+
+        function scheduleStepNavigatorPosition() {
+            if (stepPositionFrame) cancelAnimationFrame(stepPositionFrame);
+            if (stepPositionTimer) clearTimeout(stepPositionTimer);
+            stepPositionFrame = requestAnimationFrame(() => {
+                stepPositionFrame = null;
+                updateStepNavigatorPosition();
+            });
+            stepPositionTimer = setTimeout(() => {
+                stepPositionTimer = null;
+                updateStepNavigatorPosition();
+            }, 450);
+        }
+
+        function setTextToolbarCollapsed(shouldCollapse) {
+            setPanelCollapsedState('panel-text', shouldCollapse);
+            scheduleStepNavigatorPosition();
+        }
+
+        const textPanelContentForNavigation = document.querySelector('#panel-text .panel-content');
+        if (textPanelContentForNavigation) {
+            textPanelContentForNavigation.addEventListener('transitionend', scheduleStepNavigatorPosition);
+            if ('ResizeObserver' in window) {
+                const textPanelResizeObserver = new ResizeObserver(scheduleStepNavigatorPosition);
+                textPanelResizeObserver.observe(textPanelContentForNavigation);
+            }
+        }
+
+        function activatePresentationMode() {
+            if (appState.isTyping) finalizeText();
+            appState.tool = 'smart';
+            document.querySelectorAll('.tool-btn:not(.action-btn):not(.gallery-thumb):not(.btn-color)').forEach(button => button.classList.remove('active'));
+            const smartBtn = document.getElementById('tool-smart');
+            if (smartBtn) smartBtn.classList.add('active');
+            container.className = 'tool-smart';
+            clearSelection();
+            setTextToolbarCollapsed(true);
+        }
+
+        function updateStepNavigationUI(forceListRefresh = false) {
+            if (!stepNavigator || !stepListPanel) return;
+            const steps = getPresentationSteps();
+            const wasVisible = stepNavigator.classList.contains('visible');
+
+            if (steps.length === 0) {
+                currentPresentationStepId = null;
+                lastStepListSignature = '';
+                stepNavigator.classList.remove('visible', 'list-open');
+                return;
+            }
+
+            stepNavigator.classList.add('visible');
+            if (!steps.some(item => item.shape.id === currentPresentationStepId)) currentPresentationStepId = null;
+
+            const currentIndex = steps.findIndex(item => item.shape.id === currentPresentationStepId);
+            stepStatusText.textContent = currentIndex >= 0 ? `${currentIndex + 1}/${steps.length}` : `Pasos ${steps.length}`;
+            stepPrevBtn.disabled = currentIndex <= 0;
+            stepNextBtn.disabled = currentIndex === steps.length - 1;
+
+            const signature = steps.map((item, index) => [
+                index,
+                item.shape.id,
+                item.shape.text || '',
+                item.shape.checked ? 1 : 0,
+                item.shape.presentationStep || ''
+            ].join('|')).join('::') + `//${currentPresentationStepId || ''}`;
+
+            const shouldRefreshList = forceListRefresh || signature !== lastStepListSignature;
+            if (shouldRefreshList) {
+                lastStepListSignature = signature;
+                stepListPanel.replaceChildren();
+
+                steps.forEach((item, index) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'step-list-item';
+                    if (item.shape.checked) button.classList.add('completed');
+                    if (item.shape.id === currentPresentationStepId) {
+                        button.classList.add('current');
+                        button.setAttribute('aria-current', 'step');
+                    }
+                    button.setAttribute('aria-label', `Ir al paso ${index + 1}: ${item.shape.text || 'Tarea sin titulo'}`);
+
+                    const number = document.createElement('span');
+                    number.className = 'step-list-number';
+                    number.textContent = String(index + 1);
+
+                    const title = document.createElement('span');
+                    title.className = 'step-list-title';
+                    title.textContent = item.shape.text || 'Tarea sin titulo';
+
+                    const state = document.createElement('span');
+                    state.className = 'step-list-state';
+                    state.textContent = item.shape.checked ? '✓' : '○';
+                    state.title = item.shape.checked ? 'Tarea completada' : 'Tarea pendiente';
+
+                    button.append(number, title, state);
+                    button.addEventListener('click', () => goToPresentationStepById(item.shape.id));
+                    stepListPanel.appendChild(button);
+                });
+            }
+
+            if (!wasVisible || shouldRefreshList) scheduleStepNavigatorPosition();
+        }
+
+        function goToPresentationStepById(stepId) {
+            const steps = getPresentationSteps();
+            const targetItem = steps.find(item => item.shape.id === stepId);
+            if (!targetItem) return;
+
+            activatePresentationMode();
+            currentPresentationStepId = targetItem.shape.id;
+
+            const savedView = targetItem.shape.presentationView;
+            const hasSavedView = savedView && Number.isFinite(Number(savedView.centerX)) &&
+                Number.isFinite(Number(savedView.centerY)) && Number.isFinite(Number(savedView.scale));
+            const fallbackCenter = getCenter(targetItem.shape);
+            const targetScale = hasSavedView ? Math.max(0.2, Math.min(Number(savedView.scale), 5)) : view.scale;
+            const targetCenterX = hasSavedView ? Number(savedView.centerX) : fallbackCenter.x;
+            const targetCenterY = hasSavedView ? Number(savedView.centerY) : fallbackCenter.y;
+
+            view.scale = targetScale;
+            view.x = canvas.width / 2 - targetCenterX * targetScale;
+            view.y = canvas.height / 2 - targetCenterY * targetScale;
+            stepNavigator.classList.remove('list-open');
+            stepListBtn.setAttribute('aria-expanded', 'false');
+            markInteracting();
+            redrawAll();
+        }
+
+        function moveThroughPresentationSteps(direction) {
+            const steps = getPresentationSteps();
+            if (steps.length === 0) return;
+            const currentIndex = steps.findIndex(item => item.shape.id === currentPresentationStepId);
+            const targetIndex = currentIndex < 0 ? 0 : Math.max(0, Math.min(currentIndex + direction, steps.length - 1));
+            goToPresentationStepById(steps[targetIndex].shape.id);
+        }
+
+        stepNavToggleBtn.addEventListener('click', () => {
+            const willCollapse = !stepNavigator.classList.contains('collapsed');
+            stepNavigator.classList.toggle('collapsed', willCollapse);
+            stepNavToggleBtn.setAttribute('aria-expanded', String(!willCollapse));
+            if (willCollapse) {
+                stepNavigator.classList.remove('list-open');
+                stepListBtn.setAttribute('aria-expanded', 'false');
+            }
+            scheduleStepNavigatorPosition();
+        });
+
+        stepPrevBtn.addEventListener('click', () => moveThroughPresentationSteps(-1));
+        stepNextBtn.addEventListener('click', () => moveThroughPresentationSteps(1));
+        stepListBtn.addEventListener('click', () => {
+            const isOpen = stepNavigator.classList.toggle('list-open');
+            stepListBtn.setAttribute('aria-expanded', String(isOpen));
+            updateStepNavigationUI(isOpen);
+        });
+
+        window.addEventListener('resize', scheduleStepNavigatorPosition);
+
+        assignStepBtn.addEventListener('click', () => {
+            const shape = appState.paths.find(item => item.id === appState.selectedId);
+            if (!shape || shape.type !== 'checkbox') {
+                showMessage('Selecciona una casilla para asignar el paso', true);
+                return;
+            }
+            const steps = getPresentationSteps();
+            const currentIndex = steps.findIndex(item => item.shape.id === shape.id);
+            stepConfigTargetId = shape.id;
+            stepNumberInput.max = String(Math.max(1, steps.length));
+            stepNumberInput.value = String(currentIndex >= 0 ? currentIndex + 1 : steps.length);
+            stepModalOverlay.style.display = 'flex';
+            setTimeout(() => {
+                stepNumberInput.focus();
+                stepNumberInput.select();
+            }, 30);
+        });
+
+        window.closeStepModal = function() {
+            stepModalOverlay.style.display = 'none';
+            stepConfigTargetId = null;
+        };
+
+        window.saveStepConfig = function() {
+            const targetShape = appState.paths.find(item => item.id === stepConfigTargetId && item.type === 'checkbox');
+            if (!targetShape) {
+                window.closeStepModal();
+                return;
+            }
+
+            const orderedShapes = getPresentationSteps().map(item => item.shape).filter(shape => shape.id !== targetShape.id);
+            const currentPosition = getPresentationSteps().findIndex(item => item.shape.id === targetShape.id) + 1;
+            const requestedPosition = Number.parseInt(stepNumberInput.value, 10);
+            const safePosition = Number.isFinite(requestedPosition)
+                ? Math.max(1, Math.min(requestedPosition, orderedShapes.length + 1))
+                : Math.max(1, currentPosition);
+
+            saveHistory();
+            orderedShapes.splice(safePosition - 1, 0, targetShape);
+            orderedShapes.forEach((shape, index) => { shape.presentationStep = index + 1; });
+            targetShape.presentationView = captureCurrentPresentationView();
+            currentPresentationStepId = targetShape.id;
+
+            window.closeStepModal();
+            updateStepNavigationUI(true);
+            redrawAll();
+            showMessage(`Paso ${safePosition} guardado con su vista`);
+        };
+
+        stepNumberInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter') window.saveStepConfig();
+            if (event.key === 'Escape') window.closeStepModal();
+        });
+
+        stepModalOverlay.addEventListener('click', event => {
+            if (event.target === stepModalOverlay) window.closeStepModal();
+        });
 
         // ==========================================
         // VIDEO VIEWPORT MANAGEMENT
@@ -1964,23 +2395,31 @@
             diagramsModalOverlay.style.display = 'none';
         };
 
-        window.saveCurrentDiagram = async function() {
+        window.saveCurrentDiagram = async function(forceNew = false) {
             const name = diagramNameInput.value.trim();
             const demoTitle = document.getElementById('demoTitleInput').value.trim();
             
             if (!name) { showMessage("Ponle un nombre al diagrama", true); return; }
             if (appState.paths.length === 0) { showMessage("La pizarra esta vacia", true); return; }
             
-            if (currentDiagramId) {
+            if (currentDiagramId && !forceNew) {
                 const existingDiag = savedDiagrams.find(d => d.id === currentDiagramId);
                 if (existingDiag) {
-                    existingDiag.name = name;
-                    existingDiag.demoTitle = demoTitle;
-                    existingDiag.paths = JSON.parse(JSON.stringify(appState.paths));
-                    existingDiag.date = new Date().toLocaleDateString();
-                    await saveDiagramsToMemory();
-                    renderDiagramsList();
-                    showMessage("Avance guardado");
+                    const updatedDiagram = {
+                        ...existingDiag,
+                        name,
+                        demoTitle,
+                        paths: JSON.parse(JSON.stringify(appState.paths)),
+                        date: new Date().toLocaleDateString()
+                    };
+                    try {
+                        await dbPut('diagrams', updatedDiagram);
+                        Object.assign(existingDiag, updatedDiagram);
+                        renderDiagramsList();
+                        showMessage("Avance guardado");
+                    } catch (error) {
+                        showMessage("No se pudo guardar. Revisa el espacio disponible del dispositivo.", true);
+                    }
                     return;
                 }
             }
@@ -1994,17 +2433,22 @@
                 date: new Date().toLocaleDateString()
             };
             
-            currentDiagramId = newId;
-            savedDiagrams.push(newDiagram);
-            await saveDiagramsToMemory();
-            renderDiagramsList();
-            showMessage("Diagrama guardado");
+            try {
+                await dbPut('diagrams', newDiagram);
+                currentDiagramId = newId;
+                savedDiagrams.push(newDiagram);
+                renderDiagramsList();
+                showMessage(forceNew ? "Nueva pizarra guardada" : "Diagrama guardado");
+            } catch (error) {
+                showMessage("No se pudo guardar. Revisa el espacio disponible del dispositivo.", true);
+            }
         };
 
         window.loadDiagram = function(id) {
             const diagram = savedDiagrams.find(d => d.id === id);
             if (diagram) {
                 appState.paths = JSON.parse(JSON.stringify(diagram.paths));
+                currentPresentationStepId = null;
                 currentDiagramId = id;
                 diagramNameInput.value = diagram.name;
                 document.getElementById('demoTitleInput').value = diagram.demoTitle || '';
@@ -2020,13 +2464,14 @@
             if (confirm("Eliminar este diagrama permanentemente?")) {
                 savedDiagrams = savedDiagrams.filter(d => d.id !== id);
                 if (currentDiagramId === id) currentDiagramId = null;
-                await saveDiagramsToMemory();
+                await dbDelete('diagrams', id);
                 renderDiagramsList();
             }
         };
 
         function renderDiagramsList() {
             diagramsListContainer.innerHTML = '';
+            diagramListCount.innerText = `${savedDiagrams.length} ${savedDiagrams.length === 1 ? 'pizarra guardada' : 'pizarras guardadas'}`;
             if (savedDiagrams.length === 0) {
                 diagramsListContainer.innerHTML = '<span style="font-size:12px; color:#aaa; text-align:center; display:block;">No hay diagramas guardados.</span>';
                 return;
@@ -2268,16 +2713,18 @@
 
         function updateTextPanelVisibility() {
             let showPanel = false;
-            if (appState.tool === 'text') showPanel = true;
+            if (appState.tool === 'text' || appState.tool === 'checkbox') showPanel = true;
             if (appState.tool === 'select' && appState.selectedId) {
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
                 if (shape && (shape.type === 'text' || shape.type === 'checkbox')) {
                     showPanel = true;
-                    fontFamilySelect.value = shape.font || "'Pacifico', cursive";
-                    fontSizeSlider.value = shape.fontSize || 40;
-                    fontSizeDisplay.innerText = shape.fontSize || 40; // update val
-                    appState.currentFont = shape.font || "'Pacifico', cursive";
-                    appState.currentFontSize = shape.fontSize || 40;
+                    const defaultShapeFont = shape.type === 'checkbox' ? DEFAULT_CHECKBOX_FONT : "'Pacifico', cursive";
+                    const defaultShapeSize = shape.type === 'checkbox' ? DEFAULT_CHECKBOX_FONT_SIZE : 40;
+                    fontFamilySelect.value = shape.font || defaultShapeFont;
+                    fontSizeSlider.value = shape.fontSize || defaultShapeSize;
+                    fontSizeDisplay.innerText = shape.fontSize || defaultShapeSize; // update val
+                    appState.currentFont = shape.font || defaultShapeFont;
+                    appState.currentFontSize = shape.fontSize || defaultShapeSize;
                     
                     if (shape.type === 'text') {
                         document.getElementById('textAlignControls').style.display = 'flex';
@@ -2295,6 +2742,7 @@
             }
             const topPanel = document.getElementById('panel-text');
             if(showPanel && topPanel.classList.contains('collapsed')) { togglePanel('panel-text'); }
+            scheduleStepNavigatorPosition();
         }
 
         function wrapText(ctxToUse, text, maxWidth) {
@@ -2349,8 +2797,8 @@
                 minY = shape.y; 
                 maxY = shape.y + (lines.length * fSize * 1.2); 
             } else if (shape.type === 'checkbox') {
-                const fSize = shape.fontSize || 40;
-                const font = shape.font || "'Pacifico', cursive";
+                const fSize = shape.fontSize || DEFAULT_CHECKBOX_FONT_SIZE;
+                const font = shape.font || DEFAULT_CHECKBOX_FONT;
                 ctx.font = `${fSize}px ${font}`;
                 const maxWidth = 300;
                 
@@ -2464,7 +2912,13 @@
 
         function moveShape(shape, dx, dy) {
             if (shape.type === 'draw') { shape.points.forEach(p => { p.x += dx; p.y += dy; }); }
-            else if (shape.type === 'text' || shape.type === 'checkbox') { shape.x += dx; shape.y += dy; }
+            else if (shape.type === 'text' || shape.type === 'checkbox') {
+                shape.x += dx; shape.y += dy;
+                if (shape.type === 'checkbox' && shape.presentationView) {
+                    if (Number.isFinite(Number(shape.presentationView.centerX))) shape.presentationView.centerX = Number(shape.presentationView.centerX) + dx;
+                    if (Number.isFinite(Number(shape.presentationView.centerY))) shape.presentationView.centerY = Number(shape.presentationView.centerY) + dy;
+                }
+            }
             else { shape.startX += dx; shape.startY += dy; shape.endX += dx; shape.endY += dy; }
         }
 
@@ -2497,7 +2951,7 @@
                 
                 if (appState.isTyping && toolId !== 'text') finalizeText();
                 if (toolId === 'clear') {
-                    if (confirm("Borrar todo?")) { saveHistory(); appState.paths = []; currentDiagramId = null; clearSelection(); redrawAll(); }
+                    if (confirm("Borrar todo?")) { saveHistory(); appState.paths = []; currentPresentationStepId = null; currentDiagramId = null; clearSelection(); redrawAll(); }
                     return;
                 }
                 
@@ -2513,7 +2967,12 @@
                 if (toolId === 'smart') container.classList.add('tool-smart');
                 if (toolId === 'text' || toolId === 'checkbox') container.classList.add('tool-text');
                 if (toolId === 'select') container.classList.add('tool-select');
-                if (toolId !== 'select' && toolId !== 'smart') clearSelection();
+                if (toolId === 'smart') {
+                    clearSelection();
+                    setTextToolbarCollapsed(true);
+                } else if (toolId !== 'select') {
+                    clearSelection();
+                }
                 
                 updateTextPanelVisibility();
             });
@@ -2553,8 +3012,8 @@
                 } else if (shape && shape.type === 'checkbox') {
                     appState.editingShapeId = shape.id;
                     appState.isTyping = true;
-                    appState.currentFont = shape.font || "'Pacifico', cursive";
-                    appState.currentFontSize = shape.fontSize || 40;
+                    appState.currentFont = shape.font || DEFAULT_CHECKBOX_FONT;
+                    appState.currentFontSize = shape.fontSize || DEFAULT_CHECKBOX_FONT_SIZE;
                     
                     const boxSize = appState.currentFontSize * 0.8;
                     const spacing = 15 / view.scale;
@@ -2590,6 +3049,12 @@
                     saveHistory();
                     const clone = JSON.parse(JSON.stringify(shape));
                     clone.id = generateId(); 
+
+                    if (clone.type === 'checkbox') {
+                        clone.checked = false;
+                        clone.presentationStep = getNextPresentationStepNumber();
+                        clone.presentationView = captureCurrentPresentationView();
+                    }
                     
                     const offset = 30 / view.scale;
                     if (clone.type === 'text' || clone.type === 'checkbox') {
@@ -2638,8 +3103,10 @@
 
         deleteObjBtn.addEventListener('click', () => {
             if (appState.selectedId) {
+                const deletedId = appState.selectedId;
                 saveHistory(); 
                 appState.paths = appState.paths.filter(p => p.id !== appState.selectedId);
+                if (currentPresentationStepId === deletedId) currentPresentationStepId = null;
                 clearSelection();
                 redrawAll();
             }
@@ -2657,16 +3124,24 @@
         }
 
         function updateFloatingBtnsPosition() {
-            if (!appState.selectedId) return;
+            if (!appState.selectedId || appState.tool === 'smart' || appState.isPanning) {
+                floatingActions.style.display = 'none';
+                return;
+            }
             const shape = appState.paths.find(p => p.id === appState.selectedId);
-            if (!shape) return;
+            if (!shape) {
+                floatingActions.style.display = 'none';
+                return;
+            }
             
             if (shape.type === 'text' || shape.type === 'checkbox') {
-                fontFamilySelect.value = shape.font || "'Pacifico', cursive";
-                fontSizeSlider.value = shape.fontSize || 40;
-                fontSizeDisplay.innerText = shape.fontSize || 40;
-                appState.currentFont = shape.font || "'Pacifico', cursive";
-                appState.currentFontSize = shape.fontSize || 40;
+                const defaultShapeFont = shape.type === 'checkbox' ? DEFAULT_CHECKBOX_FONT : "'Pacifico', cursive";
+                const defaultShapeSize = shape.type === 'checkbox' ? DEFAULT_CHECKBOX_FONT_SIZE : 40;
+                fontFamilySelect.value = shape.font || defaultShapeFont;
+                fontSizeSlider.value = shape.fontSize || defaultShapeSize;
+                fontSizeDisplay.innerText = shape.fontSize || defaultShapeSize;
+                appState.currentFont = shape.font || defaultShapeFont;
+                appState.currentFontSize = shape.fontSize || defaultShapeSize;
             }
             
             const box = getBoundingBox(shape);
@@ -2679,6 +3154,7 @@
             editObjBtn.style.display = (shape.type === 'text' || shape.type === 'checkbox') ? 'flex' : 'none';
             reverseFlowBtn.style.display = shape.type === 'arrow' ? 'flex' : 'none';
             configReactionBtn.style.display = (shape.type !== 'arrow' && shape.type !== 'line' && shape.type !== 'checkbox') ? 'flex' : 'none';
+            assignStepBtn.style.display = shape.type === 'checkbox' ? 'flex' : 'none';
             copyObjBtn.style.display = 'flex';
             
             swapObjBtn.style.display = (shape.type === 'video' || shape.type === 'image') ? 'flex' : 'none';
@@ -2870,7 +3346,7 @@
 
             // --- CORRECCIÓN: CASILLA DE TAREA Y SU TEXTO MULTILÍNEA ---
             if (shape.type === 'checkbox') {
-                const fSize = shape.fontSize || 40;
+                const fSize = shape.fontSize || DEFAULT_CHECKBOX_FONT_SIZE;
                 const boxSize = fSize * 0.8;
                 const spacing = 15 / view.scale;
 
@@ -2899,7 +3375,7 @@
                 // Dibujar Texto Multilínea usando drawTextElement (Soluciona el problema de visibilidad y envoltura)
                 const textAlpha = shape.checked ? 0.5 : 1.0;
                 ctxToUse.globalAlpha = textAlpha;
-                drawTextElement(ctxToUse, shape.text, shape.x + boxSize + spacing, shape.y, shape.color, shape.font || "'Pacifico', cursive", fSize, false, false, 300, 'left');
+                drawTextElement(ctxToUse, shape.text, shape.x + boxSize + spacing, shape.y, shape.color, shape.font || DEFAULT_CHECKBOX_FONT, fSize, false, false, 300, 'left');
                 ctxToUse.globalAlpha = 1.0;
 
                 ctxToUse.restore(); return;
@@ -3029,7 +3505,7 @@
         }
 
         function drawSelectionBox() {
-            if (!appState.selectedId) return;
+            if (!appState.selectedId || appState.isPanning || appState.tool === 'smart') return;
             const shape = appState.paths.find(p => p.id === appState.selectedId);
             if (!shape) return;
             const box = getBoundingBox(shape);
@@ -3050,6 +3526,7 @@
         }
 
         function drawAnchors() {
+            if (appState.isPanning) return;
             if (appState.tool === 'arrow' || appState.tool === 'line') {
                 appState.paths.forEach(shape => {
                     if (['rect', 'circle', 'text', 'image', 'video', 'checkbox'].includes(shape.type)) {
@@ -3107,7 +3584,7 @@
 
             drawActiveParticles();
 
-            if(appState.tool !== 'smart') {
+            if(appState.tool !== 'smart' && !appState.isPanning) {
                 drawSelectionBox(); drawAnchors(); 
             }
 
@@ -3140,7 +3617,7 @@
                 // CORRECCIÓN: Renderizar también el texto para el Checkbox mientras se tipea
                 const editingShape = appState.editingShapeId ? appState.paths.find(p => p.id === appState.editingShapeId) : null;
                 if (editingShape && editingShape.type === 'checkbox') {
-                    const fSize = editingShape.fontSize || 40;
+                    const fSize = editingShape.fontSize || DEFAULT_CHECKBOX_FONT_SIZE;
                     const boxSize = fSize * 0.8;
                     const spacing = 15 / view.scale;
                     drawTextElement(ctx, textInput.value, editingShape.x + boxSize + spacing, editingShape.y, appState.color, appState.currentFont, appState.currentFontSize, false, false, 300, 'left');
@@ -3155,7 +3632,7 @@
                 const editingShape = appState.editingShapeId ? appState.paths.find(p => p.id === appState.editingShapeId) : null;
                 let screenPos;
                 if (editingShape && editingShape.type === 'checkbox') {
-                    const boxSize = editingShape.fontSize * 0.8;
+                    const boxSize = (editingShape.fontSize || DEFAULT_CHECKBOX_FONT_SIZE) * 0.8;
                     const spacing = 15 / view.scale;
                     screenPos = worldToScreen(editingShape.x + boxSize + spacing, editingShape.y);
                 } else {
@@ -3166,6 +3643,7 @@
             }
             updateFloatingBtnsPosition();
             updateProgressUI(); // Llamar actualización gráfica de porcentaje
+            updateStepNavigationUI();
         }
 
         function drawGrid() {
@@ -3184,19 +3662,25 @@
 
         // --- INTERACCION GENERAL CON PREVENCION DE BUGS ---
         function handlePointerDown(e) {
-            if (e.target !== textInput && appState.isTyping) {
-                finalizeText();
-                return;
-            }
             if (e.touches && e.touches.length > 1) {
+                e.preventDefault();
+                if (appState.isTyping) finalizeText();
                 smartTapCandidate = null;
+                touchSelectionCandidate = null;
                 selectionDragStarted = false;
                 appState.isPanning = true;
+                appState.snapLines = [];
                 if (appState.currentPath) {
                     appState.currentPath = null;
                     appState.snapTargetShape = null;
                 }
+                clearSelection();
+                redrawAll();
                 return;
+            }
+            if (e.target !== textInput && appState.isTyping) {
+                finalizeText();
+                if (!e.touches) return;
             }
             
             if (e.target !== textInput && !e.target.closest('.floating-actions') && !e.target.closest('.panel-wrapper') && !e.target.closest('.modal-overlay') && !e.target.closest('#top-demo-tab') && !e.target.closest('#progressTracker')) e.preventDefault();
@@ -3209,6 +3693,7 @@
             gestureStartClientX = clientX;
             gestureStartClientY = clientY;
             smartTapCandidate = null;
+            touchSelectionCandidate = null;
             selectionDragStarted = false;
             appState.isPanning = false;
 
@@ -3237,10 +3722,22 @@
 
             if (appState.tool === 'select') {
                 const clickedShape = getShapeAt(worldPos.x, worldPos.y);
-                if (clickedShape) { 
+                if (clickedShape && e.touches) {
+                    const wasAlreadySelected = appState.selectedId === clickedShape.id;
+                    touchSelectionCandidate = clickedShape;
+                    if (wasAlreadySelected) {
+                        lastPanX = worldPos.x;
+                        lastPanY = worldPos.y;
+                        saveHistory();
+                    } else {
+                        clearSelection();
+                        lastPanX = clientX;
+                        lastPanY = clientY;
+                    }
+                } else if (clickedShape) { 
                     appState.selectedId = clickedShape.id; lastPanX = worldPos.x; lastPanY = worldPos.y; 
                     saveHistory(); updateTextPanelVisibility();
-                } 
+                }
                 else {
                     clearSelection();
                     appState.isPanning = true;
@@ -3273,7 +3770,9 @@
                     appState.currentPath = {
                         id: generateId(), type: 'checkbox', color: appState.color,
                         x: worldPos.x, y: worldPos.y, text: 'Nueva Tarea', checked: false,
-                        font: appState.currentFont, fontSize: appState.currentFontSize
+                        font: DEFAULT_CHECKBOX_FONT, fontSize: DEFAULT_CHECKBOX_FONT_SIZE,
+                        presentationStep: getNextPresentationStepNumber(),
+                        presentationView: captureCurrentPresentationView()
                     };
                 } else {
                     appState.currentPath = { id: generateId(), type: appState.tool, color: appState.color, startX: worldPos.x, startY: worldPos.y, endX: worldPos.x, endY: worldPos.y, isNeon: false };
@@ -3286,8 +3785,11 @@
 
             if (e.touches && e.touches.length === 2) {
                 smartTapCandidate = null;
+                touchSelectionCandidate = null;
                 selectionDragStarted = false;
                 appState.isPanning = true;
+                appState.snapLines = [];
+                if (appState.selectedId) clearSelection();
                 if (appState.currentPath) {
                     appState.currentPath = null;
                     appState.snapTargetShape = null;
@@ -3311,6 +3813,13 @@
             const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             const worldPos = screenToWorld(clientX, clientY);
             const gestureDistance = Math.hypot(clientX - gestureStartClientX, clientY - gestureStartClientY);
+
+            if (e.touches && appState.tool === 'select' && touchSelectionCandidate &&
+                appState.selectedId !== touchSelectionCandidate.id && gestureDistance >= POINTER_DRAG_THRESHOLD) {
+                touchSelectionCandidate = null;
+                appState.isPanning = true;
+                clearSelection();
+            }
 
             if (appState.isResizingText && appState.selectedId) {
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
@@ -3398,8 +3907,11 @@
             appState.isInteracting = false;
             const wasPanning = appState.isPanning;
             const pendingSmartShape = smartTapCandidate;
+            const pendingTouchSelection = touchSelectionCandidate;
+            const wasSelectionDrag = selectionDragStarted;
             appState.isPanning = false;
             smartTapCandidate = null;
+            touchSelectionCandidate = null;
             selectionDragStarted = false;
             
             appState.snapLines = [];
@@ -3418,11 +3930,20 @@
                     if (pendingSmartShape.type === 'checkbox') {
                         saveHistory();
                         pendingSmartShape.checked = !pendingSmartShape.checked;
+                        currentPresentationStepId = pendingSmartShape.id;
                     }
                     if (pendingSmartShape.reaction && pendingSmartShape.reaction.type !== 'none') triggerReaction(pendingSmartShape);
                     redrawAll();
                 }
                 return; 
+            }
+
+            if (appState.tool === 'select' && e.type === 'touchend' && pendingTouchSelection &&
+                !wasPanning && !wasSelectionDrag) {
+                appState.selectedId = pendingTouchSelection.id;
+                updateTextPanelVisibility();
+                redrawAll();
+                return;
             }
 
             if (appState.tool === 'select' && wasPanning) {
@@ -3517,13 +4038,38 @@
             }
         });
 
-        container.addEventListener('mousedown', (e) => { markInteracting(); handlePointerDown(e); });
-        window.addEventListener('mousemove', (e) => { if (appState.isInteracting) markInteracting(); handlePointerMove(e); });
-        window.addEventListener('mouseup', handlePointerUp);
-        container.addEventListener('touchstart', (e) => { markInteracting(); handlePointerDown(e); }, { passive: false });
-        container.addEventListener('touchmove', (e) => { if (appState.isInteracting) markInteracting(); handlePointerMove(e); }, { passive: false });
-        container.addEventListener('touchend', handlePointerUp);
-        container.addEventListener('touchcancel', handlePointerUp);
+        container.addEventListener('mousedown', (e) => {
+            if (Date.now() - lastTouchEventTime < 700) return;
+            markInteracting();
+            handlePointerDown(e);
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (Date.now() - lastTouchEventTime < 700) return;
+            if (appState.isInteracting) markInteracting();
+            handlePointerMove(e);
+        });
+        window.addEventListener('mouseup', (e) => {
+            if (Date.now() - lastTouchEventTime < 700) return;
+            handlePointerUp(e);
+        });
+        container.addEventListener('touchstart', (e) => {
+            lastTouchEventTime = Date.now();
+            markInteracting();
+            handlePointerDown(e);
+        }, { passive: false });
+        container.addEventListener('touchmove', (e) => {
+            lastTouchEventTime = Date.now();
+            if (appState.isInteracting) markInteracting();
+            handlePointerMove(e);
+        }, { passive: false });
+        container.addEventListener('touchend', (e) => {
+            lastTouchEventTime = Date.now();
+            handlePointerUp(e);
+        });
+        container.addEventListener('touchcancel', (e) => {
+            lastTouchEventTime = Date.now();
+            handlePointerUp(e);
+        });
 
         // =========================================================
         // --- LOGICA: BRANDING, TARJETA Y MODO STREAMER ---
