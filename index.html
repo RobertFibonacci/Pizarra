@@ -20,13 +20,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
         :root {
-            --ui-accent: #8f83b5;
-            --ui-accent-hover: #a69bc7;
+            --ui-accent: #75699c;
+            --ui-accent-hover: #675c82;
             --ui-accent-bright: #b8add6;
             --ui-accent-soft: rgba(143, 131, 181, 0.12);
             --ui-accent-soft-strong: rgba(143, 131, 181, 0.2);
             --ui-accent-border: rgba(143, 131, 181, 0.3);
-            --ui-accent-text-dark: #17131f;
+            --ui-accent-contrast: #ffffff;
             --ui-surface: #17191d;
             --ui-surface-raised: #20232a;
             --ui-text: #f2f3f6;
@@ -45,11 +45,13 @@
 
         #canvas-container {
             width: 100%; height: 100%; position: relative; cursor: crosshair;
+            touch-action: none;
         }
         #canvas-container.tool-smart { cursor: grab; }
         #canvas-container.tool-smart:active { cursor: grabbing; }
         #canvas-container.tool-text { cursor: text; }
         #canvas-container.tool-select { cursor: default; }
+        #canvas-container.tool-select.is-panning { cursor: grabbing; }
 
         canvas { display: block; }
 
@@ -128,7 +130,7 @@
             border: 2px solid transparent; cursor: pointer; transition: 0.2s;
             background: rgba(0,0,0,0.5); padding: 2px; flex-shrink: 0;
         }
-        .gallery-thumb.active { border-color: #00ffff; transform: scale(1.1); background: rgba(255,255,255,0.1); }
+        .gallery-thumb.active { border-color: var(--ui-accent-bright); transform: scale(1.1); background: rgba(255,255,255,0.1); }
         
         .delete-thumb-btn {
             position: absolute; top: -5px; right: -5px; background: red; color: white;
@@ -236,7 +238,7 @@
             display: flex; align-items: center; justify-content: center; gap: 6px;
             font: 700 13px system-ui, sans-serif; touch-action: manipulation;
         }
-        .step-nav-toggle { padding: 0 12px; color: #00c2b8; }
+        .step-nav-toggle { padding: 0 12px; color: var(--ui-accent-bright); }
         .step-nav-btn:hover, .step-nav-toggle:hover { background: rgba(255,255,255,0.16); }
         .step-nav-btn:disabled { opacity: 0.32; cursor: default; }
         .step-nav-controls { display: flex; align-items: center; gap: 6px; }
@@ -257,11 +259,11 @@
             color: #fff; text-align: left; cursor: pointer; touch-action: manipulation;
         }
         .step-list-item:hover { background: rgba(255,255,255,0.12); }
-        .step-list-item.current { border-color: #00c2b8; background: rgba(0,194,184,0.14); }
+        .step-list-item.current { border-color: var(--ui-accent-bright); background: var(--ui-accent-soft-strong); }
         .step-list-item.completed .step-list-title { text-decoration: line-through; opacity: 0.65; }
         .step-list-number {
             width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; background: rgba(0,194,184,0.18); color: #5de1d9; font-weight: 800;
+            justify-content: center; background: var(--ui-accent-soft-strong); color: var(--ui-accent-bright); font-weight: 800;
         }
         .step-list-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
         .step-list-state { font-size: 15px; color: #8b949e; }
@@ -272,8 +274,8 @@
         }
         body.light-mode .step-nav-btn, body.light-mode .step-nav-toggle,
         body.light-mode .step-list-item { color: #202124; background: rgba(0,0,0,0.06); }
-        body.light-mode .step-nav-toggle { color: #007f78; }
-        body.light-mode .step-list-item.current { border-color: #00897b; background: rgba(0,137,123,0.12); }
+        body.light-mode .step-nav-toggle { color: var(--ui-accent); }
+        body.light-mode .step-list-item.current { border-color: var(--ui-accent); background: var(--ui-accent-soft-strong); }
 
         @media (max-width: 560px) {
             #progressTracker {
@@ -346,7 +348,7 @@
             flex: 1; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold;
         }
         .btn-cancel { background: #333; color: white; }
-        .btn-save { background: #00ffff; color: black; }
+        .btn-save { background: var(--ui-accent); color: var(--ui-accent-contrast); }
         .btn-action { background: #ff9900; color: black; }
 
         /* --- GRID DE REACCIONES Y GALERIA GENERAL --- */
@@ -358,7 +360,7 @@
             width: 100%; aspect-ratio: 1; object-fit: contain; background: #000; border-radius: 5px;
             cursor: pointer; border: 2px solid transparent; transition: 0.2s;
         }
-        .reaction-grid img.selected, .reaction-grid video.selected { border-color: #00ffff; transform: scale(1.1); }
+        .reaction-grid img.selected, .reaction-grid video.selected { border-color: var(--ui-accent-bright); transform: scale(1.1); }
 
         .full-gallery-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px;
@@ -370,7 +372,7 @@
             cursor: pointer; border: 2px solid transparent; transition: 0.2s; padding: 4px; box-sizing: border-box;
         }
         .full-gallery-item img:hover, .full-gallery-item video:hover { background: rgba(255,255,255,0.1); }
-        .full-gallery-item img.active, .full-gallery-item video.active { border-color: #00ffff; background: rgba(255,255,255,0.1); transform: scale(1.05); }
+        .full-gallery-item img.active, .full-gallery-item video.active { border-color: var(--ui-accent-bright); background: rgba(255,255,255,0.1); transform: scale(1.05); }
 
         /* --- GESTOR DE DIAGRAMAS --- */
         .modal-box.diagram-manager {
@@ -550,7 +552,7 @@
         }
         .branding-setting-row > span { width: auto !important; min-width: 0; }
         .branding-setting-row input[type="checkbox"] {
-            width: 18px; height: 18px; cursor: pointer; accent-color: #00ffff; margin: 0; justify-self: end;
+            width: 18px; height: 18px; cursor: pointer; accent-color: var(--ui-accent); margin: 0; justify-self: end;
         }
         .branding-fields {
             grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr) minmax(0, 0.8fr);
@@ -561,11 +563,11 @@
             width: 28px; height: 28px; border-radius: 5px; background: #222; object-fit: contain;
             border: 1px dashed #555; cursor: pointer; flex-shrink: 0; transition: 0.2s;
         }
-        .social-logo-preview:hover { border-color: #00ffff; }
+        .social-logo-preview:hover { border-color: var(--ui-accent); }
 
         .master-switch-container {
-            display: flex; justify-content: space-between; align-items: center; background: rgba(0, 255, 255, 0.1);
-            padding: 12px; border-radius: 10px; border: 1px solid rgba(0, 255, 255, 0.3); margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center; background: var(--ui-accent-soft);
+            padding: 12px; border-radius: 10px; border: 1px solid var(--ui-accent-border); margin-bottom: 10px;
         }
         .toggle-switch { position: relative; display: inline-block; width: 50px; height: 24px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -577,15 +579,15 @@
             position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px;
             background-color: white; transition: .4s; border-radius: 50%;
         }
-        input:checked + .slider { background-color: #00ffff; }
-        input:checked + .slider:before { transform: translateX(26px); background-color: #000; }
+        input:checked + .slider { background-color: var(--ui-accent); }
+        input:checked + .slider:before { transform: translateX(26px); background-color: var(--ui-accent-contrast); }
         
         .avatar-preview {
             width: 60px; height: 60px; border-radius: 50%; background: #222; object-fit: cover;
             border: 2px dashed #555; cursor: pointer; display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
-        .avatar-preview:hover { border-color: #00ffff; }
+        .avatar-preview:hover { border-color: var(--ui-accent); }
 
         /* --- PESTANA SUPERIOR Y TARJETA DE PRESENTACION --- */
         #top-demo-tab {
@@ -737,7 +739,7 @@
 
         /* Galeria */
         body.light-mode .gallery-thumb { background: rgba(255, 255, 255, 0.8); border-color: transparent; }
-        body.light-mode .gallery-thumb.active { border-color: #0088aa; background: rgba(0, 0, 0, 0.05); }
+        body.light-mode .gallery-thumb.active { border-color: var(--ui-accent); background: rgba(0, 0, 0, 0.05); }
         body.light-mode .view-all-btn { background: rgba(0, 0, 0, 0.05); color: #555; border-color: rgba(0, 0, 0, 0.15); }
         body.light-mode .view-all-btn:hover { background: rgba(0, 0, 0, 0.1); color: #000; }
 
@@ -799,22 +801,22 @@
         body.light-mode .diagram-manager-heading p, body.light-mode .diagram-save-hint,
         body.light-mode .diagram-file-heading p, body.light-mode .diagram-meta { color: #68717c; }
         body.light-mode .diagram-manager-title-icon, body.light-mode .diagram-item-icon {
-            color: #087e78; background: rgba(8,126,120,0.09); border-color: rgba(8,126,120,0.16);
+            color: var(--ui-accent); background: var(--ui-accent-soft); border-color: var(--ui-accent-border);
         }
         body.light-mode .diagram-manager-close, body.light-mode .diagram-menu-btn,
         body.light-mode .diagram-secondary-action, body.light-mode .diagram-file-action {
             color: #37404a; background: rgba(0,0,0,0.045); border-color: rgba(0,0,0,0.1);
         }
-        body.light-mode .diagram-save-card { background: rgba(8,126,120,0.055); border-color: rgba(8,126,120,0.18); }
+        body.light-mode .diagram-save-card { background: var(--ui-accent-soft); border-color: var(--ui-accent-border); }
         body.light-mode .diagram-save-card #diagramNameInput { background: #fff; border-color: rgba(0,0,0,0.14); }
         body.light-mode .diagram-section-label, body.light-mode .diagram-saved-header h4,
         body.light-mode .diagram-file-heading h4 { color: #242a31; }
         body.light-mode .diagram-list-count { color: #59626d; background: rgba(0,0,0,0.055); }
         body.light-mode .diagram-empty-state { color: #67717c; background: rgba(0,0,0,0.018); border-color: rgba(0,0,0,0.14); }
         body.light-mode .diagram-item { background: #fff; border-color: rgba(0,0,0,0.09); }
-        body.light-mode .diagram-item.is-current { background: rgba(8,126,120,0.055); border-color: rgba(8,126,120,0.32); }
+        body.light-mode .diagram-item.is-current { background: var(--ui-accent-soft); border-color: var(--ui-accent-border); }
         body.light-mode .diagram-name { color: #171b20; }
-        body.light-mode .diagram-open-btn { color: #086d68; background: rgba(8,126,120,0.08); border-color: rgba(8,126,120,0.17); }
+        body.light-mode .diagram-open-btn { color: var(--ui-accent); background: var(--ui-accent-soft); border-color: var(--ui-accent-border); }
         body.light-mode .diagram-danger-menu, body.light-mode .diagram-manager-footer { border-color: rgba(0,0,0,0.09); }
         body.light-mode .diagram-manager-footer { background: #eef1f4; }
         body.light-mode .diagram-new-blank { color: #4d5661; border-color: rgba(0,0,0,0.13); }
@@ -823,11 +825,11 @@
 
         /* Branding modal */
         body.light-mode .branding-setting-row { background: rgba(0, 0, 0, 0.05); }
-        body.light-mode .master-switch-container { background: rgba(0, 180, 180, 0.08); border-color: rgba(0, 180, 180, 0.25); }
+        body.light-mode .master-switch-container { background: var(--ui-accent-soft); border-color: var(--ui-accent-border); }
         body.light-mode .avatar-preview { background: #ddd; border-color: #999; }
-        body.light-mode .avatar-preview:hover { border-color: #0088aa; }
+        body.light-mode .avatar-preview:hover { border-color: var(--ui-accent); }
         body.light-mode .social-logo-preview { background: #ddd; border-color: #999; }
-        body.light-mode .social-logo-preview:hover { border-color: #0088aa; }
+        body.light-mode .social-logo-preview:hover { border-color: var(--ui-accent); }
 
         /* Capsula streamer */
         body.light-mode .branding-capsule {
@@ -838,14 +840,14 @@
         }
         body.light-mode .capsule-prefix { color: #555; }
         body.light-mode .capsule-handle { color: #000; }
-        body.light-mode .capsule-subs { color: #0088aa; }
+        body.light-mode .capsule-subs { color: var(--ui-accent); }
 
         /* Toast */
         body.light-mode #toastMsg { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
 
         /* Toggle switch */
         body.light-mode .toggle-switch .slider { background-color: #999; }
-        body.light-mode .toggle-switch input:checked + .slider { background-color: #0088aa; }
+        body.light-mode .toggle-switch input:checked + .slider { background-color: var(--ui-accent); }
 
         /* --- SISTEMA VISUAL UNIFICADO: VIOLETA HUMO --- */
         body.light-mode {
@@ -864,7 +866,7 @@
         .compact-settings-modal h3 { text-align: left; font-size: 18px; }
         .compact-settings-modal > p { text-align: left !important; color: var(--ui-muted) !important; line-height: 1.45; }
         .compact-settings-modal .modal-btns button { min-height: 44px; border-radius: 10px; touch-action: manipulation; }
-        .modal-box .btn-save { background: var(--ui-accent); color: var(--ui-accent-text-dark); }
+        .modal-box .btn-save { background: var(--ui-accent); color: var(--ui-accent-contrast); }
         .modal-box .btn-save:hover { background: var(--ui-accent-hover); }
         .modal-box input[type="text"]:focus, .modal-box input[type="number"]:focus,
         .modal-box select:focus {
@@ -886,7 +888,7 @@
         .diagram-save-card #diagramNameInput:focus {
             border-color: var(--ui-accent); box-shadow: 0 0 0 3px var(--ui-accent-soft);
         }
-        .diagram-primary-action { background: var(--ui-accent); color: var(--ui-accent-text-dark); }
+        .diagram-primary-action { background: var(--ui-accent); color: var(--ui-accent-contrast); }
         .diagram-primary-action:hover { background: var(--ui-accent-hover); }
         .diagram-empty-state svg, .diagram-current-badge { color: var(--ui-accent-bright); }
         .diagram-item.is-current { border-color: var(--ui-accent-border); background: var(--ui-accent-soft); }
@@ -943,7 +945,7 @@
             color: #edf0f4; background: rgba(255,255,255,0.075); border-color: rgba(255,255,255,0.13);
         }
         .settings-manager-footer .btn-save, .settings-primary-action {
-            color: var(--ui-accent-text-dark); background: var(--ui-accent);
+            color: var(--ui-accent-contrast); background: var(--ui-accent);
         }
         .settings-manager-footer .btn-save:hover, .settings-primary-action:hover { background: var(--ui-accent-hover); }
         .settings-section-card {
@@ -962,7 +964,7 @@
         }
         .profile-settings-manager .master-switch-container > div:last-child { flex-wrap: wrap; justify-content: flex-end; }
         .profile-settings-manager .toggle-switch input:checked + .slider { background-color: var(--ui-accent); }
-        .profile-settings-manager .toggle-switch input:checked + .slider:before { background-color: var(--ui-accent-text-dark); }
+        .profile-settings-manager .toggle-switch input:checked + .slider:before { background-color: var(--ui-accent-contrast); }
         .profile-settings-manager input[type="checkbox"] { accent-color: var(--ui-accent); }
         .profile-identity-card { display: flex; gap: 15px; align-items: flex-start; }
         .profile-avatar-column { display: flex; flex-direction: column; align-items: center; gap: 7px; flex: 0 0 auto; }
@@ -1162,7 +1164,7 @@
         <div style="flex:1;">Progreso</div>
         <div id="progressText">0%</div>
         <div style="width: 100px; height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden;">
-            <div id="progressBarFill" style="width: 0%; height: 100%; background: #00ffff; transition: width 0.3s ease;"></div>
+            <div id="progressBarFill" style="width: 0%; height: 100%; background: var(--ui-accent); transition: width 0.3s ease;"></div>
         </div>
     </div>
 
@@ -1520,6 +1522,7 @@
             <button class="float-btn btn-primary" id="reverseFlowBtn" title="Invertir Direccion"><i data-lucide="arrow-right-left"></i></button>
             
             <button class="float-btn btn-primary" id="swapObjBtn" title="Reemplazar Video/Imagen (Mantiene Tamano)"><i data-lucide="refresh-cw"></i></button>
+            <button class="float-btn btn-primary" id="toggleImageFrameBtn" title="Mostrar u ocultar marco de imagen" aria-label="Mostrar u ocultar marco de imagen"><i data-lucide="square"></i></button>
             <input type="file" id="swapVideoInput" accept="video/mp4, video/webm, image/*" style="display:none;">
 
             <button class="float-btn btn-danger" id="deleteObjBtn" title="Eliminar"><i data-lucide="trash"></i></button>
@@ -1694,7 +1697,7 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const swCode = `
-                    const CACHE_NAME = 'pizarra-v4-20260907';
+                    const CACHE_NAME = 'pizarra-v6-20260907';
                     const urlsToCache = ['./manifest.json'];
 
                     self.addEventListener('install', event => {
@@ -1905,6 +1908,7 @@
         const assignStepBtn = document.getElementById('assignStepBtn');
         const copyObjBtn = document.getElementById('copyObjBtn'); 
         const swapObjBtn = document.getElementById('swapObjBtn');
+        const toggleImageFrameBtn = document.getElementById('toggleImageFrameBtn');
         const swapVideoInput = document.getElementById('swapVideoInput');
 
         const stepModalOverlay = document.getElementById('stepModalOverlay');
@@ -1940,6 +1944,9 @@
         const DEFAULT_EDITOR_FONT = 'Arial, sans-serif';
         const DEFAULT_CHECKBOX_FONT = 'Arial, sans-serif';
         const DEFAULT_CHECKBOX_FONT_SIZE = 24;
+        const AUTO_TEXT_MIN_WIDTH = 12;
+        const AUTO_TEXT_EMPTY_WIDTH = 96;
+        const AUTO_TEXT_MAX_WIDTH = 520;
 
         // --- ESTADO INICIAL ---
         let appState = {
@@ -1955,6 +1962,7 @@
             showGrid: true,
             isPanning: false,
             currentTextWidth: 300,
+            currentTextAutoSize: true,
             isResizingText: false,
             snapLines: [] 
         };
@@ -1962,6 +1970,11 @@
         function getActualColor(c) {
             if (c === 'adaptive') return appState.theme === 'dark' ? '#ffffff' : '#111111';
             return c;
+        }
+
+        function getUiAccentColor(bright = false) {
+            const variableName = bright ? '--ui-accent-bright' : '--ui-accent';
+            return getComputedStyle(document.body).getPropertyValue(variableName).trim() || (bright ? '#b8add6' : '#75699c');
         }
 
         // --- SISTEMA DE COLOR DESPLEGABLE ---
@@ -2035,8 +2048,8 @@
 
             if (appState.isTyping) { 
                 textInput.style.fontSize = (appState.currentFontSize * view.scale) + 'px'; 
-                textInput.style.height = 'auto';
-                textInput.style.height = textInput.scrollHeight + 'px';
+                appState.currentTextAutoSize = true;
+                syncTextInputDimensions();
                 redrawAll(); 
             }
             if (appState.selectedId) {
@@ -2044,7 +2057,7 @@
                 if (shape && (shape.type === 'text' || shape.type === 'checkbox')) { 
                     saveHistory(); 
                     shape.fontSize = appState.currentFontSize; 
-                    shape._cachedLines = null; 
+                    activateAutoTextWidth(shape);
                     redrawAll(); 
                 }
             }
@@ -2765,6 +2778,7 @@
         let smartTapCandidate = null; let selectionDragStarted = false;
         let touchSelectionCandidate = null;
         let lastTouchEventTime = 0;
+        let gesturePathsSnapshot = null;
         let animationOffset = 0; const animationSpeed = 0.35; 
 
         // ==========================================
@@ -3549,10 +3563,15 @@
                         shape.font = appState.currentFont;
                         shape.fontSize = appState.currentFontSize;
                         if(shape.type === 'text') {
-                            shape.width = appState.currentTextWidth || 300;
+                            shape.autoSize = appState.currentTextAutoSize !== false;
+                            shape.width = shape.autoSize
+                                ? measureAutoTextWidth(shape.text, shape.font, shape.fontSize)
+                                : Math.max(50, appState.currentTextWidth || 300);
                             shape.align = appState.textAlign || 'left';
                             shape._cachedLines = null;
                         } else if (shape.type === 'checkbox') {
+                            shape.autoSize = true;
+                            shape.width = measureAutoTextWidth(shape.text, shape.font, shape.fontSize);
                             shape._cachedLines = null;
                         }
                         delete shape._hiddenWhileEditing;
@@ -3562,7 +3581,8 @@
                         id: generateId(), type: 'text', color: appState.color, 
                         text: textInput.value, x: appState.textPos.x, y: appState.textPos.y,
                         font: appState.currentFont, fontSize: appState.currentFontSize, 
-                        isNeon: false, width: appState.currentTextWidth || 300,
+                        isNeon: false, width: measureAutoTextWidth(textInput.value, appState.currentFont, appState.currentFontSize),
+                        autoSize: true,
                         align: appState.textAlign || 'left'
                     });
                 }
@@ -3595,10 +3615,20 @@
 
         fontFamilySelect.addEventListener('change', (e) => {
             appState.currentFont = e.target.value;
-            if (appState.isTyping) { textInput.style.fontFamily = appState.currentFont; redrawAll(); }
+            if (appState.isTyping) {
+                textInput.style.fontFamily = appState.currentFont;
+                appState.currentTextAutoSize = true;
+                syncTextInputDimensions();
+                redrawAll();
+            }
             if (appState.selectedId) {
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
-                if (shape && (shape.type === 'text' || shape.type === 'checkbox')) { saveHistory(); shape.font = appState.currentFont; shape._cachedLines = null; redrawAll(); }
+                if (shape && (shape.type === 'text' || shape.type === 'checkbox')) {
+                    saveHistory();
+                    shape.font = appState.currentFont;
+                    activateAutoTextWidth(shape);
+                    redrawAll();
+                }
             }
         });
 
@@ -3609,7 +3639,7 @@
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
                 if (shape && (shape.type === 'text' || shape.type === 'checkbox')) {
                     showPanel = true;
-                    const defaultShapeFont = shape.type === 'checkbox' ? DEFAULT_CHECKBOX_FONT : "'Pacifico', cursive";
+                    const defaultShapeFont = shape.type === 'checkbox' ? DEFAULT_CHECKBOX_FONT : DEFAULT_EDITOR_FONT;
                     const defaultShapeSize = shape.type === 'checkbox' ? DEFAULT_CHECKBOX_FONT_SIZE : 40;
                     fontFamilySelect.value = shape.font || defaultShapeFont;
                     fontSizeSlider.value = shape.fontSize || defaultShapeSize;
@@ -3636,29 +3666,128 @@
             scheduleStepNavigatorPosition();
         }
 
+        function splitLongWord(ctxToUse, word, maxWidth) {
+            const fragments = [];
+            let fragment = '';
+            Array.from(word).forEach(character => {
+                const candidate = fragment + character;
+                if (fragment && ctxToUse.measureText(candidate).width > maxWidth) {
+                    fragments.push(fragment);
+                    fragment = character;
+                } else {
+                    fragment = candidate;
+                }
+            });
+            if (fragment || fragments.length === 0) fragments.push(fragment);
+            return fragments;
+        }
+
         function wrapText(ctxToUse, text, maxWidth) {
-            const explicitLines = text.split('\n');
+            const safeWidth = Math.max(AUTO_TEXT_MIN_WIDTH, Number(maxWidth) || AUTO_TEXT_MAX_WIDTH);
+            const explicitLines = String(text ?? '').split('\n');
             const lines = [];
+
             explicitLines.forEach(expLine => {
                 if (expLine === '') {
                     lines.push('');
                     return;
                 }
-                let words = expLine.split(' ');
-                let currentLine = words[0];
-                for (let i = 1; i < words.length; i++) {
-                    let word = words[i];
-                    let width = ctxToUse.measureText(currentLine + " " + word).width;
-                    if (width < maxWidth) {
-                        currentLine += " " + word;
-                    } else {
-                        lines.push(currentLine);
-                        currentLine = word;
-                    }
-                }
+
+                const words = expLine.split(' ');
+                let currentLine = '';
+                words.forEach(word => {
+                    const wordParts = ctxToUse.measureText(word).width > safeWidth
+                        ? splitLongWord(ctxToUse, word, safeWidth)
+                        : [word];
+
+                    wordParts.forEach((part, partIndex) => {
+                        const separator = currentLine && partIndex === 0 ? ' ' : '';
+                        const candidate = currentLine + separator + part;
+                        if (currentLine && ctxToUse.measureText(candidate).width > safeWidth) {
+                            lines.push(currentLine);
+                            currentLine = part;
+                        } else {
+                            currentLine = candidate;
+                        }
+                    });
+                });
                 lines.push(currentLine);
             });
             return lines;
+        }
+
+        function measureAutoTextWidth(text, font = DEFAULT_EDITOR_FONT, fontSize = 40) {
+            const value = String(text ?? '');
+            if (!value.length) return AUTO_TEXT_EMPTY_WIDTH;
+
+            ctx.save();
+            ctx.font = `${Number(fontSize) || 40}px ${font || DEFAULT_EDITOR_FONT}`;
+            const widestLine = value.split('\n').reduce((widest, line) => {
+                return Math.max(widest, ctx.measureText(line || ' ').width);
+            }, 0);
+            ctx.restore();
+
+            return Math.max(AUTO_TEXT_MIN_WIDTH, Math.min(AUTO_TEXT_MAX_WIDTH, Math.ceil(widestLine + 2)));
+        }
+
+        function isTextAutoSized(shape) {
+            if (!shape || shape.type === 'checkbox') return true;
+            if (shape.autoSize === true) return true;
+            if (shape.autoSize === false) return false;
+            const legacyWidth = Number(shape.width);
+            return !Number.isFinite(legacyWidth) || Math.abs(legacyWidth - 300) < 0.01;
+        }
+
+        function getShapeTextWidth(shape) {
+            if (!shape || (shape.type !== 'text' && shape.type !== 'checkbox')) return AUTO_TEXT_EMPTY_WIDTH;
+            if (shape.type === 'checkbox' || isTextAutoSized(shape)) {
+                return measureAutoTextWidth(
+                    shape.text,
+                    shape.font || (shape.type === 'checkbox' ? DEFAULT_CHECKBOX_FONT : DEFAULT_EDITOR_FONT),
+                    shape.fontSize || (shape.type === 'checkbox' ? DEFAULT_CHECKBOX_FONT_SIZE : 40)
+                );
+            }
+            return Math.max(50, Number(shape.width) || 300);
+        }
+
+        function activateAutoTextWidth(shape) {
+            if (!shape || (shape.type !== 'text' && shape.type !== 'checkbox')) return;
+            shape.autoSize = true;
+            shape.width = measureAutoTextWidth(
+                shape.text,
+                shape.font || (shape.type === 'checkbox' ? DEFAULT_CHECKBOX_FONT : DEFAULT_EDITOR_FONT),
+                shape.fontSize || (shape.type === 'checkbox' ? DEFAULT_CHECKBOX_FONT_SIZE : 40)
+            );
+            shape._cachedLines = null;
+            shape._cachedText = null;
+            shape._cachedWidth = null;
+            shape._cachedSize = null;
+        }
+
+        function syncTextInputDimensions() {
+            if (!appState.isTyping) return;
+            const editingShape = appState.editingShapeId
+                ? appState.paths.find(shape => shape.id === appState.editingShapeId)
+                : null;
+            const useAutoWidth = !editingShape || editingShape.type === 'checkbox' || appState.currentTextAutoSize !== false;
+
+            if (useAutoWidth) {
+                appState.currentTextWidth = measureAutoTextWidth(
+                    textInput.value,
+                    appState.currentFont,
+                    appState.currentFontSize
+                );
+            }
+
+            textInput.style.width = Math.max(
+                AUTO_TEXT_MIN_WIDTH,
+                appState.currentTextWidth * view.scale
+            ) + 'px';
+            textInput.style.height = 'auto';
+            textInput.style.height = Math.max(
+                appState.currentFontSize * 1.2 * view.scale,
+                textInput.scrollHeight
+            ) + 'px';
         }
 
         // --- Geometria OPTIMIZADA CON CACHE Y CORRECCIONES DE CHECKBOX ---
@@ -3670,16 +3799,17 @@
                     if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y;
                 });
             } else if (shape.type === 'text') {
-                const font = shape.font || "'Pacifico', cursive"; 
+                const font = shape.font || DEFAULT_EDITOR_FONT; 
                 const fSize = shape.fontSize || 40;
                 ctx.font = `${fSize}px ${font}`; 
-                const maxWidth = shape.width || 300;
+                const maxWidth = getShapeTextWidth(shape);
                 
-                if (!shape._cachedLines || shape._cachedText !== shape.text || shape._cachedWidth !== maxWidth || shape._cachedSize !== fSize) {
+                if (!shape._cachedLines || shape._cachedText !== shape.text || shape._cachedWidth !== maxWidth || shape._cachedSize !== fSize || shape._cachedFont !== font) {
                     shape._cachedLines = wrapText(ctx, shape.text, maxWidth);
                     shape._cachedText = shape.text;
                     shape._cachedWidth = maxWidth;
                     shape._cachedSize = fSize;
+                    shape._cachedFont = font;
                 }
                 const lines = shape._cachedLines;
                 
@@ -3691,12 +3821,14 @@
                 const fSize = shape.fontSize || DEFAULT_CHECKBOX_FONT_SIZE;
                 const font = shape.font || DEFAULT_CHECKBOX_FONT;
                 ctx.font = `${fSize}px ${font}`;
-                const maxWidth = 300;
+                const maxWidth = getShapeTextWidth(shape);
                 
-                if (!shape._cachedLines || shape._cachedText !== shape.text || shape._cachedSize !== fSize) {
+                if (!shape._cachedLines || shape._cachedText !== shape.text || shape._cachedWidth !== maxWidth || shape._cachedSize !== fSize || shape._cachedFont !== font) {
                     shape._cachedLines = wrapText(ctx, shape.text, maxWidth);
                     shape._cachedText = shape.text;
+                    shape._cachedWidth = maxWidth;
                     shape._cachedSize = fSize;
+                    shape._cachedFont = font;
                 }
                 const lines = shape._cachedLines;
 
@@ -3789,14 +3921,76 @@
             return { pA: pointA, pB: pointB };
         }
 
-        function getShapeAt(x, y) {
+        function getPointerHitTolerance(pointerType = 'mouse') {
+            const cssTolerance = pointerType === 'touch' ? 14 : pointerType === 'pen' ? 10 : 7;
+            return cssTolerance / Math.max(view.scale, 0.2);
+        }
+
+        function distanceToSegment(px, py, x1, y1, x2, y2) {
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const lengthSquared = dx * dx + dy * dy;
+            if (lengthSquared === 0) return Math.hypot(px - x1, py - y1);
+            const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / lengthSquared));
+            return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+        }
+
+        function isPointNearPolyline(points, x, y, tolerance) {
+            if (!Array.isArray(points) || points.length === 0) return false;
+            if (points.length === 1) return Math.hypot(x - points[0].x, y - points[0].y) <= tolerance;
+            for (let i = 1; i < points.length; i++) {
+                const a = points[i - 1];
+                const b = points[i];
+                if (distanceToSegment(x, y, a.x, a.y, b.x, b.y) <= tolerance) return true;
+            }
+            return false;
+        }
+
+        function isPointInsideBounds(bounds, x, y, tolerance) {
+            return x >= bounds.minX - tolerance && x <= bounds.maxX + tolerance &&
+                y >= bounds.minY - tolerance && y <= bounds.maxY + tolerance;
+        }
+
+        function isPointOnShape(shape, x, y, tolerance) {
+            if (!shape) return false;
+
+            if (shape.type === 'draw') {
+                return isPointNearPolyline(shape.points, x, y, tolerance);
+            }
+
+            if (shape.type === 'line' || shape.type === 'arrow') {
+                const sourceShape = shape.fromId ? appState.paths.find(p => p.id === shape.fromId) : null;
+                const targetShape = shape.toId ? appState.paths.find(p => p.id === shape.toId) : null;
+                const connection = getDynamicConnection(
+                    sourceShape,
+                    targetShape,
+                    { x: shape.startX, y: shape.startY },
+                    { x: shape.endX, y: shape.endY }
+                );
+                const path = getOrthogonalPath(connection.pA, connection.pA.dir, connection.pB, connection.pB.dir);
+                return isPointNearPolyline(path, x, y, tolerance);
+            }
+
+            if (shape.type === 'circle') {
+                const radius = Math.hypot(shape.endX - shape.startX, shape.endY - shape.startY);
+                const distance = Math.hypot(x - shape.startX, y - shape.startY);
+                return distance <= radius + tolerance;
+            }
+
+            // Filled/interactive objects retain a generous touch target, while
+            // freehand strokes and connectors use their actual geometry above.
+            return isPointInsideBounds(getRawBounds(shape), x, y, tolerance);
+        }
+
+        function getShapeAt(x, y, pointerType = 'mouse') {
+            const tolerance = getPointerHitTolerance(pointerType);
             for (let i = appState.paths.length - 1; i >= 0; i--) {
                 const shape = appState.paths[i];
-                
+
+                if (shape._hiddenWhileEditing) continue;
                 if (appState.tool === 'smart' && (shape.type === 'arrow' || shape.type === 'line')) continue;
 
-                const box = getBoundingBox(shape);
-                if (x >= box.minX && x <= box.maxX && y >= box.minY && y <= box.maxY) return shape;
+                if (isPointOnShape(shape, x, y, tolerance)) return shape;
             }
             return null;
         }
@@ -3876,9 +4070,10 @@
                     appState.editingShapeId = shape.id;
                     appState.textPos = { x: shape.x, y: shape.y };
                     appState.isTyping = true;
-                    appState.currentFont = shape.font || "'Pacifico', cursive";
+                    appState.currentFont = shape.font || DEFAULT_EDITOR_FONT;
                     appState.currentFontSize = shape.fontSize || 40;
-                    appState.currentTextWidth = shape.width || 300;
+                    appState.currentTextAutoSize = isTextAutoSized(shape);
+                    appState.currentTextWidth = getShapeTextWidth(shape);
                     appState.textAlign = shape.align || 'left';
 
                     textInput.style.display = 'block';
@@ -3887,9 +4082,9 @@
                     textInput.style.top = screenPos.y + 'px';
                     textInput.style.fontFamily = appState.currentFont;
                     textInput.style.fontSize = (appState.currentFontSize * view.scale) + 'px';
-                    textInput.style.width = (appState.currentTextWidth * view.scale) + 'px';
                     textInput.style.textAlign = appState.textAlign;
                     textInput.value = shape.text;
+                    syncTextInputDimensions();
 
                     shape._hiddenWhileEditing = true;
                     redrawAll();
@@ -3905,6 +4100,8 @@
                     appState.isTyping = true;
                     appState.currentFont = shape.font || DEFAULT_CHECKBOX_FONT;
                     appState.currentFontSize = shape.fontSize || DEFAULT_CHECKBOX_FONT_SIZE;
+                    appState.currentTextAutoSize = true;
+                    appState.currentTextWidth = getShapeTextWidth(shape);
                     
                     const boxSize = appState.currentFontSize * 0.8;
                     const spacing = 15 / view.scale;
@@ -3916,9 +4113,9 @@
                     textInput.style.top = screenPos.y + 'px';
                     textInput.style.fontFamily = appState.currentFont;
                     textInput.style.fontSize = (appState.currentFontSize * view.scale) + 'px';
-                    textInput.style.width = '300px'; 
                     textInput.style.textAlign = 'left';
                     textInput.value = shape.text;
+                    syncTextInputDimensions();
 
                     shape._hiddenWhileEditing = true;
                     redrawAll();
@@ -3992,6 +4189,17 @@
             e.target.value = '';
         });
 
+        toggleImageFrameBtn.addEventListener('click', () => {
+            if (!appState.selectedId) return;
+            const shape = appState.paths.find(p => p.id === appState.selectedId);
+            if (!shape || (shape.type !== 'image' && shape.type !== 'video')) return;
+            saveHistory();
+            shape.showFrame = shape.showFrame !== false ? false : true;
+            updateFloatingBtnsPosition();
+            redrawAll();
+            showMessage(shape.showFrame ? 'Marco visible' : 'Marco oculto');
+        });
+
         deleteObjBtn.addEventListener('click', () => {
             if (appState.selectedId) {
                 const deletedId = appState.selectedId;
@@ -4026,7 +4234,7 @@
             }
             
             if (shape.type === 'text' || shape.type === 'checkbox') {
-                const defaultShapeFont = shape.type === 'checkbox' ? DEFAULT_CHECKBOX_FONT : "'Pacifico', cursive";
+                const defaultShapeFont = shape.type === 'checkbox' ? DEFAULT_CHECKBOX_FONT : DEFAULT_EDITOR_FONT;
                 const defaultShapeSize = shape.type === 'checkbox' ? DEFAULT_CHECKBOX_FONT_SIZE : 40;
                 fontFamilySelect.value = shape.font || defaultShapeFont;
                 fontSizeSlider.value = shape.fontSize || defaultShapeSize;
@@ -4049,6 +4257,10 @@
             copyObjBtn.style.display = 'flex';
             
             swapObjBtn.style.display = (shape.type === 'video' || shape.type === 'image') ? 'flex' : 'none';
+            toggleImageFrameBtn.style.display = (shape.type === 'video' || shape.type === 'image') ? 'flex' : 'none';
+            toggleImageFrameBtn.classList.toggle('active', shape.showFrame !== false);
+            toggleImageFrameBtn.title = shape.showFrame !== false ? 'Ocultar marco de imagen' : 'Mostrar marco de imagen';
+            toggleImageFrameBtn.setAttribute('aria-label', toggleImageFrameBtn.title);
             
             colorizeBtn.style.display = 'flex'; 
             colorizeBtn.title = shape.type === 'image' ? "Alternar Tinte de Color" : "Pintar con el color actual";
@@ -4073,7 +4285,8 @@
             const worldPos = screenToWorld(screenX, screenY);
             appState.textPos = worldPos; 
             appState.isTyping = true;
-            appState.currentTextWidth = 300; 
+            appState.currentTextAutoSize = true;
+            appState.currentTextWidth = AUTO_TEXT_EMPTY_WIDTH; 
 
             textInput.style.display = 'block'; 
             textInput.style.left = screenX + 'px'; 
@@ -4082,21 +4295,19 @@
             textInput.style.fontFamily = appState.currentFont; 
             textInput.style.fontSize = (appState.currentFontSize * view.scale) + 'px';
             textInput.style.lineHeight = '1.2';
-            textInput.style.width = (appState.currentTextWidth * view.scale) + 'px';
             textInput.style.textAlign = appState.textAlign;
             
             textInput.value = ''; 
-            textInput.style.height = 'auto'; 
+            syncTextInputDimensions();
             
             setTimeout(() => { 
                 textInput.focus(); 
-                textInput.style.height = textInput.scrollHeight + 'px';
+                syncTextInputDimensions();
             }, 50);
         }
 
         textInput.addEventListener('input', () => { 
-            textInput.style.height = 'auto';
-            textInput.style.height = textInput.scrollHeight + 'px';
+            syncTextInputDimensions();
             redrawAll(); 
         });
 
@@ -4157,7 +4368,7 @@
             }
         }
 
-        function drawTextElement(ctxToUse, text, x, y, color, font = "'Pacifico', cursive", size = 40, isNeon = false, isHighlighted = false, maxWidth = 300, align = 'left') {
+        function drawTextElement(ctxToUse, text, x, y, color, font = DEFAULT_EDITOR_FONT, size = 40, isNeon = false, isHighlighted = false, maxWidth = 300, align = 'left') {
             const actualColor = getActualColor(color);
             ctxToUse.font = `${size}px ${font}`; ctxToUse.textBaseline = 'top';
             
@@ -4231,7 +4442,7 @@
             }
 
             if (shape.type === 'text') { 
-                drawTextElement(ctxToUse, shape.text, shape.x, shape.y, shape.color, shape.font, shape.fontSize, shape.isNeon, isHighlighted, shape.width || 300, shape.align || 'left'); 
+                drawTextElement(ctxToUse, shape.text, shape.x, shape.y, shape.color, shape.font || DEFAULT_EDITOR_FONT, shape.fontSize, shape.isNeon, isHighlighted, getShapeTextWidth(shape), shape.align || 'left'); 
                 ctxToUse.restore(); return; 
             }
 
@@ -4266,7 +4477,7 @@
                 // Dibujar Texto Multilínea usando drawTextElement (Soluciona el problema de visibilidad y envoltura)
                 const textAlpha = shape.checked ? 0.5 : 1.0;
                 ctxToUse.globalAlpha = textAlpha;
-                drawTextElement(ctxToUse, shape.text, shape.x + boxSize + spacing, shape.y, shape.color, shape.font || DEFAULT_CHECKBOX_FONT, fSize, false, false, 300, 'left');
+                drawTextElement(ctxToUse, shape.text, shape.x + boxSize + spacing, shape.y, shape.color, shape.font || DEFAULT_CHECKBOX_FONT, fSize, false, false, getShapeTextWidth(shape), 'left');
                 ctxToUse.globalAlpha = 1.0;
 
                 ctxToUse.restore(); return;
@@ -4333,25 +4544,27 @@
                     
                     ctxToUse.drawImage(imgToDraw, -drawW / 2, -drawH / 2, drawW, drawH);
                     
-                    ctxToUse.shadowBlur = 0; 
-                    ctxToUse.lineWidth = 1 / view.scale; 
-                    ctxToUse.strokeStyle = appState.theme === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)';
-                    
-                    const r = Math.min(8 / view.scale, drawW / 4, drawH / 4);
-                    const bx = -drawW / 2; const by = -drawH / 2;
-                    
-                    ctxToUse.beginPath();
-                    ctxToUse.moveTo(bx + r, by);
-                    ctxToUse.lineTo(bx + drawW - r, by);
-                    ctxToUse.quadraticCurveTo(bx + drawW, by, bx + drawW, by + r);
-                    ctxToUse.lineTo(bx + drawW, by + drawH - r);
-                    ctxToUse.quadraticCurveTo(bx + drawW, by + drawH, bx + drawW - r, by + drawH);
-                    ctxToUse.lineTo(bx + r, by + drawH);
-                    ctxToUse.quadraticCurveTo(bx, by + drawH, bx, by + drawH - r);
-                    ctxToUse.lineTo(bx, by + r);
-                    ctxToUse.quadraticCurveTo(bx, by, bx + r, by);
-                    ctxToUse.closePath();
-                    ctxToUse.stroke();
+                    if (shape.showFrame !== false) {
+                        ctxToUse.shadowBlur = 0; 
+                        ctxToUse.lineWidth = 1 / view.scale; 
+                        ctxToUse.strokeStyle = appState.theme === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)';
+                        
+                        const r = Math.min(8 / view.scale, drawW / 4, drawH / 4);
+                        const bx = -drawW / 2; const by = -drawH / 2;
+                        
+                        ctxToUse.beginPath();
+                        ctxToUse.moveTo(bx + r, by);
+                        ctxToUse.lineTo(bx + drawW - r, by);
+                        ctxToUse.quadraticCurveTo(bx + drawW, by, bx + drawW, by + r);
+                        ctxToUse.lineTo(bx + drawW, by + drawH - r);
+                        ctxToUse.quadraticCurveTo(bx + drawW, by + drawH, bx + drawW - r, by + drawH);
+                        ctxToUse.lineTo(bx + r, by + drawH);
+                        ctxToUse.quadraticCurveTo(bx, by + drawH, bx, by + drawH - r);
+                        ctxToUse.lineTo(bx, by + r);
+                        ctxToUse.quadraticCurveTo(bx, by, bx + r, by);
+                        ctxToUse.closePath();
+                        ctxToUse.stroke();
+                    }
 
                     ctxToUse.restore();
                 }
@@ -4398,7 +4611,10 @@
         function drawSelectionBox() {
             if (!appState.selectedId || appState.isPanning || appState.tool === 'smart') return;
             const shape = appState.paths.find(p => p.id === appState.selectedId);
-            if (!shape) return;
+            // Durante la edición el objeto se oculta para dejar el textarea
+            // como única representación visible. No dibujar su selección evita
+            // el cuadro fantasma que quedaba flotando sobre la pizarra.
+            if (!shape || shape._hiddenWhileEditing) return;
             const box = getBoundingBox(shape);
             
             ctx.lineWidth = 2 / view.scale; 
@@ -4411,7 +4627,7 @@
             ctx.setLineDash([]);
             
             if (shape.type === 'text') {
-                ctx.fillStyle = '#00ffff';
+                ctx.fillStyle = getUiAccentColor(true);
                 ctx.fillRect(box.maxX - 6/view.scale, (box.minY+box.maxY)/2 - 6/view.scale, 12/view.scale, 12/view.scale);
             }
         }
@@ -4428,7 +4644,8 @@
                             Object.values(ports).forEach(port => {
                                 ctx.beginPath(); ctx.arc(port.x, port.y, 4 / view.scale, 0, Math.PI * 2);
                                 if (isTarget) { 
-                                    ctx.fillStyle = '#00ffff'; ctx.shadowBlur = 10 / view.scale; ctx.shadowColor = '#00ffff'; 
+                                    const accentColor = getUiAccentColor(true);
+                                    ctx.fillStyle = accentColor; ctx.shadowBlur = 10 / view.scale; ctx.shadowColor = accentColor; 
                                 } else { 
                                     ctx.fillStyle = appState.theme === 'dark' ? '#050505' : '#ffffff'; 
                                     ctx.shadowBlur = 3 / view.scale; 
@@ -4459,7 +4676,7 @@
             progressTracker.style.display = 'flex';
             document.getElementById('progressText').innerText = percentage + '%';
             document.getElementById('progressBarFill').style.width = percentage + '%';
-            document.getElementById('progressBarFill').style.background = percentage === 100 ? '#39ff14' : '#00ffff';
+            document.getElementById('progressBarFill').style.background = percentage === 100 ? '#39ff14' : getUiAccentColor();
         }
 
         function redrawAll() {
@@ -4482,7 +4699,7 @@
             if (appState.snapLines && appState.snapLines.length > 0) {
                 ctx.save();
                 ctx.lineWidth = 1 / view.scale;
-                ctx.strokeStyle = '#00ffff'; 
+                ctx.strokeStyle = getUiAccentColor(true); 
                 ctx.setLineDash([5 / view.scale, 5 / view.scale]);
                 ctx.beginPath();
                 const vLeft = -view.x / view.scale;
@@ -4511,7 +4728,7 @@
                     const fSize = editingShape.fontSize || DEFAULT_CHECKBOX_FONT_SIZE;
                     const boxSize = fSize * 0.8;
                     const spacing = 15 / view.scale;
-                    drawTextElement(ctx, textInput.value, editingShape.x + boxSize + spacing, editingShape.y, appState.color, appState.currentFont, appState.currentFontSize, false, false, 300, 'left');
+                    drawTextElement(ctx, textInput.value, editingShape.x + boxSize + spacing, editingShape.y, appState.color, appState.currentFont, appState.currentFontSize, false, false, appState.currentTextWidth, 'left');
                 } else if (!editingShape || editingShape.type !== 'checkbox') {
                     drawTextElement(ctx, textInput.value, appState.textPos.x, appState.textPos.y, appState.color, appState.currentFont, appState.currentFontSize, false, false, appState.currentTextWidth, appState.textAlign);
                 }
@@ -4531,6 +4748,7 @@
                 }
                 textInput.style.left = screenPos.x + 'px'; 
                 textInput.style.top = screenPos.y + 'px';
+                syncTextInputDimensions();
             }
             updateFloatingBtnsPosition();
             updateProgressUI(); // Llamar actualización gráfica de porcentaje
@@ -4560,6 +4778,7 @@
                 touchSelectionCandidate = null;
                 selectionDragStarted = false;
                 appState.isPanning = true;
+                container.classList.add('is-panning');
                 appState.snapLines = [];
                 if (appState.currentPath) {
                     appState.currentPath = null;
@@ -4587,6 +4806,7 @@
             touchSelectionCandidate = null;
             selectionDragStarted = false;
             appState.isPanning = false;
+            container.classList.remove('is-panning');
 
             if (appState.tool === 'select' && appState.selectedId) {
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
@@ -4595,6 +4815,7 @@
                     if (Math.abs(worldPos.x - box.maxX) < 20/view.scale && Math.abs(worldPos.y - (box.minY+box.maxY)/2) < 20/view.scale) {
                         appState.isResizingText = true;
                         appState.isInteracting = true;
+                        gesturePathsSnapshot = JSON.parse(JSON.stringify(appState.paths));
                         return; 
                     }
                 }
@@ -4603,16 +4824,18 @@
             if (appState.tool === 'text') { startText(clientX, clientY); return; }
 
             appState.isInteracting = true;
+            const mayChangePaths = appState.tool !== 'smart' && (appState.tool !== 'select' || !!appState.selectedId);
+            gesturePathsSnapshot = mayChangePaths ? JSON.parse(JSON.stringify(appState.paths)) : null;
 
             if (appState.tool === 'smart') {
                 clearSelection(); 
-                smartTapCandidate = getShapeAt(worldPos.x, worldPos.y);
+                smartTapCandidate = getShapeAt(worldPos.x, worldPos.y, e.pointerType || (e.touches ? 'touch' : 'mouse'));
                 lastPanX = clientX; lastPanY = clientY;
                 return; 
             }
 
             if (appState.tool === 'select') {
-                const clickedShape = getShapeAt(worldPos.x, worldPos.y);
+                const clickedShape = getShapeAt(worldPos.x, worldPos.y, e.pointerType || (e.touches ? 'touch' : 'mouse'));
                 if (clickedShape && e.touches) {
                     const wasAlreadySelected = appState.selectedId === clickedShape.id;
                     touchSelectionCandidate = clickedShape;
@@ -4632,6 +4855,7 @@
                 else {
                     clearSelection();
                     appState.isPanning = true;
+                    container.classList.add('is-panning');
                     lastPanX = clientX; lastPanY = clientY;
                 }
             } else {
@@ -4654,7 +4878,7 @@
                     appState.currentPath = { 
                         id: generateId(), type: appState.tool, src: appState.currentImageData, color: appState.color, 
                         startX: worldPos.x, startY: worldPos.y, endX: worldPos.x, endY: worldPos.y,
-                        colorize: false 
+                        colorize: false, showFrame: true
                     };
                 } else if (appState.tool === 'checkbox') {
                     // Creador directo al click, no se arrastra
@@ -4662,6 +4886,8 @@
                         id: generateId(), type: 'checkbox', color: appState.color,
                         x: worldPos.x, y: worldPos.y, text: 'Nueva Tarea', checked: false,
                         font: DEFAULT_CHECKBOX_FONT, fontSize: DEFAULT_CHECKBOX_FONT_SIZE,
+                        width: measureAutoTextWidth('Nueva Tarea', DEFAULT_CHECKBOX_FONT, DEFAULT_CHECKBOX_FONT_SIZE),
+                        autoSize: true,
                         presentationStep: getNextPresentationStepNumber(),
                         presentationView: captureCurrentPresentationView()
                     };
@@ -4679,6 +4905,7 @@
                 touchSelectionCandidate = null;
                 selectionDragStarted = false;
                 appState.isPanning = true;
+                container.classList.add('is-panning');
                 appState.snapLines = [];
                 if (appState.selectedId) clearSelection();
                 if (appState.currentPath) {
@@ -4709,6 +4936,7 @@
                 appState.selectedId !== touchSelectionCandidate.id && gestureDistance >= POINTER_DRAG_THRESHOLD) {
                 touchSelectionCandidate = null;
                 appState.isPanning = true;
+                container.classList.add('is-panning');
                 clearSelection();
             }
 
@@ -4716,6 +4944,7 @@
                 const shape = appState.paths.find(p => p.id === appState.selectedId);
                 if (shape && shape.type === 'text') {
                     shape.width = Math.max(50, worldPos.x - shape.x); 
+                    shape.autoSize = false;
                     redrawAll();
                 }
                 return;
@@ -4724,6 +4953,7 @@
             if (appState.tool === 'smart') {
                 if (!appState.isPanning && gestureDistance >= POINTER_DRAG_THRESHOLD) {
                     appState.isPanning = true;
+                    container.classList.add('is-panning');
                     smartTapCandidate = null;
                 }
                 if (appState.isPanning) {
@@ -4794,7 +5024,12 @@
 
         function handlePointerUp(e) {
             initialPinchDistance = null;
-            if (!appState.isInteracting) return;
+            container.classList.remove('is-panning');
+            const wasCancelled = e.type === 'touchcancel' || e.type === 'pointercancel';
+            if (!appState.isInteracting) {
+                gesturePathsSnapshot = null;
+                return;
+            }
             appState.isInteracting = false;
             const wasPanning = appState.isPanning;
             const pendingSmartShape = smartTapCandidate;
@@ -4806,6 +5041,17 @@
             selectionDragStarted = false;
             
             appState.snapLines = [];
+
+            if (wasCancelled) {
+                if (gesturePathsSnapshot) appState.paths = gesturePathsSnapshot;
+                gesturePathsSnapshot = null;
+                appState.currentPath = null;
+                appState.snapTargetShape = null;
+                appState.isResizingText = false;
+                redrawAll();
+                return;
+            }
+            gesturePathsSnapshot = null;
             
             if (appState.isResizingText) {
                 appState.isResizingText = false;
@@ -4815,7 +5061,7 @@
             }
 
             if (appState.tool === 'smart') {
-                if (!wasPanning && pendingSmartShape && e.type !== 'touchcancel') {
+                if (!wasPanning && pendingSmartShape) {
                     pendingSmartShape.clickAnimTime = Date.now();
                     // LÓGICA DE CHECKBOX INTERACTIVO
                     if (pendingSmartShape.type === 'checkbox') {
@@ -4929,38 +5175,119 @@
             }
         });
 
-        container.addEventListener('mousedown', (e) => {
-            if (Date.now() - lastTouchEventTime < 700) return;
-            markInteracting();
-            handlePointerDown(e);
-        });
-        window.addEventListener('mousemove', (e) => {
-            if (Date.now() - lastTouchEventTime < 700) return;
-            if (appState.isInteracting) markInteracting();
-            handlePointerMove(e);
-        });
-        window.addEventListener('mouseup', (e) => {
-            if (Date.now() - lastTouchEventTime < 700) return;
-            handlePointerUp(e);
-        });
-        container.addEventListener('touchstart', (e) => {
-            lastTouchEventTime = Date.now();
-            markInteracting();
-            handlePointerDown(e);
-        }, { passive: false });
-        container.addEventListener('touchmove', (e) => {
-            lastTouchEventTime = Date.now();
-            if (appState.isInteracting) markInteracting();
-            handlePointerMove(e);
-        }, { passive: false });
-        container.addEventListener('touchend', (e) => {
-            lastTouchEventTime = Date.now();
-            handlePointerUp(e);
-        });
-        container.addEventListener('touchcancel', (e) => {
-            lastTouchEventTime = Date.now();
-            handlePointerUp(e);
-        });
+        // Pointer Events unifican ratón, dedo y lápiz. Pointer capture evita
+        // perder el gesto al salir del canvas y elimina la doble cadena
+        // touch/mouse que provocaba selecciones y redibujos fantasma.
+        const activePointers = new Map();
+        const isTouchLikePointer = pointerType => pointerType === 'touch' || pointerType === 'pen';
+
+        function isCanvasUiTarget(event) {
+            const target = event.target;
+            if (target === textInput) return true;
+            return !!(target && target.closest && target.closest(
+                '.floating-actions, .panel-wrapper, .modal-overlay, #top-demo-tab, #progressTracker'
+            ));
+        }
+
+        function makePointerInteractionEvent(event, phase) {
+            const touchLike = isTouchLikePointer(event.pointerType);
+            const touches = touchLike
+                ? Array.from(activePointers.values()).map(pointer => ({
+                    identifier: pointer.pointerId,
+                    clientX: pointer.clientX,
+                    clientY: pointer.clientY,
+                    target: pointer.target
+                }))
+                : null;
+            const type = touchLike
+                ? (phase === 'down' ? 'touchstart' : phase === 'move' ? 'touchmove' : phase === 'cancel' ? 'touchcancel' : 'touchend')
+                : (phase === 'down' ? 'mousedown' : phase === 'move' ? 'mousemove' : 'mouseup');
+
+            return {
+                type,
+                target: event.target,
+                clientX: event.clientX,
+                clientY: event.clientY,
+                pointerType: event.pointerType,
+                pointerId: event.pointerId,
+                touches,
+                preventDefault: () => event.preventDefault()
+            };
+        }
+
+        if ('PointerEvent' in window) {
+            container.addEventListener('pointerdown', (e) => {
+                if (isCanvasUiTarget(e)) return;
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
+                activePointers.set(e.pointerId, e);
+                if (container.setPointerCapture) {
+                    try { container.setPointerCapture(e.pointerId); } catch (_) { /* captura opcional */ }
+                }
+                markInteracting();
+                handlePointerDown(makePointerInteractionEvent(e, 'down'));
+            }, { passive: false });
+
+            container.addEventListener('pointermove', (e) => {
+                if (!activePointers.has(e.pointerId)) return;
+                activePointers.set(e.pointerId, e);
+                if (appState.isInteracting) markInteracting();
+                handlePointerMove(makePointerInteractionEvent(e, 'move'));
+            }, { passive: false });
+
+            container.addEventListener('pointerup', (e) => {
+                if (!activePointers.has(e.pointerId)) return;
+                activePointers.set(e.pointerId, e);
+                handlePointerUp(makePointerInteractionEvent(e, 'up'));
+                activePointers.delete(e.pointerId);
+                if (container.releasePointerCapture) {
+                    try { container.releasePointerCapture(e.pointerId); } catch (_) { /* captura opcional */ }
+                }
+            }, { passive: false });
+
+            container.addEventListener('pointercancel', (e) => {
+                if (!activePointers.has(e.pointerId)) return;
+                activePointers.set(e.pointerId, e);
+                handlePointerUp(makePointerInteractionEvent(e, 'cancel'));
+                activePointers.delete(e.pointerId);
+                if (container.releasePointerCapture) {
+                    try { container.releasePointerCapture(e.pointerId); } catch (_) { /* captura opcional */ }
+                }
+            }, { passive: false });
+        } else {
+            // Compatibilidad con navegadores antiguos sin Pointer Events.
+            container.addEventListener('mousedown', (e) => {
+                if (Date.now() - lastTouchEventTime < 700) return;
+                markInteracting();
+                handlePointerDown(e);
+            });
+            window.addEventListener('mousemove', (e) => {
+                if (Date.now() - lastTouchEventTime < 700) return;
+                if (appState.isInteracting) markInteracting();
+                handlePointerMove(e);
+            });
+            window.addEventListener('mouseup', (e) => {
+                if (Date.now() - lastTouchEventTime < 700) return;
+                handlePointerUp(e);
+            });
+            container.addEventListener('touchstart', (e) => {
+                lastTouchEventTime = Date.now();
+                markInteracting();
+                handlePointerDown(e);
+            }, { passive: false });
+            container.addEventListener('touchmove', (e) => {
+                lastTouchEventTime = Date.now();
+                if (appState.isInteracting) markInteracting();
+                handlePointerMove(e);
+            }, { passive: false });
+            container.addEventListener('touchend', (e) => {
+                lastTouchEventTime = Date.now();
+                handlePointerUp(e);
+            });
+            container.addEventListener('touchcancel', (e) => {
+                lastTouchEventTime = Date.now();
+                handlePointerUp(e);
+            });
+        }
 
         // =========================================================
         // --- LOGICA: BRANDING, TARJETA Y MODO STREAMER ---
