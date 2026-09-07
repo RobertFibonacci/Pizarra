@@ -357,23 +357,175 @@
         .full-gallery-item img.active, .full-gallery-item video.active { border-color: #00ffff; background: rgba(255,255,255,0.1); transform: scale(1.05); }
 
         /* --- GESTOR DE DIAGRAMAS --- */
+        .modal-box.diagram-manager {
+            width: min(680px, calc(100vw - 24px)); max-width: 680px;
+            max-height: calc(100vh - 24px); max-height: min(820px, calc(100dvh - 24px));
+            padding: 0; gap: 0; overflow: hidden;
+            border-radius: 22px; background: #17191d; border-color: rgba(255,255,255,0.12);
+        }
+        .diagram-manager-header {
+            display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+            padding: 20px 22px 18px; border-bottom: 1px solid rgba(255,255,255,0.09);
+            background: linear-gradient(145deg, rgba(42,48,58,0.95), rgba(23,25,29,0.98));
+        }
+        .diagram-manager-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .diagram-manager-title-icon {
+            width: 42px; height: 42px; flex: 0 0 42px; border-radius: 13px;
+            display: flex; align-items: center; justify-content: center;
+            color: #68ddd6; background: rgba(104,221,214,0.12); border: 1px solid rgba(104,221,214,0.22);
+        }
+        .diagram-manager-title-icon svg { width: 21px; height: 21px; }
+        .diagram-manager-heading { min-width: 0; }
+        .diagram-manager-heading h3 { margin: 0 0 4px; text-align: left; font-size: 19px; line-height: 1.2; }
+        .diagram-manager-heading p { margin: 0; color: #9da5b1; font-size: 12px; line-height: 1.45; }
+        .diagram-manager-close {
+            width: 42px; height: 42px; flex: 0 0 42px; border: 0; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            color: #c5cbd3; background: rgba(255,255,255,0.07); touch-action: manipulation;
+        }
+        .diagram-manager-close:hover { background: rgba(255,255,255,0.13); color: #fff; }
+        .diagram-manager-close svg { width: 20px; height: 20px; }
+        .diagram-manager-body {
+            flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 18px; padding: 18px 22px;
+            overflow-y: auto; overscroll-behavior-y: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch;
+        }
+        .diagram-section-label {
+            display: block; margin-bottom: 8px; color: #dfe4ea; font-size: 13px; font-weight: 700;
+        }
+        .diagram-save-card {
+            padding: 16px; border: 1px solid rgba(104,221,214,0.18); border-radius: 16px;
+            background: linear-gradient(145deg, rgba(104,221,214,0.08), rgba(255,255,255,0.035));
+        }
+        .diagram-save-card #diagramNameInput {
+            min-height: 46px; padding: 11px 13px; border-radius: 11px; font-size: 15px;
+            background: rgba(8,10,13,0.74); border-color: rgba(255,255,255,0.16);
+        }
+        .diagram-save-card #diagramNameInput:focus {
+            border-color: #68ddd6; box-shadow: 0 0 0 3px rgba(104,221,214,0.13);
+        }
+        .diagram-save-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 11px; }
+        .diagram-primary-action, .diagram-secondary-action, .diagram-file-action,
+        .diagram-open-btn, .diagram-new-blank, .diagram-manager-footer .btn-cancel {
+            min-height: 44px; border-radius: 11px; border: 1px solid transparent; padding: 10px 14px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font: 700 13px system-ui, sans-serif; cursor: pointer; touch-action: manipulation;
+        }
+        .diagram-primary-action { background: #68ddd6; color: #10201f; }
+        .diagram-primary-action:hover { background: #82e6e0; }
+        .diagram-secondary-action { background: rgba(255,255,255,0.08); color: #eef1f4; border-color: rgba(255,255,255,0.14); }
+        .diagram-secondary-action:hover { background: rgba(255,255,255,0.13); }
+        .diagram-save-hint { margin: 10px 1px 0; color: #8e97a3; font-size: 11px; line-height: 1.45; }
+        .diagram-saved-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+        .diagram-saved-header h4, .diagram-file-heading h4 { margin: 0; color: #eef1f4; font-size: 14px; }
+        .diagram-list-count {
+            min-height: 0; padding: 4px 8px; border-radius: 999px; color: #b7bec7;
+            background: rgba(255,255,255,0.07); font-size: 11px; text-align: right;
+        }
         .diagram-list {
-            display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; padding: 5px 0;
-            scrollbar-width: thin; scrollbar-color: #555 #111; overscroll-behavior-y: contain;
-            touch-action: pan-y; -webkit-overflow-scrolling: touch;
+            display: flex; flex-direction: column; gap: 10px; max-height: min(38vh, 330px);
+            overflow-y: auto; padding: 1px 4px 3px 0; scrollbar-width: thin; scrollbar-color: #59616c #111;
+            overscroll-behavior-y: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch;
         }
-        .diagram-save-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
-        .diagram-save-row #saveAsNewBtn { grid-column: 1 / -1; min-height: 38px; }
-        .diagram-list-count { color: #aaa; font-size: 12px; text-align: right; min-height: 15px; }
+        .diagram-empty-state {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px;
+            min-height: 118px; padding: 16px; box-sizing: border-box; text-align: center;
+            color: #929ba7; background: rgba(255,255,255,0.025); border: 1px dashed rgba(255,255,255,0.14);
+            border-radius: 15px; font-size: 12px;
+        }
+        .diagram-empty-state svg { width: 25px; height: 25px; color: #68ddd6; }
         .diagram-item {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
+            position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px;
+            background: rgba(255,255,255,0.045); padding: 13px; border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1); transition: border-color 0.2s, background 0.2s;
         }
-        .diagram-name { font-size: 13px; color: #fff; font-family: system-ui; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 10px; }
-        .diagram-actions { display: flex; gap: 5px; }
-        .btn-load { background: #00ffff; color: black; border: none; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: bold; cursor: pointer; }
-        .btn-delete { background: #ff3333; color: white; border: none; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .diagram-item.is-current { border-color: rgba(104,221,214,0.45); background: rgba(104,221,214,0.065); }
+        .diagram-item-main { min-width: 0; display: flex; align-items: center; gap: 11px; }
+        .diagram-item-icon {
+            width: 40px; height: 40px; flex: 0 0 40px; border-radius: 11px;
+            display: flex; align-items: center; justify-content: center;
+            color: #68ddd6; background: rgba(104,221,214,0.1);
+        }
+        .diagram-item-icon svg { width: 19px; height: 19px; }
+        .diagram-item-copy { min-width: 0; }
+        .diagram-name {
+            display: block; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            color: #f4f6f8; font: 700 14px/1.35 system-ui, sans-serif;
+        }
+        .diagram-meta { display: flex; align-items: center; gap: 7px; margin-top: 3px; color: #8f98a4; font-size: 11px; }
+        .diagram-current-badge { color: #68ddd6; font-weight: 700; }
+        .diagram-menu-btn {
+            width: 44px; height: 44px; border: 0; border-radius: 11px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; touch-action: manipulation;
+            color: #abb3bd; background: rgba(255,255,255,0.055);
+        }
+        .diagram-menu-btn:hover, .diagram-menu-btn[aria-expanded="true"] { color: #fff; background: rgba(255,255,255,0.12); }
+        .diagram-menu-btn svg { width: 20px; height: 20px; }
+        .diagram-item-actions { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr; gap: 8px; }
+        .diagram-open-btn { width: 100%; background: rgba(104,221,214,0.11); color: #86e8e2; border-color: rgba(104,221,214,0.22); }
+        .diagram-open-btn:hover { background: rgba(104,221,214,0.18); }
+        .diagram-danger-menu {
+            grid-column: 1 / -1; padding-top: 9px; border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        .diagram-delete-request {
+            width: 100%; min-height: 44px; padding: 10px 12px; border: 0; border-radius: 10px;
+            display: flex; align-items: center; gap: 9px; cursor: pointer; touch-action: manipulation;
+            color: #ff9a9a; background: rgba(255,75,75,0.08); font: 700 13px system-ui, sans-serif;
+        }
+        .diagram-delete-request:hover { background: rgba(255,75,75,0.14); }
+        .diagram-delete-confirm {
+            grid-column: 1 / -1; padding: 13px; border-radius: 12px;
+            background: rgba(168,39,39,0.14); border: 1px solid rgba(255,93,93,0.25);
+        }
+        .diagram-delete-confirm strong { display: block; color: #ffd5d5; font-size: 13px; line-height: 1.4; }
+        .diagram-delete-confirm p { margin: 4px 0 11px; color: #c7a6a6; font-size: 11px; line-height: 1.45; }
+        .diagram-delete-confirm-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .diagram-keep-btn, .diagram-confirm-delete-btn {
+            min-height: 44px; border-radius: 10px; padding: 9px 12px; cursor: pointer; touch-action: manipulation;
+            font: 700 12px system-ui, sans-serif;
+        }
+        .diagram-keep-btn { color: #f0f2f5; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.15); }
+        .diagram-confirm-delete-btn { color: #fff; background: #bd3030; border: 1px solid #d84545; }
+        .diagram-confirm-delete-btn:hover { background: #cf3b3b; }
+        .diagram-file-section { padding-top: 2px; }
+        .diagram-file-heading { margin-bottom: 10px; }
+        .diagram-file-heading p { margin: 4px 0 0; color: #8f98a4; font-size: 11px; line-height: 1.4; }
+        .diagram-file-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .diagram-file-action { background: rgba(255,255,255,0.055); color: #dce1e7; border-color: rgba(255,255,255,0.12); }
+        .diagram-file-action:hover { background: rgba(255,255,255,0.1); }
+        .diagram-manager-footer {
+            display: flex; justify-content: space-between; gap: 10px; padding: 14px 22px;
+            border-top: 1px solid rgba(255,255,255,0.09); background: rgba(10,11,14,0.72);
+        }
+        .diagram-new-blank { color: #b8c0ca; background: transparent; border-color: rgba(255,255,255,0.12); }
+        .diagram-new-blank:hover { background: rgba(255,255,255,0.07); color: #fff; }
+        .diagram-manager-footer .btn-cancel { min-width: 110px; margin: 0; color: #ecf0f4; background: rgba(255,255,255,0.1); }
+        #diagramUndoToast {
+            position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+            transform: translate(-50%, 140%); z-index: 1300; width: min(430px, calc(100vw - 24px));
+            box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            padding: 11px 12px 11px 15px; border-radius: 14px; color: #f4f6f8;
+            background: rgba(32,35,41,0.98); border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.45); opacity: 0; pointer-events: none;
+            transition: transform 0.28s ease, opacity 0.28s ease; font: 600 12px system-ui, sans-serif;
+        }
+        #diagramUndoToast.visible { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+        #diagramUndoToast button {
+            min-height: 40px; padding: 8px 13px; border-radius: 10px; border: 1px solid rgba(104,221,214,0.28);
+            color: #7fe5df; background: rgba(104,221,214,0.1); cursor: pointer; font-weight: 800; touch-action: manipulation;
+        }
+        @media (max-width: 560px) {
+            .modal-box.diagram-manager {
+                width: calc(100vw - 14px); max-height: calc(100vh - 14px);
+                max-height: calc(100dvh - 14px); border-radius: 18px;
+            }
+            .diagram-manager-header { padding: 16px; }
+            .diagram-manager-body { padding: 15px; gap: 15px; }
+            .diagram-manager-title-icon { width: 38px; height: 38px; flex-basis: 38px; }
+            .diagram-save-actions, .diagram-file-actions { grid-template-columns: 1fr; }
+            .diagram-list { max-height: min(34vh, 285px); }
+            .diagram-manager-footer { padding: 12px 15px; flex-direction: column-reverse; }
+            .diagram-manager-footer .btn-cancel, .diagram-new-blank { width: 100%; }
+        }
 
         /* --- MODAL DE MARCA PERSONAL (BRANDING) V6 --- */
         .branding-setting-row {
@@ -624,8 +776,34 @@
         body.light-mode .full-gallery-item video.active { background: rgba(0, 0, 0, 0.05); }
 
         /* Gestor de diagramas */
-        body.light-mode .diagram-item { background: rgba(0, 0, 0, 0.03); border-color: rgba(0, 0, 0, 0.08); }
-        body.light-mode .diagram-name { color: #111; }
+        body.light-mode .modal-box.diagram-manager { background: #f7f8fa; border-color: rgba(0,0,0,0.12); }
+        body.light-mode .diagram-manager-header {
+            background: linear-gradient(145deg, #ffffff, #eef1f4); border-color: rgba(0,0,0,0.09);
+        }
+        body.light-mode .diagram-manager-heading p, body.light-mode .diagram-save-hint,
+        body.light-mode .diagram-file-heading p, body.light-mode .diagram-meta { color: #68717c; }
+        body.light-mode .diagram-manager-title-icon, body.light-mode .diagram-item-icon {
+            color: #087e78; background: rgba(8,126,120,0.09); border-color: rgba(8,126,120,0.16);
+        }
+        body.light-mode .diagram-manager-close, body.light-mode .diagram-menu-btn,
+        body.light-mode .diagram-secondary-action, body.light-mode .diagram-file-action {
+            color: #37404a; background: rgba(0,0,0,0.045); border-color: rgba(0,0,0,0.1);
+        }
+        body.light-mode .diagram-save-card { background: rgba(8,126,120,0.055); border-color: rgba(8,126,120,0.18); }
+        body.light-mode .diagram-save-card #diagramNameInput { background: #fff; border-color: rgba(0,0,0,0.14); }
+        body.light-mode .diagram-section-label, body.light-mode .diagram-saved-header h4,
+        body.light-mode .diagram-file-heading h4 { color: #242a31; }
+        body.light-mode .diagram-list-count { color: #59626d; background: rgba(0,0,0,0.055); }
+        body.light-mode .diagram-empty-state { color: #67717c; background: rgba(0,0,0,0.018); border-color: rgba(0,0,0,0.14); }
+        body.light-mode .diagram-item { background: #fff; border-color: rgba(0,0,0,0.09); }
+        body.light-mode .diagram-item.is-current { background: rgba(8,126,120,0.055); border-color: rgba(8,126,120,0.32); }
+        body.light-mode .diagram-name { color: #171b20; }
+        body.light-mode .diagram-open-btn { color: #086d68; background: rgba(8,126,120,0.08); border-color: rgba(8,126,120,0.17); }
+        body.light-mode .diagram-danger-menu, body.light-mode .diagram-manager-footer { border-color: rgba(0,0,0,0.09); }
+        body.light-mode .diagram-manager-footer { background: #eef1f4; }
+        body.light-mode .diagram-new-blank { color: #4d5661; border-color: rgba(0,0,0,0.13); }
+        body.light-mode .diagram-manager-footer .btn-cancel { color: #252b32; background: rgba(0,0,0,0.075); }
+        body.light-mode #diagramUndoToast { color: #fff; background: rgba(32,35,41,0.98); }
 
         /* Branding modal */
         body.light-mode .branding-setting-row { background: rgba(0, 0, 0, 0.05); }
@@ -709,37 +887,72 @@
     </div>
 
     <div id="diagramsModalOverlay" class="modal-overlay">
-        <div class="modal-box"> 
-            <h3>Gestor de Pizarras</h3>
-            <p style="font-size:12px; color:#aaa; margin:0; text-align:center;">Guarda tus clases en alta calidad en tu computadora.</p>
-            
-            <div style="display:flex; flex-direction: column; gap:15px; margin-top: 15px;">
-                <div class="diagram-save-row">
-                    <input type="text" id="diagramNameInput" placeholder="Nombre de la pizarra..." style="flex:1;">
-                    <button class="btn-save" onclick="saveCurrentDiagram()" style="white-space:nowrap;">Guardar / Actualizar</button>
-                    <button class="btn-action" id="saveAsNewBtn" onclick="saveCurrentDiagram(true)" type="button">Guardar como nueva pizarra</button>
+        <div class="modal-box diagram-manager" role="dialog" aria-modal="true" aria-labelledby="diagramManagerTitle">
+            <div class="diagram-manager-header">
+                <div class="diagram-manager-title">
+                    <div class="diagram-manager-title-icon" aria-hidden="true"><i data-lucide="save"></i></div>
+                    <div class="diagram-manager-heading">
+                        <h3 id="diagramManagerTitle">Guardar y administrar pizarras</h3>
+                        <p>Conserva tus avances, abre trabajos anteriores o crea una copia externa.</p>
+                    </div>
                 </div>
-
-                <div class="diagram-list-count" id="diagramListCount">0 pizarras guardadas</div>
-                <div id="diagramsListContainer" class="diagram-list"></div>
-                
-                <button class="btn-save" onclick="downloadPizarra()" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                    <i data-lucide="download"></i> Descargar Pizarra Actual
+                <button class="diagram-manager-close" type="button" onclick="closeDiagramsModal()" aria-label="Cerrar gestor de pizarras" title="Cerrar">
+                    <i data-lucide="x"></i>
                 </button>
-                
-                <div style="border-top: 1px solid #333; padding-top: 15px;">
-                    <input type="file" id="loadPizarraInput" accept=".pizarra,.json" style="display:none;">
-                    <button class="btn-action" onclick="document.getElementById('loadPizarraInput').click()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                        <i data-lucide="upload"></i> Cargar Pizarra desde Archivo
-                    </button>
-                </div>
             </div>
 
-            <div class="modal-btns">
-                <button class="btn-cancel" onclick="closeDiagramsModal()">Cerrar</button>
-                <button class="btn-save" style="background:#ff3333; color:white;" onclick="startNewDiagram()">Borrar y Empezar Nueva</button>
+            <div class="diagram-manager-body">
+                <section class="diagram-save-card" aria-labelledby="diagramSaveTitle">
+                    <label class="diagram-section-label" id="diagramSaveTitle" for="diagramNameInput">Nombre de la pizarra</label>
+                    <input type="text" id="diagramNameInput" placeholder="Ej. Clase de ventas — sesión 1" autocomplete="off">
+                    <div class="diagram-save-actions">
+                        <button class="diagram-primary-action" onclick="saveCurrentDiagram()" type="button">
+                            <i data-lucide="save"></i> Guardar cambios
+                        </button>
+                        <button class="diagram-secondary-action" id="saveAsNewBtn" onclick="saveCurrentDiagram(true)" type="button">
+                            <i data-lucide="copy-plus"></i> Guardar como nueva
+                        </button>
+                    </div>
+                    <p class="diagram-save-hint">“Guardar cambios” actualiza la pizarra abierta. “Guardar como nueva” conserva la anterior y crea otra copia.</p>
+                </section>
+
+                <section aria-labelledby="savedDiagramsTitle">
+                    <div class="diagram-saved-header">
+                        <h4 id="savedDiagramsTitle">Mis pizarras</h4>
+                        <span class="diagram-list-count" id="diagramListCount">0 guardadas</span>
+                    </div>
+                    <div id="diagramsListContainer" class="diagram-list"></div>
+                </section>
+
+                <section class="diagram-file-section" aria-labelledby="diagramFileTitle">
+                    <div class="diagram-file-heading">
+                        <h4 id="diagramFileTitle">Copia externa</h4>
+                        <p>Descarga un respaldo o recupera una pizarra guardada como archivo.</p>
+                    </div>
+                    <div class="diagram-file-actions">
+                        <button class="diagram-file-action" onclick="downloadPizarra()" type="button">
+                            <i data-lucide="download"></i> Descargar actual
+                        </button>
+                        <input type="file" id="loadPizarraInput" accept=".pizarra,.json" style="display:none;">
+                        <button class="diagram-file-action" onclick="document.getElementById('loadPizarraInput').click()" type="button">
+                            <i data-lucide="upload"></i> Cargar desde archivo
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <div class="diagram-manager-footer">
+                <button class="diagram-new-blank" type="button" onclick="startNewDiagram()">
+                    <i data-lucide="file-plus-2"></i> Nueva pizarra en blanco
+                </button>
+                <button class="btn-cancel" type="button" onclick="closeDiagramsModal()">Cerrar</button>
             </div>
         </div>
+    </div>
+
+    <div id="diagramUndoToast" role="status" aria-live="polite" aria-atomic="true">
+        <span id="diagramUndoText">Pizarra eliminada</span>
+        <button type="button" onclick="undoDeleteDiagram()">Deshacer</button>
     </div>
 
     <div id="stepModalOverlay" class="modal-overlay">
@@ -1132,7 +1345,7 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const swCode = `
-                    const CACHE_NAME = 'pizarra-v2-20260907';
+                    const CACHE_NAME = 'pizarra-v3-20260907';
                     const urlsToCache = ['./manifest.json'];
 
                     self.addEventListener('install', event => {
@@ -1280,6 +1493,12 @@
         let currentDiagramId = null; // ID del diagrama actual para actualizar
         const diagramsListContainer = document.getElementById('diagramsListContainer');
         const diagramListCount = document.getElementById('diagramListCount');
+        const diagramUndoToast = document.getElementById('diagramUndoToast');
+        const diagramUndoText = document.getElementById('diagramUndoText');
+        let diagramActionMenuId = null;
+        let diagramDeleteConfirmId = null;
+        let pendingDiagramDeletion = null;
+        let pendingDiagramDeletionTimer = null;
 
         async function saveDiagramsToMemory() {
             await dbClear('diagrams');
@@ -1588,18 +1807,19 @@
         });
 
         window.startNewDiagram = function() {
-            if (confirm("¿Borrar todo y empezar una nueva pizarra? (Asegurate de haber descargado si quieres guardarla)")) {
-                saveHistory();
-                appState.paths = [];
-                currentPresentationStepId = null;
-                currentDiagramId = null;
-                document.getElementById('diagramNameInput').value = '';
-                document.getElementById('demoTitleInput').value = '';
-                clearSelection();
-                redrawAll();
-                closeDiagramsModal();
-                showMessage("Nueva pizarra lista");
-            }
+            const hasCurrentContent = appState.paths.length > 0;
+            if (hasCurrentContent && !confirm("¿Crear una pizarra en blanco? La vista actual se limpiará, pero tus pizarras guardadas no se eliminarán.")) return;
+
+            saveHistory();
+            appState.paths = [];
+            currentPresentationStepId = null;
+            currentDiagramId = null;
+            document.getElementById('diagramNameInput').value = '';
+            document.getElementById('demoTitleInput').value = '';
+            clearSelection();
+            redrawAll();
+            closeDiagramsModal();
+            showMessage("Nueva pizarra lista");
         };
 
         function getCachedImage(base64) {
@@ -2387,11 +2607,15 @@
         const diagramNameInput = document.getElementById('diagramNameInput');
 
         btnDiagrams.addEventListener('click', () => {
+            diagramActionMenuId = null;
+            diagramDeleteConfirmId = null;
             diagramsModalOverlay.style.display = 'flex';
             renderDiagramsList();
         });
 
         window.closeDiagramsModal = function() {
+            diagramActionMenuId = null;
+            diagramDeleteConfirmId = null;
             diagramsModalOverlay.style.display = 'none';
         };
 
@@ -2460,52 +2684,190 @@
             }
         };
 
-        window.deleteDiagram = async function(id) {
-            if (confirm("Eliminar este diagrama permanentemente?")) {
-                savedDiagrams = savedDiagrams.filter(d => d.id !== id);
-                if (currentDiagramId === id) currentDiagramId = null;
-                await dbDelete('diagrams', id);
-                renderDiagramsList();
-            }
+        window.toggleDiagramActions = function(id) {
+            diagramDeleteConfirmId = null;
+            diagramActionMenuId = diagramActionMenuId === id ? null : id;
+            renderDiagramsList();
         };
+
+        window.requestDeleteDiagram = function(id) {
+            diagramActionMenuId = null;
+            diagramDeleteConfirmId = id;
+            renderDiagramsList();
+        };
+
+        window.cancelDeleteDiagram = function() {
+            diagramDeleteConfirmId = null;
+            renderDiagramsList();
+        };
+
+        async function finalizePendingDiagramDeletion() {
+            if (!pendingDiagramDeletion) return;
+            const deletion = pendingDiagramDeletion;
+            pendingDiagramDeletion = null;
+            if (pendingDiagramDeletionTimer) clearTimeout(pendingDiagramDeletionTimer);
+            pendingDiagramDeletionTimer = null;
+            diagramUndoToast.classList.remove('visible');
+            await dbDelete('diagrams', deletion.diagram.id);
+        }
+
+        window.confirmDiagramDeletion = async function(id) {
+            const index = savedDiagrams.findIndex(diagram => diagram.id === id);
+            if (index < 0) return;
+
+            if (pendingDiagramDeletion) await finalizePendingDiagramDeletion();
+
+            const diagram = savedDiagrams[index];
+            const wasCurrent = currentDiagramId === id;
+            savedDiagrams.splice(index, 1);
+            if (wasCurrent) currentDiagramId = null;
+
+            pendingDiagramDeletion = { diagram, index, wasCurrent };
+            diagramDeleteConfirmId = null;
+            diagramActionMenuId = null;
+            renderDiagramsList();
+
+            diagramUndoText.innerText = `“${diagram.name}” se eliminó`;
+            diagramUndoToast.classList.add('visible');
+            pendingDiagramDeletionTimer = setTimeout(finalizePendingDiagramDeletion, 10000);
+        };
+
+        window.undoDeleteDiagram = async function() {
+            if (!pendingDiagramDeletion) return;
+            const deletion = pendingDiagramDeletion;
+            pendingDiagramDeletion = null;
+            if (pendingDiagramDeletionTimer) clearTimeout(pendingDiagramDeletionTimer);
+            pendingDiagramDeletionTimer = null;
+
+            const restoreIndex = Math.min(deletion.index, savedDiagrams.length);
+            savedDiagrams.splice(restoreIndex, 0, deletion.diagram);
+            if (deletion.wasCurrent && currentDiagramId === null) currentDiagramId = deletion.diagram.id;
+            await dbPut('diagrams', deletion.diagram);
+
+            diagramUndoToast.classList.remove('visible');
+            if (diagramsModalOverlay.style.display === 'flex') renderDiagramsList();
+            showMessage("Pizarra recuperada");
+        };
+
+        // Compatibilidad con cualquier llamada anterior: ahora abre el flujo protegido.
+        window.deleteDiagram = window.requestDeleteDiagram;
 
         function renderDiagramsList() {
             diagramsListContainer.innerHTML = '';
-            diagramListCount.innerText = `${savedDiagrams.length} ${savedDiagrams.length === 1 ? 'pizarra guardada' : 'pizarras guardadas'}`;
+            diagramListCount.innerText = `${savedDiagrams.length} ${savedDiagrams.length === 1 ? 'guardada' : 'guardadas'}`;
             if (savedDiagrams.length === 0) {
-                diagramsListContainer.innerHTML = '<span style="font-size:12px; color:#aaa; text-align:center; display:block;">No hay diagramas guardados.</span>';
+                const emptyState = document.createElement('div');
+                emptyState.className = 'diagram-empty-state';
+                emptyState.innerHTML = '<i data-lucide="folder-open"></i><strong>Todavía no hay pizarras guardadas</strong><span>Escribe un nombre y usa “Guardar cambios”.</span>';
+                diagramsListContainer.appendChild(emptyState);
+                lucide.createIcons();
                 return;
             }
             
             [...savedDiagrams].reverse().forEach(diag => {
                 const item = document.createElement('div');
-                item.className = 'diagram-item';
-                
-                const nameSpan = document.createElement('span');
+                item.className = `diagram-item${diag.id === currentDiagramId ? ' is-current' : ''}`;
+
+                const itemMain = document.createElement('div');
+                itemMain.className = 'diagram-item-main';
+
+                const itemIcon = document.createElement('div');
+                itemIcon.className = 'diagram-item-icon';
+                itemIcon.setAttribute('aria-hidden', 'true');
+                itemIcon.innerHTML = '<i data-lucide="presentation"></i>';
+
+                const itemCopy = document.createElement('div');
+                itemCopy.className = 'diagram-item-copy';
+
+                const nameSpan = document.createElement('strong');
                 nameSpan.className = 'diagram-name';
                 nameSpan.title = diag.name;
                 nameSpan.innerText = diag.name;
-                
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'diagram-actions';
-                
+
+                const meta = document.createElement('div');
+                meta.className = 'diagram-meta';
+                const elementCount = Array.isArray(diag.paths) ? diag.paths.length : 0;
+                meta.innerText = `${elementCount} ${elementCount === 1 ? 'elemento' : 'elementos'} · ${diag.date || 'Sin fecha'}`;
+                if (diag.id === currentDiagramId) {
+                    const currentBadge = document.createElement('span');
+                    currentBadge.className = 'diagram-current-badge';
+                    currentBadge.innerText = '· Actual';
+                    meta.appendChild(currentBadge);
+                }
+
+                itemCopy.appendChild(nameSpan);
+                itemCopy.appendChild(meta);
+                itemMain.appendChild(itemIcon);
+                itemMain.appendChild(itemCopy);
+
+                const menuBtn = document.createElement('button');
+                menuBtn.className = 'diagram-menu-btn';
+                menuBtn.type = 'button';
+                menuBtn.title = 'Más opciones';
+                menuBtn.setAttribute('aria-label', `Más opciones para ${diag.name}`);
+                menuBtn.setAttribute('aria-expanded', diagramActionMenuId === diag.id ? 'true' : 'false');
+                menuBtn.innerHTML = '<i data-lucide="more-vertical"></i>';
+                menuBtn.onclick = () => toggleDiagramActions(diag.id);
+
+                const itemActions = document.createElement('div');
+                itemActions.className = 'diagram-item-actions';
                 const loadBtn = document.createElement('button');
-                loadBtn.className = 'btn-load';
-                loadBtn.innerText = 'Abrir';
+                loadBtn.className = 'diagram-open-btn';
+                loadBtn.type = 'button';
+                loadBtn.innerHTML = '<i data-lucide="folder-open"></i><span>Abrir pizarra</span>';
                 loadBtn.onclick = () => loadDiagram(diag.id);
-                
-                const delBtn = document.createElement('button');
-                delBtn.className = 'btn-delete';
-                delBtn.innerText = 'X';
-                delBtn.onclick = () => deleteDiagram(diag.id);
-                
-                actionsDiv.appendChild(loadBtn);
-                actionsDiv.appendChild(delBtn);
-                item.appendChild(nameSpan);
-                item.appendChild(actionsDiv);
-                
+                itemActions.appendChild(loadBtn);
+
+                item.appendChild(itemMain);
+                item.appendChild(menuBtn);
+                item.appendChild(itemActions);
+
+                if (diagramActionMenuId === diag.id) {
+                    const dangerMenu = document.createElement('div');
+                    dangerMenu.className = 'diagram-danger-menu';
+                    const deleteRequestBtn = document.createElement('button');
+                    deleteRequestBtn.className = 'diagram-delete-request';
+                    deleteRequestBtn.type = 'button';
+                    deleteRequestBtn.innerHTML = '<i data-lucide="trash-2"></i><span>Eliminar esta pizarra…</span>';
+                    deleteRequestBtn.onclick = () => requestDeleteDiagram(diag.id);
+                    dangerMenu.appendChild(deleteRequestBtn);
+                    item.appendChild(dangerMenu);
+                }
+
+                if (diagramDeleteConfirmId === diag.id) {
+                    const confirmation = document.createElement('div');
+                    confirmation.className = 'diagram-delete-confirm';
+
+                    const confirmationTitle = document.createElement('strong');
+                    confirmationTitle.innerText = `¿Eliminar “${diag.name}”?`;
+                    const confirmationText = document.createElement('p');
+                    confirmationText.innerText = 'La pizarra desaparecerá de la lista, pero tendrás 10 segundos para deshacer la acción.';
+
+                    const confirmationActions = document.createElement('div');
+                    confirmationActions.className = 'diagram-delete-confirm-actions';
+                    const keepBtn = document.createElement('button');
+                    keepBtn.className = 'diagram-keep-btn';
+                    keepBtn.type = 'button';
+                    keepBtn.innerText = 'Conservar';
+                    keepBtn.onclick = cancelDeleteDiagram;
+                    const confirmDeleteBtn = document.createElement('button');
+                    confirmDeleteBtn.className = 'diagram-confirm-delete-btn';
+                    confirmDeleteBtn.type = 'button';
+                    confirmDeleteBtn.innerText = 'Sí, eliminar';
+                    confirmDeleteBtn.onclick = () => confirmDiagramDeletion(diag.id);
+
+                    confirmationActions.appendChild(keepBtn);
+                    confirmationActions.appendChild(confirmDeleteBtn);
+                    confirmation.appendChild(confirmationTitle);
+                    confirmation.appendChild(confirmationText);
+                    confirmation.appendChild(confirmationActions);
+                    item.appendChild(confirmation);
+                    setTimeout(() => keepBtn.focus(), 0);
+                }
+
                 diagramsListContainer.appendChild(item);
             });
+            lucide.createIcons();
         }
 
         // --- LOGICA DE CONTROLES (TEMA Y MALLA) ---
