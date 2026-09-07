@@ -113,6 +113,24 @@
         .tool-btn.active { color: #fff; background: rgba(255,255,255,0.2); box-shadow: inset 0 0 5px rgba(0,0,0,0.5); }
         .tool-btn svg { width: 20px; height: 20px; }
         .action-btn:hover { color: #ff5555; background: rgba(255,50,50,0.1); }
+
+        .shape-tools { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 100%; position: relative; }
+        .shape-menu-toggle, .shape-constraint-btn {
+            background: transparent; border: 0; color: #888; padding: 6px; border-radius: 8px;
+            cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+            position: relative; width: 32px; height: 32px; touch-action: manipulation;
+        }
+        .shape-menu-toggle:hover, .shape-constraint-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+        .shape-menu-toggle.active, .shape-constraint-btn.active { color: #fff; background: var(--ui-accent-soft-strong); box-shadow: inset 0 0 5px rgba(0,0,0,0.45); }
+        .shape-menu-toggle svg, .shape-constraint-btn svg { width: 20px; height: 20px; }
+        .shape-menu { display: none; grid-template-columns: repeat(2, 34px); gap: 4px; padding: 5px; border-radius: 10px; background: rgba(24,24,30,0.98); border: 1px solid rgba(255,255,255,0.1); z-index: 30; box-shadow: 0 8px 20px rgba(0,0,0,0.45); }
+        .shape-tools.open .shape-menu { display: grid; }
+        .shape-menu .tool-btn { width: 34px; height: 34px; padding: 5px; }
+        .shape-menu .tool-btn svg { width: 19px; height: 19px; }
+        .shape-size-readout { color: var(--ui-muted); font-size: 10px; font-weight: 700; text-align: center; white-space: nowrap; min-height: 14px; }
+        body.light-mode .shape-menu { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); }
+        body.light-mode .shape-menu-toggle, body.light-mode .shape-constraint-btn { color: #555; }
+        body.light-mode .shape-menu-toggle.active, body.light-mode .shape-constraint-btn.active { color: #202124; }
         
         #tool-smart:hover { color: #ffff00; background: rgba(255,255,0,0.1); }
         #tool-smart.active { color: #ffff00; background: rgba(255,255,0,0.2); box-shadow: inset 0 0 5px rgba(255,255,0,0.5); }
@@ -240,6 +258,7 @@
         }
         .step-nav-toggle { padding: 0 12px; color: var(--ui-accent-bright); }
         .step-nav-btn:hover, .step-nav-toggle:hover { background: rgba(255,255,255,0.16); }
+        .step-nav-btn svg { width: 18px; height: 18px; }
         .step-nav-btn:disabled { opacity: 0.32; cursor: default; }
         .step-nav-controls { display: flex; align-items: center; gap: 6px; }
         .step-navigator.collapsed .step-nav-controls { display: none; }
@@ -268,10 +287,19 @@
         .step-list-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
         .step-list-state { font-size: 15px; color: #8b949e; }
         .step-list-item.completed .step-list-state { color: #43a047; }
+        .step-map-panel {
+            display: none; width: 100%; height: 184px; box-sizing: border-box; padding: 8px;
+            border-radius: 14px; background: rgba(20, 20, 20, 0.95); border: 1px solid rgba(255,255,255,0.16);
+            box-shadow: 0 8px 26px rgba(0,0,0,0.6); backdrop-filter: blur(10px); pointer-events: auto;
+        }
+        .step-navigator.map-open .step-map-panel { display: block; }
+        #minimapCanvas { display: block; width: 100%; height: 100%; border-radius: 10px; touch-action: none; cursor: crosshair; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
         body.light-mode .step-nav-bar, body.light-mode .step-list-panel {
             background: rgba(255,255,255,0.95); border-color: rgba(0,0,0,0.16);
             box-shadow: 0 5px 18px rgba(0,0,0,0.18);
         }
+        body.light-mode .step-map-panel { background: rgba(255,255,255,0.95); border-color: rgba(0,0,0,0.16); box-shadow: 0 5px 18px rgba(0,0,0,0.18); }
         body.light-mode .step-nav-btn, body.light-mode .step-nav-toggle,
         body.light-mode .step-list-item { color: #202124; background: rgba(0,0,0,0.06); }
         body.light-mode .step-nav-toggle { color: var(--ui-accent); }
@@ -286,6 +314,7 @@
             #progressTracker > div:last-child { width: min(100px, 25vw) !important; }
             .step-navigator { width: min(360px, calc(100vw - 16px)); z-index: 25; }
             .step-nav-toggle, .step-nav-btn { min-width: 42px; height: 42px; }
+            .step-map-panel { height: 164px; }
             .font-size-btn { width: 42px; height: 42px; flex-basis: 42px; }
             .panel-wrapper.text-panel { bottom: calc(15px + env(safe-area-inset-bottom, 0px)); }
         }
@@ -1532,6 +1561,9 @@
     <div class="zoom-indicator" id="zoomText" role="button" tabindex="0" title="Restablecer visualizacion al 100%" aria-label="Restablecer visualizacion al 100%">100%</div>
 
     <div class="step-navigator collapsed" id="stepNavigator" aria-label="Navegador de pasos de presentación">
+        <div class="step-map-panel" id="stepMapPanel" aria-label="Mapa general de la pizarra">
+            <canvas id="minimapCanvas"></canvas>
+        </div>
         <div class="step-list-panel" id="stepListPanel" aria-label="Lista ordenada de pasos"></div>
         <div class="step-nav-bar">
             <button class="step-nav-toggle" id="stepNavToggleBtn" type="button" aria-expanded="false" title="Mostrar u ocultar controles de pasos">
@@ -1539,7 +1571,8 @@
             </button>
             <div class="step-nav-controls">
                 <button class="step-nav-btn" id="stepPrevBtn" type="button" aria-label="Paso anterior" title="Paso anterior">←</button>
-                <button class="step-nav-btn" id="stepListBtn" type="button" aria-label="Abrir lista de pasos" aria-expanded="false" title="Abrir lista de pasos">Lista</button>
+                <button class="step-nav-btn" id="stepListBtn" type="button" aria-label="Abrir lista de pasos" aria-expanded="false" title="Abrir lista de pasos"><i data-lucide="list-ordered" aria-hidden="true"></i><span class="sr-only">Lista</span></button>
+                <button class="step-nav-btn" id="stepMapBtn" type="button" aria-label="Abrir minimapa" aria-expanded="false" title="Abrir minimapa"><i data-lucide="map" aria-hidden="true"></i></button>
                 <button class="step-nav-btn" id="stepNextBtn" type="button" aria-label="Paso siguiente" title="Paso siguiente">→</button>
             </div>
         </div>
@@ -1591,6 +1624,18 @@
             <button class="tool-btn" id="tool-arrow" title="Flujo Dinamico"><i data-lucide="git-merge"></i></button>
             <button class="tool-btn" id="tool-rect" title="Rectangulo"><i data-lucide="square"></i></button>
             <button class="tool-btn" id="tool-circle" title="Circulo"><i data-lucide="circle"></i></button>
+            <div class="shape-tools" id="shapeTools" aria-label="Figuras adicionales">
+                <button class="shape-menu-toggle" id="shapeMenuToggleBtn" type="button" aria-expanded="false" aria-label="Más figuras" title="Más figuras"><i data-lucide="shapes" aria-hidden="true"></i></button>
+                <div class="shape-menu" id="shapeMenu" role="group" aria-label="Más figuras">
+                    <button class="tool-btn" id="tool-roundrect" title="Rectángulo redondeado"><i data-lucide="square"></i></button>
+                    <button class="tool-btn" id="tool-diamond" title="Rombo / decisión"><i data-lucide="diamond"></i></button>
+                    <button class="tool-btn" id="tool-ellipse" title="Elipse"><i data-lucide="circle"></i></button>
+                    <button class="tool-btn" id="tool-parallelogram" title="Paralelogramo / entrada"><i data-lucide="scan"></i></button>
+                    <button class="tool-btn" id="tool-hexagon" title="Hexágono / preparación"><i data-lucide="hexagon"></i></button>
+                </div>
+                <button class="shape-constraint-btn" id="shapeConstraintBtn" type="button" aria-pressed="false" aria-label="Activar cuadrado perfecto 1 a 1" title="Activar cuadrado perfecto 1:1"><i data-lucide="lock-keyhole" aria-hidden="true"></i></button>
+                <span class="shape-size-readout" id="shapeSizeReadout" aria-live="polite"></span>
+            </div>
             <!-- NUEVA HERRAMIENTA: CASILLA DE TAREA -->
             <button class="tool-btn" id="tool-checkbox" title="Añadir Tarea (Casilla de progreso)"><i data-lucide="check-square"></i></button>
             
@@ -1697,7 +1742,7 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const swCode = `
-                    const CACHE_NAME = 'pizarra-v6-20260907';
+                    const CACHE_NAME = 'pizarra-v7-20260907';
                     const urlsToCache = ['./manifest.json'];
 
                     self.addEventListener('install', event => {
@@ -1864,6 +1909,8 @@
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            resizeMinimapCanvas();
+            scheduleMinimapRedraw();
             redrawAll();
         }
         window.addEventListener('resize', resizeCanvas);
@@ -1920,6 +1967,15 @@
         const stepPrevBtn = document.getElementById('stepPrevBtn');
         const stepListBtn = document.getElementById('stepListBtn');
         const stepNextBtn = document.getElementById('stepNextBtn');
+        const stepMapBtn = document.getElementById('stepMapBtn');
+        const stepMapPanel = document.getElementById('stepMapPanel');
+        const minimapCanvas = document.getElementById('minimapCanvas');
+        const minimapCtx = minimapCanvas ? minimapCanvas.getContext('2d') : null;
+
+        const shapeTools = document.getElementById('shapeTools');
+        const shapeMenuToggleBtn = document.getElementById('shapeMenuToggleBtn');
+        const shapeConstraintBtn = document.getElementById('shapeConstraintBtn');
+        const shapeSizeReadout = document.getElementById('shapeSizeReadout');
         
         const fontFamilySelect = document.getElementById('fontFamilySelect');
         const fontSizeSlider = document.getElementById('fontSizeSlider');
@@ -1964,7 +2020,8 @@
             currentTextWidth: 300,
             currentTextAutoSize: true,
             isResizingText: false,
-            snapLines: [] 
+            snapLines: [],
+            shapeConstraint: 'free'
         };
 
         function getActualColor(c) {
@@ -2779,7 +2836,14 @@
         let touchSelectionCandidate = null;
         let lastTouchEventTime = 0;
         let gesturePathsSnapshot = null;
-        let animationOffset = 0; const animationSpeed = 0.35; 
+        let animationOffset = 0;
+        let lastAnimationTimestamp = 0;
+        const animationSpeed = 0.24;
+        const ANIMATED_DASH_LENGTH = 8;
+        const ANIMATED_DASH_GAP = 5;
+        const ANIMATED_DASH_PERIOD = ANIMATED_DASH_LENGTH + ANIMATED_DASH_GAP;
+        let cameraAnimationFrame = null;
+        let cameraAnimationToken = 0;
 
         // ==========================================
         // RECORRIDO ORDENADO DE CASILLAS / PRESENTACION
@@ -2789,6 +2853,16 @@
         let lastStepListSignature = '';
         let stepPositionFrame = null;
         let stepPositionTimer = null;
+        let minimapOpen = false;
+        let minimapFrame = null;
+        let minimapPointerId = null;
+        let minimapDragging = false;
+        let minimapTransform = null;
+        let minimapDpr = 1;
+
+        function prefersReducedMotion() {
+            return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        }
 
         function captureCurrentPresentationView() {
             return {
@@ -2877,19 +2951,329 @@
             setTextToolbarCollapsed(true);
         }
 
+        function cancelCameraAnimation() {
+            cameraAnimationToken += 1;
+            if (cameraAnimationFrame !== null) {
+                cancelAnimationFrame(cameraAnimationFrame);
+                cameraAnimationFrame = null;
+            }
+        }
+
+        function easeInOutCubic(progress) {
+            return progress < 0.5
+                ? 4 * progress * progress * progress
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+        }
+
+        function setCameraCenter(centerX, centerY, scale) {
+            const safeScale = Math.max(0.2, Math.min(Number(scale) || 1, 5));
+            view.scale = safeScale;
+            view.x = canvas.width / 2 - Number(centerX || 0) * safeScale;
+            view.y = canvas.height / 2 - Number(centerY || 0) * safeScale;
+        }
+
+        function animateCameraTo(centerX, centerY, targetScale, duration = 520) {
+            const safeTargetScale = Math.max(0.2, Math.min(Number(targetScale) || view.scale, 5));
+            const startCenterX = (canvas.width / 2 - view.x) / view.scale;
+            const startCenterY = (canvas.height / 2 - view.y) / view.scale;
+            const startScale = view.scale;
+            const delta = Math.abs(startCenterX - centerX) + Math.abs(startCenterY - centerY) + Math.abs(startScale - safeTargetScale) * 100;
+
+            cancelCameraAnimation();
+            if (prefersReducedMotion() || delta < 0.5 || duration <= 0) {
+                setCameraCenter(centerX, centerY, safeTargetScale);
+                redrawAll();
+                return;
+            }
+
+            const token = cameraAnimationToken;
+            const startedAt = performance.now();
+            const frame = now => {
+                if (token !== cameraAnimationToken) return;
+                const progress = Math.min(1, (now - startedAt) / duration);
+                const eased = easeInOutCubic(progress);
+                setCameraCenter(
+                    startCenterX + (centerX - startCenterX) * eased,
+                    startCenterY + (centerY - startCenterY) * eased,
+                    startScale + (safeTargetScale - startScale) * eased
+                );
+                redrawAll();
+                if (progress < 1) {
+                    cameraAnimationFrame = requestAnimationFrame(frame);
+                } else {
+                    cameraAnimationFrame = null;
+                    setCameraCenter(centerX, centerY, safeTargetScale);
+                    redrawAll();
+                }
+            };
+            cameraAnimationFrame = requestAnimationFrame(frame);
+        }
+
+        function getBoardContentBounds() {
+            const allShapes = appState.paths.concat(appState.currentPath ? [appState.currentPath] : []);
+            const finiteBoxes = allShapes
+                .filter(shape => shape && !shape._hiddenWhileEditing)
+                .map(shape => {
+                    try { return getRawBounds(shape); } catch (_) { return null; }
+                })
+                .filter(box => box && [box.minX, box.minY, box.maxX, box.maxY].every(Number.isFinite));
+
+            if (finiteBoxes.length === 0) {
+                return { minX: -500, minY: -320, maxX: 500, maxY: 320 };
+            }
+
+            const raw = finiteBoxes.reduce((bounds, box) => ({
+                minX: Math.min(bounds.minX, box.minX), minY: Math.min(bounds.minY, box.minY),
+                maxX: Math.max(bounds.maxX, box.maxX), maxY: Math.max(bounds.maxY, box.maxY)
+            }), { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
+            const width = Math.max(1, raw.maxX - raw.minX);
+            const height = Math.max(1, raw.maxY - raw.minY);
+            const padding = Math.max(80, Math.max(width, height) * 0.08);
+            return {
+                minX: raw.minX - padding, minY: raw.minY - padding,
+                maxX: raw.maxX + padding, maxY: raw.maxY + padding
+            };
+        }
+
+        function getViewportWorldBounds() {
+            return {
+                minX: -view.x / view.scale,
+                minY: -view.y / view.scale,
+                maxX: (-view.x + canvas.width) / view.scale,
+                maxY: (-view.y + canvas.height) / view.scale
+            };
+        }
+
+        function resizeMinimapCanvas() {
+            if (!minimapCanvas) return;
+            const rect = minimapCanvas.getBoundingClientRect();
+            const width = Math.max(1, Math.round(rect.width || minimapCanvas.clientWidth || 1));
+            const height = Math.max(1, Math.round(rect.height || minimapCanvas.clientHeight || 1));
+            minimapDpr = Math.min(2, window.devicePixelRatio || 1);
+            const nextWidth = Math.round(width * minimapDpr);
+            const nextHeight = Math.round(height * minimapDpr);
+            if (minimapCanvas.width !== nextWidth || minimapCanvas.height !== nextHeight) {
+                minimapCanvas.width = nextWidth;
+                minimapCanvas.height = nextHeight;
+            }
+        }
+
+        function getMinimapTransform(bounds) {
+            const width = Math.max(1, minimapCanvas?.clientWidth || minimapCanvas?.getBoundingClientRect().width || 1);
+            const height = Math.max(1, minimapCanvas?.clientHeight || minimapCanvas?.getBoundingClientRect().height || 1);
+            const worldWidth = Math.max(1, bounds.maxX - bounds.minX);
+            const worldHeight = Math.max(1, bounds.maxY - bounds.minY);
+            const scale = Math.max(0.001, Math.min((width - 20) / worldWidth, (height - 20) / worldHeight));
+            const contentWidth = worldWidth * scale;
+            const contentHeight = worldHeight * scale;
+            return {
+                scale,
+                offsetX: (width - contentWidth) / 2 - bounds.minX * scale,
+                offsetY: (height - contentHeight) / 2 - bounds.minY * scale,
+                width, height, bounds
+            };
+        }
+
+        function worldToMinimapPoint(x, y, transform = minimapTransform) {
+            if (!transform) return { x: 0, y: 0 };
+            return { x: x * transform.scale + transform.offsetX, y: y * transform.scale + transform.offsetY };
+        }
+
+        function minimapToWorldPoint(x, y, transform = minimapTransform) {
+            if (!transform || !transform.scale) return { x: 0, y: 0 };
+            return { x: (x - transform.offsetX) / transform.scale, y: (y - transform.offsetY) / transform.scale };
+        }
+
+        function drawMinimapShape(shape, transform) {
+            if (!minimapCtx || !shape || shape._hiddenWhileEditing) return;
+            const mapCtx = minimapCtx;
+            const color = getActualColor(shape.color || appState.color);
+            const pointsForLine = () => {
+                const sourceShape = shape.fromId ? appState.paths.find(item => item.id === shape.fromId) : null;
+                const targetShape = shape.toId ? appState.paths.find(item => item.id === shape.toId) : null;
+                const connection = getDynamicConnection(sourceShape, targetShape,
+                    { x: shape.startX, y: shape.startY }, { x: shape.endX, y: shape.endY });
+                return getOrthogonalPath(connection.pA, connection.pA.dir, connection.pB, connection.pB.dir);
+            };
+            const mapPoints = points => points.map(point => worldToMinimapPoint(point.x, point.y, transform));
+
+            mapCtx.save();
+            mapCtx.strokeStyle = color || '#b8add6';
+            mapCtx.fillStyle = color || '#b8add6';
+            mapCtx.globalAlpha = shape.type === 'image' || shape.type === 'video' ? 0.28 : 0.82;
+            mapCtx.lineWidth = 1.5;
+            mapCtx.setLineDash([]);
+            mapCtx.lineJoin = 'round';
+            mapCtx.lineCap = 'round';
+
+            if (shape.type === 'draw') {
+                const points = mapPoints(shape.points || []);
+                if (points.length > 1) {
+                    mapCtx.beginPath(); mapCtx.moveTo(points[0].x, points[0].y);
+                    points.slice(1).forEach(point => mapCtx.lineTo(point.x, point.y));
+                    mapCtx.stroke();
+                }
+            } else if (shape.type === 'line' || shape.type === 'arrow') {
+                const points = mapPoints(pointsForLine());
+                if (points.length > 1) {
+                    mapCtx.beginPath(); mapCtx.moveTo(points[0].x, points[0].y);
+                    points.slice(1).forEach(point => mapCtx.lineTo(point.x, point.y));
+                    mapCtx.stroke();
+                }
+            } else if (shape.type === 'circle' || shape.type === 'ellipse') {
+                const box = getRawBounds(shape);
+                const center = worldToMinimapPoint((box.minX + box.maxX) / 2, (box.minY + box.maxY) / 2, transform);
+                mapCtx.beginPath();
+                mapCtx.ellipse(center.x, center.y, Math.max(1, (box.maxX - box.minX) * transform.scale / 2), Math.max(1, (box.maxY - box.minY) * transform.scale / 2), 0, 0, Math.PI * 2);
+                mapCtx.stroke();
+            } else {
+                const polygon = typeof getPolygonPoints === 'function' ? getPolygonPoints(shape) : null;
+                if (polygon && polygon.length >= 3) {
+                    const points = mapPoints(polygon);
+                    mapCtx.beginPath(); mapCtx.moveTo(points[0].x, points[0].y);
+                    points.slice(1).forEach(point => mapCtx.lineTo(point.x, point.y));
+                    mapCtx.closePath(); mapCtx.stroke();
+                } else {
+                    const box = getRawBounds(shape);
+                    const topLeft = worldToMinimapPoint(box.minX, box.minY, transform);
+                    const width = Math.max(2, (box.maxX - box.minX) * transform.scale);
+                    const height = Math.max(2, (box.maxY - box.minY) * transform.scale);
+                    if (shape.type === 'checkbox') {
+                        const checkboxSize = Math.max(3, Math.min(width, height) * 0.35);
+                        mapCtx.strokeRect(topLeft.x, topLeft.y + (height - checkboxSize) / 2, checkboxSize, checkboxSize);
+                        mapCtx.beginPath(); mapCtx.moveTo(topLeft.x + checkboxSize + 2, topLeft.y + height / 2); mapCtx.lineTo(topLeft.x + width, topLeft.y + height / 2); mapCtx.stroke();
+                    } else if (shape.type === 'text') {
+                        mapCtx.fillRect(topLeft.x, topLeft.y, width, Math.max(2, Math.min(height, 4)));
+                    } else {
+                        const radius = shape.type === 'roundrect' ? Math.min(5, width / 3, height / 3) : 0;
+                        if (radius && mapCtx.roundRect) { mapCtx.beginPath(); mapCtx.roundRect(topLeft.x, topLeft.y, width, height, radius); mapCtx.stroke(); }
+                        else mapCtx.strokeRect(topLeft.x, topLeft.y, width, height);
+                    }
+                }
+            }
+            mapCtx.restore();
+        }
+
+        function drawMinimap() {
+            if (!minimapOpen || !minimapCtx || !minimapCanvas) return;
+            resizeMinimapCanvas();
+            const bounds = getBoardContentBounds();
+            const transform = getMinimapTransform(bounds);
+            minimapTransform = transform;
+            const mapCtx = minimapCtx;
+            mapCtx.setTransform(minimapDpr, 0, 0, minimapDpr, 0, 0);
+            mapCtx.clearRect(0, 0, transform.width, transform.height);
+            mapCtx.fillStyle = appState.theme === 'dark' ? 'rgba(8,8,12,0.96)' : 'rgba(248,249,252,0.98)';
+            mapCtx.fillRect(0, 0, transform.width, transform.height);
+
+            mapCtx.strokeStyle = appState.theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(20,25,35,0.09)';
+            mapCtx.lineWidth = 1;
+            mapCtx.strokeRect(0.5, 0.5, transform.width - 1, transform.height - 1);
+            appState.paths.forEach(shape => drawMinimapShape(shape, transform));
+            if (appState.currentPath) drawMinimapShape(appState.currentPath, transform);
+
+            const viewport = getViewportWorldBounds();
+            const topLeft = worldToMinimapPoint(viewport.minX, viewport.minY, transform);
+            const bottomRight = worldToMinimapPoint(viewport.maxX, viewport.maxY, transform);
+            const accent = getUiAccentColor(true);
+            mapCtx.save();
+            mapCtx.fillStyle = accent;
+            mapCtx.globalAlpha = 0.12;
+            mapCtx.fillRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
+            mapCtx.globalAlpha = 0.95;
+            mapCtx.strokeStyle = accent;
+            mapCtx.lineWidth = 2;
+            mapCtx.strokeRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
+            const currentStep = appState.paths.find(shape => shape.id === currentPresentationStepId);
+            if (currentStep) {
+                const center = getCenter(currentStep);
+                const point = worldToMinimapPoint(center.x, center.y, transform);
+                mapCtx.fillStyle = accent;
+                mapCtx.beginPath(); mapCtx.arc(point.x, point.y, 4, 0, Math.PI * 2); mapCtx.fill();
+            }
+            mapCtx.restore();
+        }
+
+        function scheduleMinimapRedraw() {
+            if (!minimapOpen || minimapFrame !== null) return;
+            minimapFrame = requestAnimationFrame(() => {
+                minimapFrame = null;
+                drawMinimap();
+            });
+        }
+
+        function setMinimapOpen(open) {
+            minimapOpen = !!open;
+            if (!stepNavigator || !stepMapBtn) return;
+            stepNavigator.classList.toggle('map-open', minimapOpen);
+            stepMapBtn.setAttribute('aria-expanded', String(minimapOpen));
+            stepMapBtn.setAttribute('title', minimapOpen ? 'Cerrar minimapa' : 'Abrir minimapa');
+            stepMapBtn.setAttribute('aria-label', minimapOpen ? 'Cerrar minimapa' : 'Abrir minimapa');
+            if (minimapOpen) {
+                resizeMinimapCanvas();
+                drawMinimap();
+                scheduleMinimapRedraw();
+            }
+            scheduleStepNavigatorPosition();
+        }
+
+        if (minimapCanvas) {
+            minimapCanvas.addEventListener('pointerdown', event => {
+                if (!minimapOpen || !minimapTransform) return;
+                event.preventDefault();
+                minimapPointerId = event.pointerId;
+                minimapDragging = true;
+                try { minimapCanvas.setPointerCapture(event.pointerId); } catch (_) { /* captura opcional */ }
+                cancelCameraAnimation();
+                const rect = minimapCanvas.getBoundingClientRect();
+                const world = minimapToWorldPoint(event.clientX - rect.left, event.clientY - rect.top);
+                setCameraCenter(world.x, world.y, view.scale);
+                markInteracting();
+                redrawAll();
+            }, { passive: false });
+            minimapCanvas.addEventListener('pointermove', event => {
+                if (!minimapDragging || event.pointerId !== minimapPointerId || !minimapTransform) return;
+                event.preventDefault();
+                const rect = minimapCanvas.getBoundingClientRect();
+                const world = minimapToWorldPoint(event.clientX - rect.left, event.clientY - rect.top);
+                setCameraCenter(world.x, world.y, view.scale);
+                redrawAll();
+            }, { passive: false });
+            const finishMinimapPointer = event => {
+                if (event.pointerId !== minimapPointerId) return;
+                minimapDragging = false;
+                minimapPointerId = null;
+                try { minimapCanvas.releasePointerCapture(event.pointerId); } catch (_) { /* captura opcional */ }
+            };
+            minimapCanvas.addEventListener('pointerup', finishMinimapPointer);
+            minimapCanvas.addEventListener('pointercancel', finishMinimapPointer);
+        }
+
         function updateStepNavigationUI(forceListRefresh = false) {
             if (!stepNavigator || !stepListPanel) return;
             const steps = getPresentationSteps();
             const wasVisible = stepNavigator.classList.contains('visible');
+            const hasBoardContent = appState.paths.some(shape => shape && !shape._hiddenWhileEditing);
 
             if (steps.length === 0) {
                 currentPresentationStepId = null;
                 lastStepListSignature = '';
-                stepNavigator.classList.remove('visible', 'list-open');
+                stepListPanel.replaceChildren();
+                stepNavigator.classList.toggle('visible', hasBoardContent);
+                stepNavigator.classList.remove('list-open');
+                stepListBtn.setAttribute('aria-expanded', 'false');
+                stepListBtn.disabled = true;
+                stepPrevBtn.disabled = true;
+                stepNextBtn.disabled = true;
+                if (!hasBoardContent) setMinimapOpen(false);
+                stepStatusText.textContent = hasBoardContent ? 'Mapa' : 'Pasos 0';
+                if (hasBoardContent) scheduleStepNavigatorPosition();
                 return;
             }
 
             stepNavigator.classList.add('visible');
+            stepListBtn.disabled = false;
+            stepMapBtn.disabled = false;
             if (!steps.some(item => item.shape.id === currentPresentationStepId)) currentPresentationStepId = null;
 
             const currentIndex = steps.findIndex(item => item.shape.id === currentPresentationStepId);
@@ -2959,13 +3343,11 @@
             const targetCenterX = hasSavedView ? Number(savedView.centerX) : fallbackCenter.x;
             const targetCenterY = hasSavedView ? Number(savedView.centerY) : fallbackCenter.y;
 
-            view.scale = targetScale;
-            view.x = canvas.width / 2 - targetCenterX * targetScale;
-            view.y = canvas.height / 2 - targetCenterY * targetScale;
+            animateCameraTo(targetCenterX, targetCenterY, targetScale, 520);
             stepNavigator.classList.remove('list-open');
             stepListBtn.setAttribute('aria-expanded', 'false');
+            setMinimapOpen(false);
             markInteracting();
-            redrawAll();
         }
 
         function moveThroughPresentationSteps(direction) {
@@ -2983,6 +3365,7 @@
             if (willCollapse) {
                 stepNavigator.classList.remove('list-open');
                 stepListBtn.setAttribute('aria-expanded', 'false');
+                setMinimapOpen(false);
             }
             scheduleStepNavigatorPosition();
         });
@@ -2990,9 +3373,16 @@
         stepPrevBtn.addEventListener('click', () => moveThroughPresentationSteps(-1));
         stepNextBtn.addEventListener('click', () => moveThroughPresentationSteps(1));
         stepListBtn.addEventListener('click', () => {
+            setMinimapOpen(false);
             const isOpen = stepNavigator.classList.toggle('list-open');
             stepListBtn.setAttribute('aria-expanded', String(isOpen));
             updateStepNavigationUI(isOpen);
+        });
+        stepMapBtn.addEventListener('click', () => {
+            const isOpen = !minimapOpen;
+            stepNavigator.classList.remove('list-open');
+            stepListBtn.setAttribute('aria-expanded', 'false');
+            setMinimapOpen(isOpen);
         });
 
         window.addEventListener('resize', scheduleStepNavigatorPosition);
@@ -3086,10 +3476,11 @@
                 let hasChanges = needsRedraw;
                 needsRedraw = false;
 
-                animationOffset -= animationSpeed;
-                if (animationOffset <= -100) animationOffset = 0;
+                const deltaTime = lastAnimationTimestamp ? Math.min(50, Math.max(0, timestamp - lastAnimationTimestamp)) : 1000 / FPS_IDLE;
+                lastAnimationTimestamp = timestamp;
+                animationOffset = (animationOffset - animationSpeed * (deltaTime / (1000 / 60))) % ANIMATED_DASH_PERIOD;
 
-                const hasAnimatedLines = appState.paths.some(p => p.type === 'arrow');
+                const hasAnimatedLines = !prefersReducedMotion() && appState.paths.some(p => p.type === 'arrow');
                 const hasActiveAnims = appState.paths.some(p => p.popAnimTime || p.clickAnimTime);
 
                 if (hasAnimatedLines || hasActiveAnims) {
@@ -3879,12 +4270,105 @@
             };
         }
 
+        function isConstrainableShapeTool(tool) {
+            return ['rect', 'roundrect', 'diamond', 'ellipse', 'parallelogram', 'hexagon'].includes(tool);
+        }
+
+        function getConstrainedEndpoint(startX, startY, endX, endY, event = null, shapeType = appState.tool) {
+            const eventRequestsSquare = !!(event && (event.shiftKey || event.altKey));
+            const shouldConstrain = isConstrainableShapeTool(shapeType) &&
+                (appState.shapeConstraint === 'square' || eventRequestsSquare);
+            if (!shouldConstrain) return { x: endX, y: endY };
+
+            const dx = endX - startX;
+            const dy = endY - startY;
+            const size = Math.max(Math.abs(dx), Math.abs(dy));
+            return {
+                x: startX + (dx < 0 ? -size : size),
+                y: startY + (dy < 0 ? -size : size)
+            };
+        }
+
+        function getPolygonPoints(shape) {
+            if (!shape || !['diamond', 'parallelogram', 'hexagon'].includes(shape.type)) return null;
+            const box = getRawBounds(shape);
+            if (![box.minX, box.minY, box.maxX, box.maxY].every(Number.isFinite)) return null;
+            const width = box.maxX - box.minX;
+            const height = box.maxY - box.minY;
+            const skew = Math.min(width * 0.22, Math.max(8, height * 0.35));
+            const cx = (box.minX + box.maxX) / 2;
+            const cy = (box.minY + box.maxY) / 2;
+            if (shape.type === 'diamond') {
+                return [
+                    { x: cx, y: box.minY }, { x: box.maxX, y: cy },
+                    { x: cx, y: box.maxY }, { x: box.minX, y: cy }
+                ];
+            }
+            if (shape.type === 'parallelogram') {
+                return [
+                    { x: box.minX + skew, y: box.minY }, { x: box.maxX, y: box.minY },
+                    { x: box.maxX - skew, y: box.maxY }, { x: box.minX, y: box.maxY }
+                ];
+            }
+            return [
+                { x: box.minX + skew, y: box.minY }, { x: box.maxX - skew, y: box.minY },
+                { x: box.maxX, y: cy }, { x: box.maxX - skew, y: box.maxY },
+                { x: box.minX + skew, y: box.maxY }, { x: box.minX, y: cy }
+            ];
+        }
+
+        function isPointInPolygon(x, y, points) {
+            if (!Array.isArray(points) || points.length < 3) return false;
+            let inside = false;
+            for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+                const xi = points[i].x, yi = points[i].y;
+                const xj = points[j].x, yj = points[j].y;
+                const intersects = ((yi > y) !== (yj > y)) &&
+                    (x < (xj - xi) * (y - yi) / ((yj - yi) || Number.EPSILON) + xi);
+                if (intersects) inside = !inside;
+            }
+            return inside;
+        }
+
+        function traceShapePath(ctxToUse, shape) {
+            ctxToUse.beginPath();
+            if (shape.type === 'rect') {
+                const box = getRawBounds(shape);
+                ctxToUse.rect(box.minX, box.minY, box.maxX - box.minX, box.maxY - box.minY);
+            } else if (shape.type === 'roundrect') {
+                const box = getRawBounds(shape);
+                const radius = Math.min(18 / view.scale, Math.abs(box.maxX - box.minX) / 3, Math.abs(box.maxY - box.minY) / 3);
+                if (ctxToUse.roundRect && radius > 0) ctxToUse.roundRect(box.minX, box.minY, box.maxX - box.minX, box.maxY - box.minY, radius);
+                else ctxToUse.rect(box.minX, box.minY, box.maxX - box.minX, box.maxY - box.minY);
+            } else if (shape.type === 'circle') {
+                const radius = Math.hypot(shape.endX - shape.startX, shape.endY - shape.startY);
+                ctxToUse.arc(shape.startX, shape.startY, radius, 0, 2 * Math.PI);
+            } else if (shape.type === 'ellipse') {
+                const box = getRawBounds(shape);
+                ctxToUse.ellipse((box.minX + box.maxX) / 2, (box.minY + box.maxY) / 2,
+                    Math.abs(box.maxX - box.minX) / 2, Math.abs(box.maxY - box.minY) / 2, 0, 0, 2 * Math.PI);
+            } else if (['diamond', 'parallelogram', 'hexagon'].includes(shape.type)) {
+                const points = getPolygonPoints(shape) || [];
+                if (points.length) {
+                    ctxToUse.moveTo(points[0].x, points[0].y);
+                    points.slice(1).forEach(point => ctxToUse.lineTo(point.x, point.y));
+                    ctxToUse.closePath();
+                }
+            } else if (shape.type === 'draw') {
+                const points = shape.points || [];
+                if (points.length) {
+                    ctxToUse.moveTo(points[0].x, points[0].y);
+                    points.slice(1).forEach(point => ctxToUse.lineTo(point.x, point.y));
+                }
+            }
+        }
+
         function findShapeOrPoint(x, y, ignoreId = null) {
              for (let i = appState.paths.length - 1; i >= 0; i--) {
                 const shape = appState.paths[i];
                 if (shape.id === ignoreId) continue;
                 
-                if (['rect', 'circle', 'text', 'image', 'video', 'checkbox'].includes(shape.type)) {
+                if (['rect', 'roundrect', 'diamond', 'ellipse', 'parallelogram', 'hexagon', 'circle', 'text', 'image', 'video', 'checkbox'].includes(shape.type)) {
                      const box = getBoundingBox(shape);
                      const magnetism = 40 / view.scale;
                      if (x >= box.minX - magnetism && x <= box.maxX + magnetism && y >= box.minY - magnetism && y <= box.maxY + magnetism) return shape;
@@ -3977,6 +4461,21 @@
                 return distance <= radius + tolerance;
             }
 
+            if (shape.type === 'ellipse') {
+                const box = getRawBounds(shape);
+                const radiusX = Math.max(1, (box.maxX - box.minX) / 2);
+                const radiusY = Math.max(1, (box.maxY - box.minY) / 2);
+                const centerX = (box.minX + box.maxX) / 2;
+                const centerY = (box.minY + box.maxY) / 2;
+                const normalized = Math.pow((x - centerX) / (radiusX + tolerance), 2) + Math.pow((y - centerY) / (radiusY + tolerance), 2);
+                return normalized <= 1;
+            }
+
+            if (['diamond', 'parallelogram', 'hexagon'].includes(shape.type)) {
+                const points = getPolygonPoints(shape) || [];
+                return isPointInPolygon(x, y, points) || isPointNearPolyline([...points, points[0]], x, y, tolerance);
+            }
+
             // Filled/interactive objects retain a generous touch target, while
             // freehand strokes and connectors use their actual geometry above.
             return isPointInsideBounds(getRawBounds(shape), x, y, tolerance);
@@ -4021,6 +4520,36 @@
             path.push(p2); return path;
         }
 
+        function updateShapeConstraintUI() {
+            if (!shapeConstraintBtn) return;
+            const locked = appState.shapeConstraint === 'square';
+            shapeConstraintBtn.classList.toggle('active', locked);
+            shapeConstraintBtn.setAttribute('aria-pressed', String(locked));
+            shapeConstraintBtn.setAttribute('title', locked ? 'Desactivar proporción 1:1' : 'Activar cuadrado perfecto 1:1');
+            shapeConstraintBtn.setAttribute('aria-label', locked ? 'Desactivar proporción 1 a 1' : 'Activar cuadrado perfecto 1 a 1');
+        }
+
+        if (shapeMenuToggleBtn) {
+            shapeMenuToggleBtn.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                const isOpen = shapeTools.classList.toggle('open');
+                shapeMenuToggleBtn.setAttribute('aria-expanded', String(isOpen));
+                shapeMenuToggleBtn.classList.toggle('active', isOpen);
+            });
+        }
+
+        if (shapeConstraintBtn) {
+            shapeConstraintBtn.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                appState.shapeConstraint = appState.shapeConstraint === 'square' ? 'free' : 'square';
+                updateShapeConstraintUI();
+                showMessage(appState.shapeConstraint === 'square' ? 'Proporción 1:1 activada' : 'Proporción libre activada');
+            });
+        }
+        updateShapeConstraintUI();
+
         // --- Eventos UI Interfaz Principal ---
         document.querySelectorAll('.tool-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -4042,6 +4571,12 @@
                 
                 appState.tool = toolId;
                 document.querySelectorAll('.gallery-thumb').forEach(b => b.classList.remove('active'));
+
+                if (shapeTools && shapeMenuToggleBtn && shapeTools.contains(e.currentTarget)) {
+                    shapeTools.classList.remove('open');
+                    shapeMenuToggleBtn.setAttribute('aria-expanded', 'false');
+                    shapeMenuToggleBtn.classList.remove('active');
+                }
 
                 if(!e.currentTarget.classList.contains('action-btn') && !e.currentTarget.classList.contains('btn-color') && e.currentTarget.id !== 'currentColorBtn') {
                     document.querySelectorAll('.tool-btn:not(.action-btn):not(.gallery-thumb):not(.btn-color)').forEach(b => b.classList.remove('active'));
@@ -4321,10 +4856,11 @@
             ctxToUse.lineWidth = 1.0 / view.scale; ctxToUse.strokeStyle = actualColor; 
             const glowColor = (actualColor === '#000000' || actualColor === '#111111') && appState.theme === 'dark' ? '#ffffff' : actualColor;
             ctxToUse.lineJoin = 'round';
+            ctxToUse.lineCap = 'round';
             
             if (isAnimated) {
-                ctxToUse.setLineDash([12 / view.scale, 8 / view.scale]); 
-                ctxToUse.lineDashOffset = (reverseFlow ? -animationOffset : animationOffset) / view.scale;
+                ctxToUse.setLineDash([ANIMATED_DASH_LENGTH / view.scale, ANIMATED_DASH_GAP / view.scale]);
+                ctxToUse.lineDashOffset = prefersReducedMotion() ? 0 : (reverseFlow ? -animationOffset : animationOffset) / view.scale;
             } else {
                 ctxToUse.setLineDash([]); 
             }
@@ -4574,19 +5110,7 @@
             ctxToUse.lineCap = 'round'; ctxToUse.lineJoin = 'round';
             const glowColor = (actualColor === '#000000' || actualColor === '#111111') && appState.theme === 'dark' ? '#ffffff' : actualColor;
             
-            ctxToUse.beginPath();
-            if (shape.type === 'draw') {
-                const pts = shape.points;
-                if (pts.length > 0) {
-                    ctxToUse.moveTo(pts[0].x, pts[0].y);
-                    for (let i = 1; i < pts.length; i++) ctxToUse.lineTo(pts[i].x, pts[i].y);
-                }
-            } else if (shape.type === 'rect') {
-                ctxToUse.rect(shape.startX, shape.startY, shape.endX - shape.startX, shape.endY - shape.startY);
-            } else if (shape.type === 'circle') {
-                const radius = Math.hypot(shape.endX - shape.startX, shape.endY - shape.startY);
-                ctxToUse.arc(shape.startX, shape.startY, radius, 0, 2 * Math.PI);
-            }
+            traceShapePath(ctxToUse, shape);
             
             if (shape.isNeon || isHighlighted) {
                 ctxToUse.lineWidth = 2.5 / view.scale; 
@@ -4636,7 +5160,7 @@
             if (appState.isPanning) return;
             if (appState.tool === 'arrow' || appState.tool === 'line') {
                 appState.paths.forEach(shape => {
-                    if (['rect', 'circle', 'text', 'image', 'video', 'checkbox'].includes(shape.type)) {
+                    if (['rect', 'roundrect', 'diamond', 'ellipse', 'parallelogram', 'hexagon', 'circle', 'text', 'image', 'video', 'checkbox'].includes(shape.type)) {
                         const isSource = appState.currentPath && appState.currentPath.fromId === shape.id;
                         const isTarget = appState.snapTargetShape && appState.snapTargetShape.id === shape.id;
                         if(isSource || isTarget || !appState.currentPath) {
@@ -4677,6 +5201,23 @@
             document.getElementById('progressText').innerText = percentage + '%';
             document.getElementById('progressBarFill').style.width = percentage + '%';
             document.getElementById('progressBarFill').style.background = percentage === 100 ? '#39ff14' : getUiAccentColor();
+        }
+
+        function updateShapeSizeReadout() {
+            if (!shapeSizeReadout) return;
+            const candidate = appState.currentPath || (appState.selectedId ? appState.paths.find(shape => shape.id === appState.selectedId) : null);
+            if (!candidate || !isConstrainableShapeTool(candidate.type)) {
+                shapeSizeReadout.textContent = '';
+                return;
+            }
+            const box = getRawBounds(candidate);
+            if (![box.minX, box.minY, box.maxX, box.maxY].every(Number.isFinite)) {
+                shapeSizeReadout.textContent = '';
+                return;
+            }
+            const width = Math.round(Math.abs(box.maxX - box.minX));
+            const height = Math.round(Math.abs(box.maxY - box.minY));
+            shapeSizeReadout.textContent = `${width} × ${height}${width === height ? ' · 1:1' : ''}`;
         }
 
         function redrawAll() {
@@ -4751,8 +5292,10 @@
                 syncTextInputDimensions();
             }
             updateFloatingBtnsPosition();
+            updateShapeSizeReadout();
             updateProgressUI(); // Llamar actualización gráfica de porcentaje
             updateStepNavigationUI();
+            scheduleMinimapRedraw();
         }
 
         function drawGrid() {
@@ -4771,6 +5314,7 @@
 
         // --- INTERACCION GENERAL CON PREVENCION DE BUGS ---
         function handlePointerDown(e) {
+            cancelCameraAnimation();
             if (e.touches && e.touches.length > 1) {
                 e.preventDefault();
                 if (appState.isTyping) finalizeText();
@@ -4893,6 +5437,9 @@
                     };
                 } else {
                     appState.currentPath = { id: generateId(), type: appState.tool, color: appState.color, startX: worldPos.x, startY: worldPos.y, endX: worldPos.x, endY: worldPos.y, isNeon: false };
+                    if (isConstrainableShapeTool(appState.tool)) {
+                        appState.currentPath.lockAspect = appState.shapeConstraint === 'square' || !!e.shiftKey || !!e.altKey;
+                    }
                 }
             }
         }
@@ -5013,7 +5560,12 @@
             } else if (appState.currentPath && appState.tool !== 'text' && appState.tool !== 'checkbox') {
                 if (appState.tool === 'draw') appState.currentPath.points.push(worldPos);
                 else { 
-                    appState.currentPath.endX = worldPos.x; appState.currentPath.endY = worldPos.y; 
+                    const shapeType = appState.currentPath.type;
+                    const constrained = isConstrainableShapeTool(shapeType) && (appState.currentPath.lockAspect || !!e.shiftKey || !!e.altKey);
+                    const endpoint = constrained
+                        ? getConstrainedEndpoint(appState.currentPath.startX, appState.currentPath.startY, worldPos.x, worldPos.y, e, shapeType)
+                        : worldPos;
+                    appState.currentPath.endX = endpoint.x; appState.currentPath.endY = endpoint.y; 
                     if (appState.tool === 'arrow' || appState.tool === 'line') { 
                         appState.snapTargetShape = findShapeOrPoint(worldPos.x, worldPos.y, appState.currentPath.fromId); 
                     }
@@ -5093,7 +5645,7 @@
                     if (appState.snapTargetShape) appState.currentPath.toId = appState.snapTargetShape.id; 
                 }
                 
-                if (['rect', 'circle', 'image', 'video', 'line', 'arrow'].includes(appState.currentPath.type)) {
+                if (['rect', 'roundrect', 'diamond', 'ellipse', 'parallelogram', 'hexagon', 'circle', 'image', 'video', 'line', 'arrow'].includes(appState.currentPath.type)) {
                     const w = Math.abs(appState.currentPath.endX - appState.currentPath.startX);
                     const h = Math.abs(appState.currentPath.endY - appState.currentPath.startY);
                     
@@ -5130,7 +5682,7 @@
                     // Simulamos click en editar para cambiarle el texto
                     document.getElementById('editObjBtn').click();
                 } 
-                else if (wasMedia || ['arrow', 'line', 'rect', 'circle'].includes(finishedType)) {
+                else if (wasMedia || ['arrow', 'line', 'rect', 'roundrect', 'diamond', 'ellipse', 'parallelogram', 'hexagon', 'circle'].includes(finishedType)) {
                     appState.tool = 'select';
                     document.querySelectorAll('.tool-btn:not(.action-btn):not(.gallery-thumb):not(.btn-color)').forEach(b => b.classList.remove('active'));
                     const selectBtn = document.getElementById('tool-select');
@@ -5148,6 +5700,7 @@
 
         canvas.addEventListener('wheel', (e) => {
             e.preventDefault();
+            cancelCameraAnimation();
             markInteracting();
             view.scale = Math.max(0.2, Math.min(view.scale * (1 + e.deltaY * -0.001), 5));
             const worldX = (e.clientX - view.x) / view.scale, worldY = (e.clientY - view.y) / view.scale;
@@ -5156,6 +5709,7 @@
         });
 
         function resetZoomTo100() {
+            cancelCameraAnimation();
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const worldCenterX = (centerX - view.x) / view.scale;
@@ -5210,6 +5764,10 @@
                 clientY: event.clientY,
                 pointerType: event.pointerType,
                 pointerId: event.pointerId,
+                shiftKey: !!event.shiftKey,
+                altKey: !!event.altKey,
+                ctrlKey: !!event.ctrlKey,
+                metaKey: !!event.metaKey,
                 touches,
                 preventDefault: () => event.preventDefault()
             };
